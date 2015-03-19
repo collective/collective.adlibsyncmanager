@@ -11,7 +11,7 @@ from plone.registry.interfaces import IRegistry
 def migrate(self):
     from collective.adlibsyncmanager.sync_mechanism import SyncMechanism
     
-    folder = "nl/collectie/schilderijen"
+    folder = "nl"
 
     #
     # Create or GET registry record
@@ -32,6 +32,9 @@ def migrate(self):
         registry.records['last_request_successful'] = Record(field.Bool(title=u"last_request_successful"), False)
         registry.records['last_successful_date'] = Record(field.Text(title=u"last_successful_date"), unicode_date)
         registry.records['request_period'] = Record(field.Int(title=u"request_period"), 1)
+        last_request_successful = False
+        last_successful_date = unicode_date
+        request_period = 1
 
     #
     #Define date based on last request
@@ -46,10 +49,17 @@ def migrate(self):
     #
     # Define request type
     #
-    request_type = "sync_date"
+    request_type = "test"
+
+
+    #
+    # Define log path
+    #
     
+    log_path = "/Users/AG/Projects/NewTeylersMuseum/adlib_sync.log"
+
     #Create the migrator
-    sync = SyncMechanism(self, date, request_type, folder)
+    sync = SyncMechanism(self, date, request_type, folder, log_path)
     
     print("=== Starting Sync. ===")
 

@@ -14,10 +14,8 @@ collective.adlibsyncmanager.egg-info/paster_plugins.txt
 collective.adlibsyncmanager.egg-info/requires.txt
 collective.adlibsyncmanager.egg-info/top_level.txt
 collective/adlibsyncmanager/__init__.py
-collective/adlibsyncmanager/api_migrator.py
 collective/adlibsyncmanager/sync_mechanism.py
 collective/adlibsyncmanager/tests.py
-collective/adlibsyncmanager/xml_migrator.py
 collective/adlibsyncmanager/Extensions/__init__.py
 collective/adlibsyncmanager/Extensions/adlib_migration.py
 collective/adlibsyncmanager/Extensions/adlib_sync_manager.py
