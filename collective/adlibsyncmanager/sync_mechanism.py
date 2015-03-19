@@ -30,6 +30,7 @@ class SyncMechanism:
 
         self.portal = portal
         self.folder_path = folder.split('/')
+        self.image_folder = folder.split('/')
 
         self.api_request = ""
         self.xmldoc = ""
@@ -44,6 +45,38 @@ class SyncMechanism:
         self.error_message = ""
 
     ##### Utils #####
+
+    def get_container(self):
+        if len(self.folder_path) == 0:
+            print "!=== Folder check failed ==="
+            self.success = False
+            return None
+
+        container = self.portal
+
+        for folder in self.folder_path:
+            if hasattr(container, folder):
+                container = container[folder]
+            else:
+                print ("== Chosen folder " + folder + " does not exist. Creating new folder ==")
+                self.success = False
+                return None
+
+        return container
+
+    def get_object_from_instance(self, object_number):
+        container = self.get_container()
+
+        catalog = getToolByName(container, 'portal_catalog')
+        all_objects = catalog(portal_type='Object', Language="nl")
+
+        for brain in all_objects:
+            item = brain.getObject()
+            if hasattr(item, 'object_number'):
+                if item.object_number == object_number:
+                    return item
+
+        return None
 
     def transform_creators_name(self, creators):
         date_birth = ""
@@ -313,7 +346,7 @@ class SyncMechanism:
 
     def convert_object_number_priref(self, object_number):
         quoted_query = urllib.quote(object_number)
-        api_request = API_REQUEST_URL_COLLECT % (quoted_query)
+        api_request = API_REQUEST_URL % (quoted_query)
         xml_doc = self.parse_api_doc(api_request)
         root = xml_doc.getroot()
         recordList = root.find("recordList")
@@ -759,6 +792,8 @@ class SyncMechanism:
     def sync_date(self):
         date = self.date
 
+        self.is_en = False
+
         self.xmldoc = self.build_request(date)
         records = self.get_records(self.xmldoc)
 
@@ -768,6 +803,9 @@ class SyncMechanism:
         for record in records:
             if record.find('object_number') != None:
                 object_number = record.find('object_number').text
+                
+                self.write_log_details("== Try to find object %s in website ==" % (object_number))
+
                 _object = self.get_object_from_instance(object_number)
                 if _object != None:
                     transaction.begin()
@@ -785,17 +823,19 @@ class SyncMechanism:
                     
                     except:
                         transaction.abort()
-                        self.write_log_details("== Unexpected expection. Aborting. ")
+                        self.write_log_details("== Unexpected exception. Aborting. ")
                         self.errors += 1
                         self.success = False
-                        return
+                        raise
 
                     self.write_log_details("== Object updated ==")
                     self.updated += 1
                 else:
+                    self.write_log_details("== Object %s not found." %(object_number))
                     self.skipped += 1
 
         self.success = True
+        return
                 
     def start_sync(self):
         if self.type in VALID_TYPES:
