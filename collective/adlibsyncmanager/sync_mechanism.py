@@ -225,7 +225,7 @@ class SyncMechanism:
                 if text[0] == " ":
                     text = text[1:]
                 if len(text) > 0:
-                    if text[:-1] == " ":
+                    if text[-1] == " ":
                         text = text[:-1]
                 return text
             else:
@@ -293,14 +293,41 @@ class SyncMechanism:
                     number += 1
                     if number != len(all_dimensions):
                         if d["part"] != "":
-                            dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                            if self.transform_d(d['type']) != "":
+                                if (d["part"] in ['papier', 'opzet', 'lijst']) and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                            else:
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s %s (%s)<p>" % (d['value'], d['unit'], d['part'])
                         else:
-                            dimensions += "%s: %s %s<p>" % (self.transform_d(d['type']), d['value'], d['unit'])
+                            if self.transform_d(d['type']) != "":
+                                dimensions += "%s: %s %s<p>" % (self.transform_d(d['type']), d['value'], d['unit'])
+                            else:
+                                dimensions += "%s %s<p>" % (d['value'], d['unit'])
                     else:
                         if d["part"] != "":
-                            dimensions += "%s: %s %s (%s)" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                            if self.transform_d(d['type']) != "":
+                                if (d["part"] in ['papier', 'opzet', 'lijst']) and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                            else:
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s %s (%s)<p>" % (d['value'], d['unit'], d['part'])
                         else:
-                            dimensions += "%s: %s %s" % (self.transform_d(d['type']), d['value'], d['unit'])
+                            if self.transform_d(d['type']) != "":
+                                dimensions += "%s: %s %s<p>" % (self.transform_d(d['type']), d['value'], d['unit'])
+                            else:
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s %s<p>" % (d['value'], d['unit'])
                 dimension = dimensions
             else:
                 dimensions = ""
@@ -310,7 +337,10 @@ class SyncMechanism:
                     if number != len(all_dimensions):
                         if self.transform_d(d['type']) != "":
                             if d["part"] != "":
-                                dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
                             else:
                                 dimensions += "%s: %s %s<p>" % (self.transform_d(d['type']), d['value'], d['unit'])
                         else:
@@ -318,21 +348,27 @@ class SyncMechanism:
                     else:
                         if self.transform_d(d['type']) != "":
                             if d["part"] != "":
-                                dimensions += "%s: %s %s (%s)" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s: %s %s (%s)<p>" % (self.transform_d(d['type']), d['value'], d['unit'], d['part'])
                             else:
-                                dimensions += "%s: %s %s" % (self.transform_d(d['type']), d['value'], d['unit'])
+                                dimensions += "%s: %s %s<p>" % (self.transform_d(d['type']), d['value'], d['unit'])
                         else:
                             if d['part'] != "":
-                                dimensions += "%s %s (%s)" % (d['value'], d['unit'], d['part'])
+                                if d["part"] in ['papier', 'opzet', 'lijst'] and (('drawings' in self.image_folder) or ('tekening' in self.folder_path)):
+                                    pass
+                                else:
+                                    dimensions += "%s %s (%s)<p>" % (d['value'], d['unit'], d['part'])
                             else:
-                                dimensions += "%s %s" % (d['value'], d['unit'])
+                                dimensions += "%s %s<p>" % (d['value'], d['unit'])
 
                 dimension = "%s" %(self.trim_white_spaces(dimensions))
 
             return dimension
         else:
             return ""
-
+            
     def create_inscription_field(self, inscription_data):
         field_inscription = ""
 
@@ -424,9 +460,19 @@ class SyncMechanism:
             if first_record.find('Title').find('title').find('value') != None:
                 object_data['title'] = self.trim_white_spaces(first_record.find('Title').find('title').find('value').text)
         
-        if first_record.find('Technique') != None:
-            if first_record.find('Technique').find('technique') != None:
-                object_data['technique'] = self.trim_white_spaces(first_record.find('Technique').find('technique').text)
+        if len(first_record.findall('Technique')) > 1:
+            index = 0
+            for technique in first_record.findall('Technique'):
+                index += 1
+                if technique.find('technique') != None:
+                    if index != len(first_record.findall('Technique')):
+                        object_data['technique'] += "%s, " %(self.trim_white_spaces(technique.find('technique').text))
+                    else:
+                        object_data['technique'] += "%s" %(self.trim_white_spaces(technique.find('technique').text))
+
+        elif len(first_record.findall('Technique')) > 0:
+            if first_record.findall('Technique')[0].find('technique') != None:
+                    object_data['technique'] = self.trim_white_spaces(first_record.findall('Technique')[0].find('technique').text)
         #
         # Update material
         #
