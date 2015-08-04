@@ -8,14 +8,14 @@ CORE = {
     # Identification tab
     #
     "priref": "priref",
-    "title": "title",
+    "title": "identification_titleDescription_title-title",
     "description": "description",
 
     "institution.name":"identification_identification_institutionNames",
     "institution.name-name":"",# value is in the relation - parent
-    "institution.place":"",#parent
+    "institution.place":"",#repeated
     "institution.name-address.place":"identification_identification_institutionPlace",
-    "institution.code":"",#parent
+    "institution.code":"",#repeated
     "institution.name-institution_code":"identification_identification_institutionCode",
     "object_number":"identification_identification_objectNumber",
     "administration_name": "identification_identification_administrativeName",
@@ -38,9 +38,9 @@ CORE = {
 
     "title.type":"identification_titleDescription_titleType",
     "description.date": "identification_titleDescription_titleDate",
-    "title.notes": "identification_titleDescription_notes",
+    "title.notes": "identification_titleDescription_notes-notes",
     "title.language": "identification_titleDescription_language",
-    "title.translation": "identification_titleDescription_translatedTitle",
+    "title.translation": "identification_titleDescription_translatedTitle-title",
     "description.name": "identification_titleDescription_describer",
 
     "other_name":"identification_objectName_otherName-name",
@@ -101,10 +101,10 @@ CORE = {
     #
     # Physical characteristics
     #
-    "phys_characteristic.aspect-term":"physicalCharacteristics_keywords-aspect",
-    "phys_characteristic.keyword-term":"physicalCharacteristics_keywords-keyword",
-    "phys_characteristic.notes":"physicalCharacteristics_keywords-notes",
-    "phys_characteristic.part":"physicalCharacteristics_keywords-part",
+    "phys_characteristic.aspect-term":"physicalCharacteristics_keyword-aspect",
+    "phys_characteristic.keyword-term":"physicalCharacteristics_keyword-keyword",
+    "phys_characteristic.notes":"physicalCharacteristics_keyword-notes",
+    "phys_characteristic.part":"physicalCharacteristics_keyword-part",
 
     "physical_description": "physicalCharacteristics_physicalDescription_description",
     "technique.part":"physicalCharacteristics_technique-part",
@@ -133,9 +133,9 @@ CORE = {
     # Iconography
     #
     "content.motif.general": "",#parent
-    "content.motif.general-term": "iconography_generalSearchCriteria_generalThemes-term",
+    "content.motif.general-term": "iconography_generalSearchCriteria_generalthemes",
     "content.motif.specific":"",#parent
-    "content.motif.specific-term":"iconography_generalSearchCriteria_specificThemes-term",
+    "content.motif.specific-term":"iconography_generalSearchCriteria_specificthemes",
     
     "content.classification.scheme":"iconography_generalSearchCriteria_classificationTheme-term",
     "content.classification.code":"iconography_generalSearchCriteria_classificationTheme-code",
@@ -228,9 +228,9 @@ CORE = {
     #
 
     "documentation":"",#parent
-    "documentation-documentation.title":"",#parent
+    "documentation-documentation.title":"documentation_documentation-titles",#relation
     "documentation-documentation.title-lead_word":"documentation_documentation-article",
-    "documentation-documentation.title-title":"documentation_documentation-title",
+    "documentation-documentation.title-title":"",
     "documentation-documentation.title-author.name":"documentation_documentation-author",
     "documentation-documentation.page_reference":"documentation_documentation-pageMark",
     "documentation-documentation.notes":"documentation_documentation-notes",
@@ -314,6 +314,7 @@ CORE = {
     "reproduction.reference-reproduction_type":"reproductions_reproduction-type",
     "reproduction.reference-format":"reproductions_reproduction-format",
     "reproduction.reference-reference_number":"reproductions_reproduction-reference",
+    "reproduction.creator": "",
     "reproduction.reference-creator":"reproductions_reproduction-creator",
     "reproduction.reference-production_date":"reproductions_reproduction-date",
     "reproduction.notes":"reproductions_reproduction-notes",
@@ -422,13 +423,13 @@ CORE = {
     "association.person.type-text":"associations_associatedPersonInstitution-nameType",
     "association.person-name":"",#name is in the relation
     "association.person.association-term":"associations_associatedPersonInstitution-association",
-    #"association.person.date.start":"",# removed based on feedback
-    #"association.person.date.end":"",# removed based on feedback
+    "association.person.date.start":"associations_associatedPersonInstitution-startDate",# removed based on feedback
+    "association.person.date.end":"associations_associatedPersonInstitution-endDate",# removed based on feedback
     "association.person.note":"associations_associatedPersonInstitution-notes",
 
     "association.subject.tax.rank-text": "associations_associatedSubjects-taxonomicRank",
     "association.subject.tax-scientific_name": "associations_associatedSubjects-scientificName",
-    "association.subject.name-term":"",#parent
+    "association.subject.name-term":"associations_associatedSubjects-properName",
     "association.subject.type-text":"associations_associatedSubjects-subjectType",
     "association.subject-term":"associations_associatedSubjects-subject",
     "association.subject.association-term":"associations_associatedSubjects-associations",

@@ -12,16 +12,18 @@ subfields_types = {
 	"creator": "relation",
 	"creator.role-term": "gridlist",
 	"production.place-term": "gridlist",
+	"documentation-documentation.title":"relation",
 
 	"technique-term": "gridlist",
 	"material-term": "gridlist",
 	"dimension.type-term": "gridlist",
-
+	"dimension.unit-term": "choice",
 	"association.person.type-text": "choice",
-
+	"phys_characteristic.keyword-term":"gridlist",
+	"phys_characteristic.aspect-term": "gridlist",
 	"content.motif.general-term":"gridlist",
 	'content.motif.specific-term':"gridlist",
-
+	"association.subject.name-term": "gridlist",
 	"content.person.name":"relation",
 	"content.person.name.type-text":"choice",
 
@@ -29,7 +31,7 @@ subfields_types = {
 	"content.subject.tax.rank-text": "choice",
 	"content.subject.name-term": "gridlist",
 	"content.subject-term": "gridlist",
-	
+
 	"inscription.type-term": "gridlist",
 	"inscription.maker": "relation",
 	"inscription.maker.role-term": "gridlist",
@@ -73,6 +75,7 @@ relation_types = {
 	"owner_hist.acquired_from":"PersonOrInstitution",
 	"Collector-field_coll.name":"PersonOrInstitution",
 	"exhibition-exhibition": "Exhibition",
-	"association.person":"PersonOrInstitution"
+	"association.person":"PersonOrInstitution",
+	"documentation-documentation.title": "Article"
 
 }

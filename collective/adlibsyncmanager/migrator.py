@@ -103,6 +103,7 @@ class APIMigrator:
         all_exhibitions = catalog(portal_type='Exhibition', Language="all")
         all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
         all_incoming = catalog(portal_type='IncomingLoan', Language="all")
+        all_articles = catalog(portal_type='Article', Language="all")
 
         self.all_objects = all_objects
         self.all_persons = all_persons
@@ -111,7 +112,7 @@ class APIMigrator:
         self.all_exhibitions = all_exhibitions
         self.all_outgoing = all_outgoing
         self.all_incoming = all_incoming
-
+        self.all_articles = all_articles
 
     def build_api_request_all(self):
         url = ""
@@ -7619,6 +7620,7 @@ class APIMigrator:
 
                 treatment_number = data['treatmentDetails_identification_treatmentNumber']
                 if treatment_number:
+                    continue
                     treatment = self.find_treatment_by_treatmentnumber(treatment_number)
                     if treatment:
                         self.update_treatment(data, treatment)
@@ -7626,8 +7628,8 @@ class APIMigrator:
                         print "Treatment does not exist: Create new Treatment object"
                         result = self.get_zm_treatment(priref, obj, True)
                 else:
-                    print "Treatment %s does not have a treatment number" %(str(priref))
-
+                    print "Treatment %s does not have a treatment number. CREATING" %(str(priref))
+                    result = self.get_zm_treatment(priref, obj, True)
             except:
                 print "Object failed"
                 timestamp = datetime.datetime.today().isoformat()
@@ -8669,6 +8671,16 @@ class APIMigrator:
 
         return None
 
+    def find_article_by_priref(self, priref):
+        if priref:
+            for brain in self.all_articles:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return None
+
     def find_incomingloan_by_priref(self, priref):
         if priref:
             for brain in self.all_incoming:
@@ -8677,7 +8689,7 @@ class APIMigrator:
                     if obj.priref == priref:
                         return obj
 
-        return True
+        return None
     
     def find_outgoingloan_by_priref(self, priref):
         if priref:
@@ -8687,7 +8699,7 @@ class APIMigrator:
                     if obj.priref == priref:
                         return obj
 
-        return True  
+        return None  
 
     def find_exhibition_by_priref(self, priref):
         if priref:
@@ -10436,7 +10448,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = "update_treatments"
+            self.type_migrator = "updater"
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)

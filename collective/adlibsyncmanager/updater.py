@@ -70,20 +70,32 @@ class Updater:
         self.datagrids = {}
         self.object_number = ""
         self.xml_path = ""
+        self.dev = False
 
     def log(self, text=""):
+        return
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
                 text = text.encode('ascii', 'ignore')
-                print "[%s] %s" %(str(timestamp), str(text))
+                final_log = "[%s] %s" %(str(timestamp), str(text))
+                print final_log
             else:
                 pass
         elif RUNNING:
-            if "STATUS" in text or "ERROR" in text or "warning" in text:
+            if "STATUS" in text or "ERROR" in text or "Warning" in text:
                 timestamp = datetime.datetime.today().isoformat()
                 text = text.encode('ascii', 'ignore')
-                print "[%s] %s" %(str(timestamp), str(text))
+
+                final_log = "[%s] %s" %(str(timestamp), str(text))
+                
+                if ".lref" not in text and "Warning" not in text:
+                    self.error_log_file.write(final_log+"\n")
+
+                if "Warning" in text or ".lref" in text or "STATUS" in text:
+                    self.warning_log_file.write(final_log+"\n")
+
+                print final_log
             else:
                 pass
 
@@ -195,7 +207,7 @@ class Updater:
         self.field_types['title'] = "text"
         self.field_types['description'] = 'text'
 
-    def create_relation(self, object_number, xml_path, current_value, objecttype_relatedto, priref, grid=False):
+    def create_relation(self, current_value, objecttype_relatedto, priref, grid=False):
         if grid:
             current_value = []
         
@@ -209,7 +221,7 @@ class Updater:
                     person_id = intids.getId(person)
                     relation_value = RelationValue(person_id)
                     for relation in current_value:
-                        if relation.to_object.priref == priref:
+                        if relation.to_object.id == person.id:
                             self.error("Relation already created.")
                             return current_value
                     current_value.append(relation_value)
@@ -245,7 +257,7 @@ class Updater:
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
-                        if relation.to_object.priref == priref:
+                        if relation.to_object.id == obj.id:
                             self.error("Relation already created.")
                             return current_value
                     current_value.append(relation_value)
@@ -263,9 +275,10 @@ class Updater:
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
-                        if relation.to_object.priref == priref:
+                        if relation.to_object.id == obj.id:
                             self.error("Relation already created.")
                             return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -317,6 +330,22 @@ class Updater:
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+
+        elif objecttype_relatedto == "Article":
+            obj = self.api.find_article_by_priref(priref)
+            if obj:
+                if not grid:
+                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("%s - %s - Cannot find Article %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+
         else:
             self.error("Relation type not available %s" %(str(objecttype_relatedto)))
 
@@ -338,6 +367,23 @@ class Updater:
             self.log("%s%s - %s - %s" %("[ ERROR ] ", object_number, xml_path, value))
 
         return True
+
+    def warning(self, text="", object_number="", xml_path="", value=""):
+        if text:
+            self.log("%s%s" %("[ Warning ] ", text))
+        else:
+            if not object_number:
+                object_numnber = "None"
+            if not xml_path:
+                xml_path = "No path"
+            if not value:
+                value = "No value"
+            value.encode('ascii', 'ignore')
+
+            self.log("%s%s - %s - %s" %("[ Warning ] ", object_number, xml_path, value))
+
+        return True
+
 
     def get_object_number(self, xml_record):
         if xml_record.find('object_number') != None:
@@ -362,17 +408,25 @@ class Updater:
         
         default_test = " "
         if subfield_type == "choice":
-            default_test = "No value"
             if xml_element.get('language') != "0":
                 return current_value
 
         updated = False
+        found = False
         for line in current_value:
             if subfield in line:
-                if line[subfield] == default_test or line[subfield] == []:
-                    line[subfield] = value
+                found = True
+                if line[subfield] == default_test or line[subfield] == [] or line[subfield] == 'No value':
+                    if line[subfield] == 'No value' and value == "":
+                        line[subfield] = 'No value'
+                    else:
+                        line[subfield] = value
+                    
                     updated = True
                     break
+        
+        if not found:
+            return current_value
 
         if not updated:
             val = self.create_dictionary(subfield, current_value, value, xml_element, subfield_type, plone_fieldroot)
@@ -386,6 +440,10 @@ class Updater:
                 return current_value
 
         new_value = self.get_schema_gridfield(plone_fieldroot)
+
+        if subfield not in new_value:
+            return current_value
+
         new_value[subfield] = value
         current_value.append(new_value)
 
@@ -444,7 +502,7 @@ class Updater:
                 if new_value not in current_value:
                     current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
-                    self.error("Value already in vocabulary.")
+                    self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value)))
                 value = current_value
             else:
                 value = [self.api.trim_white_spaces(xml_element.text)]
@@ -483,7 +541,7 @@ class Updater:
 
     def setattribute(self, plone_object, plone_fieldname, field_type, value):
         if value != None:
-            if field_type == "choice" and value == "":
+            if field_type == "choice" and (value == "" or value == " "):
                 value = "No value"
             setattr(plone_object, plone_fieldname, value)
         else:
@@ -558,17 +616,31 @@ class Updater:
         return True
 
     def start(self):
-        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v35_test_choicefield.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v35.xml"
         collecion_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v35.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
 
-        self.collection, self.xml_root = self.api.get_zm_collection(collecion_path_prod)
+        timestamp = datetime.datetime.today().isoformat()
+        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s.log" %(str(timestamp))
+        self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s.log" %(str(timestamp))
+        self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
+        self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
+        
+        self.dev = True
+        if self.dev:
+            self.error_log_file = open(self.error_path_dev, "w+")
+            self.warning_log_file = open(self.warning_path_dev, "w+")
+        else:
+            self.error_log_file = open(self.error_path, "w+")
+            self.warning_log_file = open(self.warning_path, "w+")
+        
+
+        self.collection, self.xml_root = self.api.get_zm_collection(collection_path)
         self.generate_field_types()
 
         total = len(list(self.collection))
         curr = 0
-
         limit = 0
 
         for xml_record in list(self.collection):
