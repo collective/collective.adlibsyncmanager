@@ -7163,6 +7163,8 @@ class APIMigrator:
     def create_zm_treatment(self, obj):
         
         transaction.begin()
+
+        self.folder_path = "nl/conserverings-behandelingen/conserverings-behandelingen".split('/')
         
         container = self.get_container()
         dirty_id = obj['dirty_id']
@@ -7171,6 +7173,10 @@ class APIMigrator:
         result = False
 
         created_object = None
+
+        treatment_title = obj['treatmentDetails_identification_treatmentNumber']
+        if treatment_title == "":
+            treatment_title = str(obj['priref'])
 
         try:
             ## Verify if id already exists in container
@@ -7199,8 +7205,9 @@ class APIMigrator:
                         ## Standard
                         type_name="treatment",
                         id=normalized_id,
-                        title=obj['treatmentDetails_identification_treatmentNumber'],
+                        title=treatment_title,
                         text=text,
+                        priref=obj['priref'],
 
                         # Treatment details
                         treatmentDetails_identification_treatmentNumber=obj["treatmentDetails_identification_treatmentNumber"],
@@ -7495,6 +7502,8 @@ class APIMigrator:
             # Linked Objects
             "linkedObjects_linkedObjects": []
         }
+
+        object_data['priref'] = priref
             
         try:
             ###
@@ -7571,6 +7580,54 @@ class APIMigrator:
                 if len(obj.findall('reproduction.identifier_URL')) >= 0:
                     priref = obj.find('priref').text
                     result = self.get_zm_treatment(priref, obj, True)
+            except:
+                print "Object failed"
+                timestamp = datetime.datetime.today().isoformat()
+                print "[%s] Object failed unexpected" %(timestamp)
+                raise
+
+        self.success = True
+        return
+
+    def update_treatment(self, data, item):
+        for key, value in data.iteritems():
+            if key not in ['text', 'dirty_id']:
+                if hasattr(obj, key):
+                    setattr(obj, key, value)
+
+        print "Treatment updated!"
+
+        return True
+
+    def update_treatments(self):
+        collection_path_test = "/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
+        collection_path = "/home/andre/collectie-zm-v1/xml/Treatments.xml"
+        collection_path_prod = "/var/www/zm-collectie-v2/xml/Treatments.xml"
+        objects = self.get_zm_collection(collection_path_prod)
+
+        total = len(list(objects))
+        curr = 0
+
+        for obj in list(objects):
+            curr += 1
+            
+            print "Updating: %s / %s" %(str(curr), str(total))
+            
+            try:
+                priref = obj.find('priref').text
+                data = self.get_zm_treatment(priref, obj, False)
+
+                treatment_number = data['treatmentDetails_identification_treatmentNumber']
+                if treatment_number:
+                    treatment = self.find_treatment_by_treatmentnumber(treatment_number)
+                    if treatment:
+                        self.update_treatment(data, treatment)
+                    else:
+                        print "Treatment does not exist: Create new Treatment object"
+                        result = self.get_zm_treatment(priref, obj, True)
+                else:
+                    print "Treatment %s does not have a treatment number" %(str(priref))
+
             except:
                 print "Object failed"
                 timestamp = datetime.datetime.today().isoformat()
@@ -8661,11 +8718,11 @@ class APIMigrator:
 
     def find_treatment_by_priref(self, priref):
         if priref:
-            for brain in self.all_treatments:
-                obj = brain.getObject()
-                if hasattr(obj, 'priref'):
-                    if obj.priref == priref:
-                        return obj
+            results = self.portal_catalog(treatment_priref=priref, portal_type="treatment")
+            if results:
+                item = results[0]
+                obj = item.getObject()
+                return obj
         return None
 
     def find_treatment_by_treatmentnumber(self, priref):
@@ -10388,6 +10445,9 @@ class APIMigrator:
             elif self.type_migrator == "updater":
                 updater = Updater(self)
                 updater.start()
+
+            elif self.type_migrator == "update_treatments":
+                self.update_treatments()
 
             elif self.type_migrator == "converter":
                 converter = Converter(self)

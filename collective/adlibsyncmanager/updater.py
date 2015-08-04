@@ -68,6 +68,8 @@ class Updater:
         self.fields = getFieldsInOrder(self.schema)
         self.field_types = {}
         self.datagrids = {}
+        self.object_number = ""
+        self.xml_path = ""
 
     def log(self, text=""):
         if DEBUG:
@@ -193,9 +195,10 @@ class Updater:
         self.field_types['title'] = "text"
         self.field_types['description'] = 'text'
 
-    def create_relation(self, current_value, objecttype_relatedto, priref, grid=False):
+    def create_relation(self, object_number, xml_path, current_value, objecttype_relatedto, priref, grid=False):
         if grid:
             current_value = []
+        
         current_value = []
         
         if objecttype_relatedto == "PersonOrInstitution":
@@ -214,7 +217,8 @@ class Updater:
                     current_value = []
                     current_value.append(person)
             else:
-                self.error("Cannot find person %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+
         elif objecttype_relatedto == "Object":
             obj = self.api.find_object(self.api.all_objects, priref)
             if obj:
@@ -230,6 +234,8 @@ class Updater:
                 else:
                     current_value = []
                     current_value.append(obj)
+            else:
+                self.error("%s - %s - Cannot find Object %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Exhibition":
             obj = self.api.find_exhibition_by_priref(priref)
@@ -247,7 +253,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("Cannot find Exhibition %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find Exhibition %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Archive":
             obj = self.api.find_archive_by_priref(priref)
@@ -265,7 +271,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("Cannot find Archive %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find Archive %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "treatment":
             obj = self.api.find_treatment_by_treatmentnumber(priref)
@@ -280,7 +286,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("Cannot find Treatment %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find Treatment %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "OutgoingLoan":
             obj = self.api.find_outgoingloan_by_priref(priref)
@@ -295,7 +301,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("Cannot find Outgoing Loan %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "IncomingLoan":
             obj = self.api.find_incomingloan_by_priref(priref)
@@ -310,7 +316,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("Cannot find Incoming Loan %s in Plone" %(str(priref)))
+                self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
         else:
             self.error("Relation type not available %s" %(str(objecttype_relatedto)))
 
@@ -516,6 +522,7 @@ class Updater:
         # Iterate the whole tree
         for element in xml_record.iter():
             xml_path = self.get_xml_path(element)
+            self.xml_path = xml_path
             self.write(xml_path, element, plone_object, object_number)
 
         return True
@@ -552,7 +559,7 @@ class Updater:
 
     def start(self):
         collection_path = "/Users/AG/Projects/collectie-zm/single-object-v35_test_choicefield.xml"
-        collecion_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v33.xml"
+        collecion_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v35.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
 
@@ -573,6 +580,7 @@ class Updater:
             if object_number:
                 plone_object = self.api.find_object(self.api.all_objects, object_number)
                 if plone_object:
+                    self.object_number = str(object_number)
                     self.generate_field_types()
                     self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                     self.update(xml_record, plone_object, object_number)
