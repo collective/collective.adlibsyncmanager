@@ -10436,7 +10436,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = "updater"
+            self.type_migrator = "update_treatments"
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)
