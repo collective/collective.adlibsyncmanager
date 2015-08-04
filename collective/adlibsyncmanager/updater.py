@@ -211,8 +211,6 @@ class Updater:
         if grid:
             current_value = []
         
-        current_value = []
-        
         if objecttype_relatedto == "PersonOrInstitution":
             person = self.api.find_person_by_priref(self.api.all_persons, priref)
             if person:
