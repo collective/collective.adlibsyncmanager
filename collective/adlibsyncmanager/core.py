@@ -36,9 +36,9 @@ CORE = {
     "object_name.notes": "identification_objectName_objectname-notes",
     "object_name.type-term":"identification_objectName_objectname-type",
 
-    "title.type":"identification_titleDescription_titleType",
+    "title.type":"identification_titleDescription_title-type",
     "description.date": "identification_titleDescription_titleDate",
-    "title.notes": "identification_titleDescription_notes-notes",
+    "title.notes": "identification_titleDescription_title-notes",
     "title.language": "identification_titleDescription_language",
     "title.translation": "identification_titleDescription_translatedTitle-title",
     "description.name": "identification_titleDescription_describer",

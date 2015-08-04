@@ -607,6 +607,8 @@ class APIMigrator:
 
     def trim_white_spaces(self, text):
         if text != "" and text != None:
+            if text == "\nEUR":
+                return "EUR"
             if type(text) == unicode:
                 if text == u'\n\u20ac':
                     return "EUR"
