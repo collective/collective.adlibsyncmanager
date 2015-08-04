@@ -7603,7 +7603,7 @@ class APIMigrator:
         collection_path_test = "/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
         collection_path = "/home/andre/collectie-zm-v1/xml/Treatments.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/Treatments.xml"
-        objects = self.get_zm_collection(collection_path_prod)
+        objects, root = self.get_zm_collection(collection_path_prod)
 
         total = len(list(objects))
         curr = 0
