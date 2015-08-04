@@ -367,20 +367,23 @@ class Updater:
         return True
 
     def warning(self, text="", object_number="", xml_path="", value=""):
-        if text:
-            self.log("%s%s" %("[ Warning ] ", text))
-        else:
-            if not object_number:
-                object_numnber = "None"
-            if not xml_path:
-                xml_path = "No path"
-            if not value:
-                value = "No value"
-            value.encode('ascii', 'ignore')
+        try:
+            if text:
+                self.log("%s%s" %("[ Warning ] ", text))
+            else:
+                if not object_number:
+                    object_numnber = "None"
+                if not xml_path:
+                    xml_path = "No path"
+                if not value:
+                    value = "No value"
+                value.encode('ascii', 'ignore')
 
-            self.log("%s%s - %s - %s" %("[ Warning ] ", object_number, xml_path, value))
+                self.log("%s%s - %s - %s" %("[ Warning ] ", object_number, xml_path, value))
 
-        return True
+            return True
+        except:
+            pass
 
 
     def get_object_number(self, xml_record):
@@ -500,7 +503,10 @@ class Updater:
                 if new_value not in current_value:
                     current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
-                    self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value)))
+                    try:
+                        self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
+                    except:
+                        pass
                 value = current_value
             else:
                 value = [self.api.trim_white_spaces(xml_element.text)]
@@ -631,7 +637,7 @@ class Updater:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_path_prod
+            collection_xml = collection_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -643,7 +649,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection)[:21]:
+        for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
