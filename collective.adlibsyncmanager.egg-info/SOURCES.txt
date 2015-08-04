@@ -14,6 +14,11 @@ collective.adlibsyncmanager.egg-info/paster_plugins.txt
 collective.adlibsyncmanager.egg-info/requires.txt
 collective.adlibsyncmanager.egg-info/top_level.txt
 collective/adlibsyncmanager/__init__.py
+collective/adlibsyncmanager/archive_migrator.py
+collective/adlibsyncmanager/book_migrator.py
+collective/adlibsyncmanager/incomingloan_migrator.py
+collective/adlibsyncmanager/migrator.py
+collective/adlibsyncmanager/objectentry_migrator.py
 collective/adlibsyncmanager/sync_mechanism.py
 collective/adlibsyncmanager/tests.py
 collective/adlibsyncmanager/Extensions/__init__.py
