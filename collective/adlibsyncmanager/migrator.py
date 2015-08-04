@@ -7589,7 +7589,7 @@ class APIMigrator:
         self.success = True
         return
 
-    def update_treatment(self, data, item):
+    def update_treatment(self, data, obj):
         for key, value in data.iteritems():
             if key not in ['text', 'dirty_id']:
                 if hasattr(obj, key):
