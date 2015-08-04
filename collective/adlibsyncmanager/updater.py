@@ -73,7 +73,7 @@ class Updater:
         self.dev = False
 
     def log(self, text=""):
-        return
+
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
@@ -627,7 +627,7 @@ class Updater:
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
-        self.dev = True
+        self.dev = False
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -636,7 +636,7 @@ class Updater:
             self.warning_log_file = open(self.warning_path, "w+")
         
 
-        self.collection, self.xml_root = self.api.get_zm_collection(collection_path)
+        self.collection, self.xml_root = self.api.get_zm_collection(collecion_path_prod)
         self.generate_field_types()
 
         total = len(list(self.collection))
