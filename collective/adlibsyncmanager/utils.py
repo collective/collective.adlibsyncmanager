@@ -28,7 +28,8 @@ subfields_types = {
 	"content.subject.type-text":"choice",
 	"content.subject.tax.rank-text": "choice",
 	"content.subject.name-term": "gridlist",
-
+	"content.subject-term": "gridlist",
+	
 	"inscription.type-term": "gridlist",
 	"inscription.maker": "relation",
 	"inscription.maker.role-term": "gridlist",

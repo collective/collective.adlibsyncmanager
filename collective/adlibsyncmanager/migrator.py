@@ -101,12 +101,16 @@ class APIMigrator:
         all_archives = catalog(portal_type='Archive', Language="all")
         all_treatments = catalog(portal_type='treatment', Language="all")
         all_exhibitions = catalog(portal_type='Exhibition', Language="all")
-        
+        all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
+        all_incoming = catalog(portal_type='IncomingLoan', Language="all")
+
         self.all_objects = all_objects
         self.all_persons = all_persons
         self.all_archives = all_archives
         self.all_treatments = all_treatments
         self.all_exhibitions = all_exhibitions
+        self.all_outgoing = all_outgoing
+        self.all_incoming = all_incoming
 
 
     def build_api_request_all(self):
@@ -602,8 +606,9 @@ class APIMigrator:
 
     def trim_white_spaces(self, text):
         if text != "" and text != None:
-            if text == u'\u20ac':
-                return "EUR"
+            if type(text) == unicode:
+                if text == u'\n\u20ac':
+                    return "EUR"
             if len(text) > 0:
                 if text[0] == " ":
                     text = text[1:]
@@ -8606,6 +8611,26 @@ class APIMigrator:
                 return obj
 
         return None
+
+    def find_incomingloan_by_priref(self, priref):
+        if priref:
+            for brain in self.all_incoming:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return True
+    
+    def find_outgoingloan_by_priref(self, priref):
+        if priref:
+            for brain in self.all_outgoing:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return True  
 
     def find_exhibition_by_priref(self, priref):
         if priref:

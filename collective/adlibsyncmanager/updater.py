@@ -171,7 +171,7 @@ class Updater:
             type_field = []
             self.datagrids[field.__name__] = False
         elif IChoice.providedBy(field):
-            type_field = " "
+            type_field = "No value"
         elif ITextLine.providedBy(field):
             type_field = " "
         elif IList.providedBy(field):
@@ -281,6 +281,36 @@ class Updater:
                     current_value.append(obj)
             else:
                 self.error("Cannot find Treatment %s in Plone" %(str(priref)))
+
+        elif objecttype_relatedto == "OutgoingLoan":
+            obj = self.api.find_outgoingloan_by_priref(priref)
+            if obj:
+                if not grid:
+                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("Cannot find Outgoing Loan %s in Plone" %(str(priref)))
+
+        elif objecttype_relatedto == "IncomingLoan":
+            obj = self.api.find_incomingloan_by_priref(priref)
+            if obj:
+                if not grid:
+                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("Cannot find Incoming Loan %s in Plone" %(str(priref)))
         else:
             self.error("Relation type not available %s" %(str(objecttype_relatedto)))
 
@@ -288,7 +318,6 @@ class Updater:
         return current_value
 
     def error(self, text="", object_number="", xml_path="", value=""):
-        
         if text:
             self.log("%s%s" %("[ ERROR ] ", text))
         else:
@@ -324,14 +353,17 @@ class Updater:
         return False
 
     def update_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
+        
+        default_test = " "
         if subfield_type == "choice":
+            default_test = "No value"
             if xml_element.get('language') != "0":
                 return current_value
 
         updated = False
         for line in current_value:
             if subfield in line:
-                if line[subfield] == " " or line[subfield] == []:
+                if line[subfield] == default_test or line[subfield] == []:
                     line[subfield] = value
                     updated = True
                     break
@@ -391,7 +423,11 @@ class Updater:
 
         elif field_type == "choice":
             if xml_element.get('language') == "0":
-                return self.api.trim_white_spaces(xml_element.text)
+                value = self.api.trim_white_spaces(xml_element.text)
+                if value == "":
+                    return "No value"
+                else:
+                    return value
             else:
                 return current_value
         
@@ -484,31 +520,43 @@ class Updater:
 
         return True
 
-    def update_indexes(self):
+    def update_indexes(self, targets=[]):
+        
         self.log("Updating indexes")
-        #for obj in self.api.all_objects:
-        #    item = obj.getObject()
-        #    item.reindexObject(idxs=["identification_identification_objectNumber"])
 
-        for obj in self.api.all_persons:
-            item = obj.getObject()
-            item.reindexObject(idxs=["person_priref"])
+        for target in targets:
+            if target == "Object":
+                for obj in self.api.all_objects:
+                    item = obj.getObject()
+                    item.reindexObject(idxs=["identification_identification_objectNumber"])
 
-        self.log("Persons updated!")
+                self.log("Objects updated!")
 
-        for obj in self.api.all_archives:
-            item = obj.getObject()
-            item.reindexObject(idxs=["archive_priref"])
+            elif target == "PersonOrInstitution":
+                for obj in self.api.all_persons:
+                    item = obj.getObject()
+                    item.reindexObject(idxs=["person_priref"])
 
-        self.log("Updated!")
+                self.log("PersonOrInstitution objects updated!")
+
+            elif target == "Archive":
+                for obj in self.api.all_archives:
+                    item = obj.getObject()
+                    item.reindexObject(idxs=["archive_priref"])
+
+                self.log("Archive objects updated!")
+            else:    
+                self.log("Type %s does not have a method to be reindexed!" %(target))
+
+        return True
 
     def start(self):
-        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v35_test_choicefield.xml"
         collecion_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v33.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
 
-        self.collection, self.xml_root = self.api.get_zm_collection(collecion_path_prod)
+        self.collection, self.xml_root = self.api.get_zm_collection(collection_path)
         self.generate_field_types()
 
         total = len(list(self.collection))

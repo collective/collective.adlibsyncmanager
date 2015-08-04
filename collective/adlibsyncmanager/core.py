@@ -4,42 +4,39 @@
 ## Adlib - Plone object
 
 CORE = {
+    #
     # Identification tab
+    #
     "priref": "priref",
-    "institution.name":"identification_identification_institutionNames",
-    "institution.name-name":"",
+    "title": "title",
+    "description": "description",
 
-    
-    
-    "institution.place":"",
+    "institution.name":"identification_identification_institutionNames",
+    "institution.name-name":"",# value is in the relation - parent
+    "institution.place":"",#parent
     "institution.name-address.place":"identification_identification_institutionPlace",
-    "institution.code":"",
+    "institution.code":"",#parent
     "institution.name-institution_code":"identification_identification_institutionCode",
     "object_number":"identification_identification_objectNumber",
-
     "administration_name": "identification_identification_administrativeName",
-    
-    "collection": "",
+    "collection": "",#parent
     "collection-term": "identification_identification_collections",
     
-    "title": "title",
-    "title.type":"identification_titleDescription_titleType",
-
-    "description": "description",
     "part":"identification_identification_part",
     "number_of_parts": "identification_identification_totNumber",
     "copy_number": "identification_identification_copyNumber",
     "edition": "identification_identification_edition",
     "distinguishing_features": "identification_identification_distinguishFeatures",
     
-    "object_category": "",
+    "object_category": "",#parent
     "object_category-term": "identification_objectName_category",
     
-    "object_name":"",
+    "object_name":"",#parent
     "object_name-term": "identification_objectName_objectname-name",
     "object_name.notes": "identification_objectName_objectname-notes",
     "object_name.type-term":"identification_objectName_objectname-type",
-    
+
+    "title.type":"identification_titleDescription_titleType",
     "description.date": "identification_titleDescription_titleDate",
     "title.notes": "identification_titleDescription_notes",
     "title.language": "identification_titleDescription_language",
@@ -49,18 +46,19 @@ CORE = {
     "other_name":"identification_objectName_otherName-name",
     "other_name.type":"identification_objectName_otherName-type",
     
-    "Taxonomy": "",
-    "Taxonomy-taxonomy.scientific_name": "",
+    "Taxonomy": "",#parent
+    "Taxonomy-taxonomy.scientific_name": "",#parent
     "Taxonomy-taxonomy.scientific_name-scientific_name": "identification_taxonomy-scientific_name",
     "Taxonomy-taxonomy.scientific_name-common_name": "identification_taxonomy-common_name",
-    "Taxonomy-taxonomy.rank": "",
+    "Taxonomy-taxonomy.rank": "",#parent
     "Taxonomy-taxonomy.rank-text": "identification_taxonomy-rank",
 
     #"Taxonomy-taxonomy.scientific_name.lref":"",
     #"Taxonomy-taxonomy.scientific_name.lref":"",
 
-    "Determination": "",
+    "Determination": "",#parent
     "Determination-determination.name": "identification_taxonomy_determiners-name",
+    "Determination-determination.name-name": "",#value is in the relation - parent
     "Determination-determination.date": "identification_taxonomy_determiners-date",
     "object_status-text": "identification_taxonomy_objectstatus",
     "determination.notes": "identification_taxonomy_notes-notes",
@@ -69,24 +67,26 @@ CORE = {
     #"Determination-determination.name.lref":"",
     #"Determination-determination.name-name":"",
     #"Determination-determination.name.lref":"",
-    
+        
+    #
     # Production tab
+    #
     "creator": "productionDating_productionDating-makers",
-    "creator-name": "",
-    "creator.role": "",
+    "creator-name": "",# value is in the relation - parenet
+    "creator.role": "",#parent
     "creator.role-term": "productionDating_productionDating-role",
     "creator.qualifier": "productionDating_productionDating-qualifier",
-    "creator.date_of_birth":"",
+    "creator.date_of_birth":"", #repeated
     "creator-birth.date.start":"productionDating_productionDating-dateBirth",
-    "creator.date_of_death":"",
+    "creator.date_of_death":"", #repeated
     "creator-death.date.start":"productionDating_productionDating-dateDeath",
 
-    "production": "",
+    "production": "",#parent
     "production.place-term": "productionDating_productionDating-place",
     "production.notes": "productionDating_productionDating-production_notes",
  
     "production.reason": "productionDating_production_productionReason",
-    "school_style": "",
+    "school_style": "",#parent
     "school_style-term": "productionDating_production_schoolStyles",
     
     "production.date.start":"productionDating_dating_period-date_early",
@@ -94,12 +94,13 @@ CORE = {
     "production.date.end":"productionDating_dating_period-date_late",
     "production_date.end.prec":"productionDating_dating_period-date_late_precision",
 
-    "production.period": "",
+    "production.period": "",#parent
     "production.period-term": "productionDating_production_periods",
     "production.date.notes": "productionDating_dating_notes-notes",
 
-    
+    #
     # Physical characteristics
+    #
     "phys_characteristic.aspect-term":"physicalCharacteristics_keywords-aspect",
     "phys_characteristic.keyword-term":"physicalCharacteristics_keywords-keyword",
     "phys_characteristic.notes":"physicalCharacteristics_keywords-notes",
@@ -107,32 +108,33 @@ CORE = {
 
     "physical_description": "physicalCharacteristics_physicalDescription_description",
     "technique.part":"physicalCharacteristics_technique-part",
-    "technique": "",
+    "technique": "",#parent
     "technique-term": "physicalCharacteristics_technique-technique",
     "technique.notes": "physicalCharacteristics_technique-notes",
 
     "material.part":"physicalCharacteristics_material-part",
-    "material": "",
+    "material": "",#parent
     "material-term":"physicalCharacteristics_material-material",
     "material.notes":"physicalCharacteristics_material-notes",
 
     "dimension.part": "physicalCharacteristics_dimension-part",
-    "dimension.type": "",
+    "dimension.type": "",#parent
     "dimension.type-term":"physicalCharacteristics_dimension-dimension",
     "dimension.value":"physicalCharacteristics_dimension-value",
-    "dimension.unit": "",
+    "dimension.unit": "",#parent
     "dimension.unit-term": "physicalCharacteristics_dimension-units",
     "dimension.precision": "physicalCharacteristics_dimension-precision",
     "dimension.notes": "physicalCharacteristics_dimension-notes",
 
-    "frame":"physicalCharacteristics_frame-frame",
+    "frame":"physicalCharacteristics_frame-frame",#parent
     "frame.notes":"physicalCharacteristics_frame-detail",
 
+    #
     # Iconography
-
-    "content.motif.general": "",
+    #
+    "content.motif.general": "",#parent
     "content.motif.general-term": "iconography_generalSearchCriteria_generalThemes-term",
-    "content.motif.specific":"",
+    "content.motif.specific":"",#parent
     "content.motif.specific-term":"iconography_generalSearchCriteria_specificThemes-term",
     
     "content.classification.scheme":"iconography_generalSearchCriteria_classificationTheme-term",
@@ -143,21 +145,26 @@ CORE = {
     
     "content.person.position":"iconography_contentPersonInstitution-position",
     "content.person.name":"iconography_contentPersonInstitution-names",
-    "content.person.name-name":"",
-    "content.person.name.type":"",
+    "content.person.name-name":"",#value is in the relation - parent
+    "content.person.name.type":"",#parent
     "content.person.name.type-text": "iconography_contentPersonInstitution-nameType",
     "content.person.note":"iconography_contentPersonInstitution-notes",
 
     "content.subject.position":"iconography_contentSubjects-position",
-    "content.subject.type": "",
+    "content.subject.type": "",#parent
     "content.subject.type-text":"iconography_contentSubjects-subjectType",
-    "content.subject.name": "",
-    "content.subject.name-term": "iconography_contentSubjects-subject",
-    "content.subject.tax.rank": "",
+    "content.subject.name": "",#parent
+    "content.subject.name-term": "iconography_contentSubjects-properName",
+    "content.subject.tax.rank": "",#parent
     "content.subject.tax.rank-text":"iconography_contentSubjects-taxonomicRank",
-    "content.subject.tax":"",
+    "content.subject.tax":"",#parent
     "content.subject.tax-scientific_name": "iconography_contentSubjects-scientificName",
     "content.subject.note": "iconography_contentSubjects-notes",
+
+    "content.subject":"",
+    "content.subject-term":"iconography_contentSubjects-subject",
+    "content.subject.identifier":"iconography_contentSubjects-identifier",
+
 
     "content.date.position": "iconography_contentPeriodDate-position",
     "content.date.period":"",# parent
@@ -166,8 +173,15 @@ CORE = {
     "content.date.end":"iconography_contentPeriodDate-endDate",
     "content.date.note":"iconography_contentPeriodDate-notes",
 
+    # Iconografisch bron
+    "content.source.general":"iconography_iconographySource_sourceGeneral",
+    "content.source.object_number":"iconography_iconographySource_sourceObjectNumber",
+    "content.source.specific":"iconography_iconographySource_sourceSpecific",
+
+    #
     # Inscriptions and markings
-    "inscription.type":"",
+    # 
+    "inscription.type":"",#parent
     "inscription.type-term":"inscriptionsMarkings_inscriptionsAndMarkings-type",
     "inscription.position":"inscriptionsMarkings_inscriptionsAndMarkings-position",
     "inscription.method":"inscriptionsMarkings_inscriptionsAndMarkings-method",
@@ -181,13 +195,16 @@ CORE = {
     "inscription.interpretation":"inscriptionsMarkings_inscriptionsAndMarkings-interpretation",
     "inscription.language":"inscriptionsMarkings_inscriptionsAndMarkings-language",
     "inscription.translation":"inscriptionsMarkings_inscriptionsAndMarkings-translation",
-    "inscription.script":"",
+    "inscription.script":"",#parent
     "inscription.script-term":"inscriptionsMarkings_inscriptionsAndMarkings-script",
     "inscription.transliteration":"inscriptionsMarkings_inscriptionsAndMarkings-transliteration",
     "inscription.notes":"inscriptionsMarkings_inscriptionsAndMarkings-notes",
 
+    #
     # Nummers / relaties
-    "Alternative_number":"",
+    #
+
+    "Alternative_number":"",#parent
     "Alternative_number-alternative_number.type": "numbersRelationships_numbers-type",
     "Alternative_number-alternative_number": "numbersRelationships_numbers-number",
     "Alternative_number-alternative_number.institution": "numbersRelationships_numbers-institution",
@@ -199,17 +216,19 @@ CORE = {
     "parts.notes": "numbersRelationships_relationshipsWithOtherObjects_parts-notes",
 
     "related_object.reference": "numbersRelationships_relationshipsWithOtherObjects_relatedObjects-relatedObject",
-    "related_object.association": "",
+    "related_object.association": "",#parent
     "related_object.association-term": "numbersRelationships_relationshipsWithOtherObjects_relatedObjects-associations",
     "related_object.notes":"numbersRelationships_relationshipsWithOtherObjects_relatedObjects-notes",
 
     "digital_reference.type":"numbersRelationships_digitalReferences-type",
     "digital_reference":"numbersRelationships_digitalReferences-reference",
 
+    #
     # Documentatie
+    #
 
-    "documentation":"",
-    "documentation-documentation.title":"",
+    "documentation":"",#parent
+    "documentation-documentation.title":"",#parent
     "documentation-documentation.title-lead_word":"documentation_documentation-article",
     "documentation-documentation.title-title":"documentation_documentation-title",
     "documentation-documentation.title-author.name":"documentation_documentation-author",
@@ -227,6 +246,7 @@ CORE = {
     "archive.number": "documentationFreeArchive_archives",
     "archive.number-number":"documentationFreeArchive_archive-archiveNumber",
     "archive.number-content": "documentationFreeArchive_archive-content",
+    
     # repeated
     "archive.content":"",
 
@@ -248,9 +268,10 @@ CORE = {
     "old.conservation_request.name":"conditionConservation_conservation_request-requester",
     "old.conservation_request.reason":"conditionConservation_conservation_request-reason",
     "old.conservation_request.date":"conditionConservation_conservation_request-date",
+    "old.conservation_request.status":"conditionConservation_conservation_request-status",
 
-    "conservation":"",
-    "conservation-conservation.number":"",
+    "conservation":"",#parent
+    "conservation-conservation.number":"",#parent
     "conservation-conservation.number-treatment_number":"conditionConservation_conservationTreatments-treatmentNumber",
     "conservation-conservation.number-treatment_method":"conditionConservation_conservationTreatments-treatmentMethod",
     "conservation-conservation.number-date.start":"conditionConservation_conservationTreatments-startDate",
@@ -288,15 +309,17 @@ CORE = {
     #
     
     # Reproductie
-    "reproduction.reference":"",
-    "reproduction.reference-image_reference":"reproductions_reproduction-reference",
+    "reproduction.reference":"",#parent
+    "reproduction.reference-image_reference":"reproductions_reproduction-identifierURL",
     "reproduction.reference-reproduction_type":"reproductions_reproduction-type",
     "reproduction.reference-format":"reproductions_reproduction-format",
+    "reproduction.reference-reference_number":"reproductions_reproduction-reference",
+    "reproduction.reference-creator":"reproductions_reproduction-creator",
     "reproduction.reference-production_date":"reproductions_reproduction-date",
-    "reproduction.identifier_URL":"reproductions_reproduction-identifierURL",
     "reproduction.notes":"reproductions_reproduction-notes",
     
     # repeated
+    "reproduction.identifier_URL":"",
     "reproduction.format":"",
     "reproduction.type":"",
     "reproduction.date":"",
@@ -329,15 +352,14 @@ CORE = {
     # 
     # Acquisition
     #
-
+    "accession_date":"acquisition_accession_date",
     "acquisition.number":"acquisition_number",
     "acquisition.reason":"acquisition_reason",
     "acquisition.date":"acquisition_date",
     "acquisition.method-term":"acquisition_methods",
     "acquisition.conditions":"acquisition_conditions",
     "acquisition.source":"acquisition_acquisition_from",
-    "acquisition.source-name":"",
-    # name is in the relation
+    "acquisition.source-name":"",# name is in the relation
     "acquisition.place-term":"acquisition_places",
     "acquisition.notes":"acquisition_notes",
     "acquisition.date.precision":"acquisition_precision",
@@ -372,18 +394,15 @@ CORE = {
     # Uitschrijving
     "deaccession.date":"disposal_deaccession",
     "new_object_number":"disposal_new_object_number",
-    #"accession_date":"",
-
+    
     # Afstoning
     "disposal.number":"disposal_number",
     "disposal.date":"disposal_date",
     "disposal.method": "disposal_method",
     "disposal.prop_recipient":"disposal_disposal_proposedRecipient",
-    "disposal.prop_recipient-name":"",
-    #name is in the relation - parent
+    "disposal.prop_recipient-name":"",#name is in the relation - parent
     "disposal.recipient":"disposal_disposal_recipient",
-    "disposal.recipient-name":"",
-    # name is in the relation - parent
+    "disposal.recipient-name":"",# name is in the relation - parent
     "disposal.reason":"disposal_reason",
     "disposal.provisos":"disposal_provisos",
 
@@ -394,7 +413,6 @@ CORE = {
     # Documentatie
     "disposal.document.description":"disposal_documentation-description",
     "disposal.document.reference":"disposal_documentation-reference",
-
     "disposal.notes":"disposal_notes",
 
     #
@@ -414,10 +432,12 @@ CORE = {
     "association.subject.type-text":"associations_associatedSubjects-subjectType",
     "association.subject-term":"associations_associatedSubjects-subject",
     "association.subject.association-term":"associations_associatedSubjects-associations",
-    #"association.subject.date.start":"", # removed based on feedback
-    #"association.subject.date.end":"", # removed based on  feedback
+        
+    # In the future this two fields are likely to be removed
+    "association.subject.date.start":"associations_associatedSubjects-startDate",
+    "association.subject.date.end":"associations_associatedSubjects-endDate",
+    
     "association.subject.note":"associations_associatedSubjects-notes",
-
     "association.period.date.start":"associations_associatedPeriods-startDate",
     "association.period.date.end":"associations_associatedPeriods-endDate",
     "association.period.assoc-term":"associations_associatedPeriods-associations",
@@ -432,8 +452,7 @@ CORE = {
     #
 
     "current_owner": "ownershipHistory_ownership_currentOwner",
-    "current_owner-name":"",
-    #its in the relation
+    "current_owner-name":"",#value its in the relation (parent)
 
     "owner_hist.owner":"ownershipHistory_history_owner",
     "owner_hist.owner-name":"",#parent
@@ -442,11 +461,11 @@ CORE = {
     "owner_hist.acquisition.method":"",
     "owner_hist.acquisition.method-term":"ownershipHistory_history_exchangeMethod",
     "owner_hist.acquired_from":"ownershipHistory_history_acquiredFrom",
-    "owner_hist.acquired_from-name":"",
+    "owner_hist.acquired_from-name":"",#value is in the relation - parent
     "owner_hist.auction":"",#parent
     "owner_hist.auction-auction":"ownershipHistory_auction",
     "owner_hist.auction.lot_number":"ownershipHistory_lot_no",
-    "owner_hist.auction.lref":"ownershipHistory_rec_no",#rec no,
+    "owner_hist.auction.lref":"ownershipHistory_rec_no",
     "owner_hist.place":"",#parent
     "owner_hist.place-term":"ownershipHistory_history_place",
 
@@ -460,7 +479,7 @@ CORE = {
     # Location
     #
 
-    "location.default":"",
+    "location.default":"",#parent
     "location.default-term":"location_normalLocation_normalLocation",
 
     "location.date.begin":"location_currentLocation-start_date",
@@ -535,13 +554,15 @@ CORE = {
     "Stratigraphy-stratigraphy.unit-term":"fieldCollection_habitatStratigraphy_stratigrafie-unit",
     "Stratigraphy-stratigraphy.type":"",#parent
     "Stratigraphy-stratigraphy.type-term":"fieldCollection_habitatStratigraphy_stratigrafie-type",
+    "habitat":"",#parent
+    "habitat-term":"fieldCollection_habitatStratigraphy_habitat-term",
 
     "field_coll.notes":"fieldCollection_notes-notes",
 
     #
     # Tentoonstelling
     #
-    "exhibition":"",
+    "exhibition":"",#parent
     "exhibition-exhibition.catalogue_number":"exhibitions_exhibition-catObject",
     "exhibition-exhibition":"exhibitions_exhibition-exhibitionName",
     "exhibition-title":"exhibitions_exhibition-name",
@@ -571,58 +592,62 @@ CORE = {
     #
     # Bruikelen
     #
-    "Loan_out":"",
-    "Loan_out-loan.out.requester":"",
-    "Loan_out-loan.out.number":"",
+    "Loan_out":"",#parent
+    "Loan_out-loan.out.requester":"",#parent
+    "Loan_out-loan.out.request.reason":"",#parent
     "Loan_out-loan.out.number-request.reason":"loans_outgoingLoans-requestReason",
 
     "Loan_out-loan.out.contract.period.start":"",
-    "Loan_out-loan.out.number-contract.period.start":"loans_outgoingLoans-contractPeriod",
     "Loan_out-loan.out.contract.period.end":"",
+    "Loan_out-loan.out.number":"",#parent
+    "Loan_out-loan.out.number-contract.period.start":"loans_outgoingLoans-contractPeriod",
     "Loan_out-loan.out.number-contract.period.end":"loans_outgoingLoans-contractPeriod-to",
     
-    "Loan_out-loan.out.status":"",
+    
     "Loan_out-loan.out.number-loan_status":"loans_outgoingLoans-status",
+    "Loan_out-loan.out.status":"",#repeated
 
-    "Loan_out-loan.out.requester":"",
+    "Loan_out-loan.out.requester":"",#repeated
     "Loan_out-loan.out.number-requester":"loans_outgoingLoans-requester",
 
-    "Loan_out-loan.out.requester.contact":"",
+    "Loan_out-loan.out.requester.contact":"",#repeated
     "Loan_out-loan.out.number-requester.contact":"loans_outgoingLoans-contact",
     "Loan_out-loan.out.number-loan_number":"loans_outgoingLoans-loanNumber",
     
     #"Loan_out-loan.out.number.lref":"",
-    "Loan_out-loan.out.request.period.start":"",
+    "Loan_out-loan.out.request.period.start":"",#repeated
     "Loan_out-loan.out.number-request.period.start":"loans_outgoingLoans-requestPeriod",
-    "Loan_out-loan.out.request.period.end":"",
+    "Loan_out-loan.out.request.period.end":"",#repeated
     "Loan_out-loan.out.number-request.period.end":"loans_outgoingLoans-requestPeriodTo",
     
     #"Loan_out-loan.out.number.lref":"",
     
     "Loan_in":"",
-    "Loan_in-loan.in.requester":"",
-    "Loan-in-loan.in.number":"",
+    "Loan_in-loan.in.requester":"",#repeated
+    "Loan-in-loan.in.number":"",#relation
+    "Loan_in-loan.in.request.reason":"",
     "Loan_in-loan.in.number-request.reason":"loans_incomingLoans-requestReason",
+    
 
     "Loan_in-loan.in.contract.period.start":"",
     "Loan_in-loan.in.number-contract.period.start":"loans_incomingLoans-contractPeriod",
     "Loan_in-loan.in.contract.period.end":"",
     "Loan_in-loan.in.number-contract.period.end":"loans_incomingLoans-contractPeriod-to",
     
-    "Loan_in-loan.in.status":"",
+    "Loan_in-loan.in.status":"",#repeated
     "Loan_in-loan.in.number-loan_status":"loans_incomingLoans-status",
 
-    "Loan_in-loan.in.lender":"",
+    "Loan_in-loan.in.lender":"",#repeated
     "Loan_in-loan.in.number-lender":"loans_incomingLoans-lender",
 
-    "Loan_in-loan.in.requester.contact":"",
+    "Loan_in-loan.in.requester.contact":"",#repeated
     "Loan_in-loan.in.number-lender.contact":"loans_incomingLoans-contact",
     "Loan_in-loan.in.number-loan_number":"loans_incomingLoans-loanNumber",
     
     #"Loan_in-loan.in.number.lref":"",
-    "Loan_in-loan.in.request.period.start":"",
+    "Loan_in-loan.in.request.period.start":"",#repeated
     "Loan_in-loan.in.number-request.period.start":"loans_incomingLoans-requestPeriod",
-    "Loan_in-loan.in.request.period.end":"",
+    "Loan_in-loan.in.request.period.end":"",#repeated
     "Loan_in-loan.in.number-request.period.end":"loans_incomingLoans-requestPeriodTo",
 
     #
@@ -667,16 +692,16 @@ CORE = {
     "despatch.number-destination":"transport_despatchNumber-destination",
     "despatch.number-transport_number":"transport_despatchNumber-transport_number",
     
-    "entry.depositor":"",
+    "entry.depositor":"",#repeated
     "entry.number-depositor":"transport_entry_number-depositor",
-    "entry.reason":"",
+    "entry.reason":"",#repeated
     "entry.number-entry_reason":"transport_entry_number-entry_reason",
     "entry.number-transport_number":"transport_entry_number-transport_number",
-    "entry.entry_date":"",
+    "entry.entry_date":"",#repeated
     "entry.number-entry_date":"transport_entry_number-entry_date",
-    "entry.return_date":"",
+    "entry.return_date":"",#repeated
     "entry.number-return_date":"transport_entry_number-return_date",
-    "entry.owner":"",
+    "entry.owner":"",#repeated
     "entry.number-owner":"transport_entry_number-owner",
     
 
