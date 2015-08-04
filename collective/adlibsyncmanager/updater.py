@@ -508,7 +508,7 @@ class Updater:
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
 
-        self.collection, self.xml_root = self.api.get_zm_collection(collection_path)
+        self.collection, self.xml_root = self.api.get_zm_collection(collecion_path_prod)
         self.generate_field_types()
 
         total = len(list(self.collection))
