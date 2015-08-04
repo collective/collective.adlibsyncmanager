@@ -625,7 +625,7 @@ class Updater:
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
-        self.dev = True
+        self.dev = False
         collection_xml = collection_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
