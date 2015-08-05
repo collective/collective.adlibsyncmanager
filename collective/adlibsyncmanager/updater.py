@@ -208,8 +208,8 @@ class Updater:
         self.field_types['description'] = 'text'
 
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False):
-        #if grid:
-        #    current_value = []
+        if grid:
+            current_value = []
         
         if objecttype_relatedto == "PersonOrInstitution":
             person = self.api.find_person_by_priref(self.api.all_persons, priref)
