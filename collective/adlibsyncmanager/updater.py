@@ -309,13 +309,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     current_value.append(relation_value)
                 else:
-                    intids = component.getUtility(IIntIds)
-                    obj_id = intids.getId(obj)
-                    relation_value = RelationValue(obj_id)
-                    for relation in current_value:
-                        if relation.id == obj.id:
-                            self.warning("%s - %s - OutgoingLoan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
-                            return current_value
+                    current_value = []
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
@@ -330,13 +324,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     current_value.append(relation_value)
                 else:
-                    intids = component.getUtility(IIntIds)
-                    obj_id = intids.getId(obj)
-                    relation_value = RelationValue(obj_id)
-                    for relation in current_value:
-                        if relation.id == obj.id:
-                            self.warning("%s - %s - IncomingLoan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
-                            return current_value
+                    current_value = []
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
