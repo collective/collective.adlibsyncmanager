@@ -104,6 +104,7 @@ class APIMigrator:
         all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
         all_incoming = catalog(portal_type='IncomingLoan', Language="all")
         all_articles = catalog(portal_type='Article', Language="all")
+        all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
 
         self.all_objects = all_objects
         self.all_persons = all_persons
@@ -113,6 +114,7 @@ class APIMigrator:
         self.all_outgoing = all_outgoing
         self.all_incoming = all_incoming
         self.all_articles = all_articles
+        self.all_objectentries = all_objectentries
 
     def build_api_request_all(self):
         url = ""
@@ -8676,6 +8678,16 @@ class APIMigrator:
     def find_article_by_priref(self, priref):
         if priref:
             for brain in self.all_articles:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return None
+
+    def find_objectentry_by_priref(self, priref):
+        if priref:
+            for brain in self.all_objectentries:
                 obj = brain.getObject()
                 if hasattr(obj, 'priref'):
                     if obj.priref == priref:

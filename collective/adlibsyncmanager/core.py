@@ -600,7 +600,7 @@ CORE = {
 
     "Loan_out-loan.out.contract.period.start":"",
     "Loan_out-loan.out.contract.period.end":"",
-    "Loan_out-loan.out.number":"",#parent
+    "Loan_out-loan.out.number":"loans_outgoingLoans-loannumber",#relation
     "Loan_out-loan.out.number-contract.period.start":"loans_outgoingLoans-contractPeriod",
     "Loan_out-loan.out.number-contract.period.end":"loans_outgoingLoans-contractPeriod-to",
     
@@ -625,7 +625,7 @@ CORE = {
     
     "Loan_in":"",
     "Loan_in-loan.in.requester":"",#repeated
-    "Loan-in-loan.in.number":"",#relation
+    "Loan-in-loan.in.number":"loans_incomingLoans-loannumber",#relation
     "Loan_in-loan.in.request.reason":"",
     "Loan_in-loan.in.number-request.reason":"loans_incomingLoans-requestReason",
     
@@ -674,10 +674,10 @@ CORE = {
     #
 
     # Edit
-    "input.date":"input_date",
-    "input.time":"input_time",
-    "input.source":"input_source",
-    "input.name":"input_name",
+    "input.date":"managementDetails_input-date",
+    "input.time":"managementDetails_input-time",
+    "input.source":"managementDetails_input-source",
+    "input.name":"managementDetails_input-name",
     "Edit-edit.date":"managementDetails_edit-editDate",
     "Edit-edit.notes":"managementDetails_edit-editNotes",
     "Edit-edit.name":"managementDetails_edit-editName",
@@ -697,13 +697,14 @@ CORE = {
     "entry.number-depositor":"transport_entry_number-depositor",
     "entry.reason":"",#repeated
     "entry.number-entry_reason":"transport_entry_number-entry_reason",
-    "entry.number-transport_number":"transport_entry_number-transport_number",
+    "entry.number-transport_number":"",#value in the relation
     "entry.entry_date":"",#repeated
     "entry.number-entry_date":"transport_entry_number-entry_date",
     "entry.return_date":"",#repeated
     "entry.number-return_date":"transport_entry_number-return_date",
     "entry.owner":"",#repeated
     "entry.number-owner":"transport_entry_number-owner",
+    "entry.number":"transport_entry_number-transport_number",
     
 
 

@@ -208,8 +208,8 @@ class Updater:
         self.field_types['description'] = 'text'
 
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False):
-        if grid:
-            current_value = []
+        #if grid:
+        #    current_value = []
         
         if objecttype_relatedto == "PersonOrInstitution":
             person = self.api.find_person_by_priref(self.api.all_persons, priref)
@@ -309,7 +309,13 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     current_value.append(relation_value)
                 else:
-                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.id == obj.id:
+                            self.warning("%s - %s - OutgoingLoan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
@@ -324,7 +330,13 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     current_value.append(relation_value)
                 else:
-                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.id == obj.id:
+                            self.warning("%s - %s - IncomingLoan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
@@ -343,6 +355,22 @@ class Updater:
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Article %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+
+        elif objecttype_relatedto == "ObjectEntry":
+            obj = self.api.find_objectentry_by_priref(priref)
+            if obj:
+                if not grid:
+                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("%s - %s - Cannot find ObjectEntry %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+                
 
         else:
             self.error("Relation type not available %s" %(str(objecttype_relatedto)))
@@ -632,7 +660,7 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = False
-        collection_xml = collection_total
+        collection_xml = collection_path_prod
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")

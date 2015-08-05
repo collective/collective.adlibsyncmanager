@@ -60,7 +60,10 @@ subfields_types = {
 	"association.subject.type-text":"choice",
 	"association.period.assoc-term":"gridlist",
 	"association.period-term":"gridlist",
-	"acquisition.funding.currency":"gridlist"
+	"acquisition.funding.currency":"gridlist",
+	"entry.number":"relation",
+	"Loan_out-loan.out.number":"relation",
+	"Loan-in-loan.in.number":"relation"
 }
 
 relation_types = {
@@ -76,6 +79,8 @@ relation_types = {
 	"Collector-field_coll.name":"PersonOrInstitution",
 	"exhibition-exhibition": "Exhibition",
 	"association.person":"PersonOrInstitution",
-	"documentation-documentation.title": "Article"
-
+	"documentation-documentation.title": "Article",
+	"entry.number": "ObjectEntry",
+	"Loan_out-loan.out.number":"OutgoingLoan",
+	"Loan-in-loan.in.number": "IncomingLoan"
 }
