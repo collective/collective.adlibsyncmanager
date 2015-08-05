@@ -8688,10 +8688,13 @@ class APIMigrator:
     def find_objectentry_by_priref(self, priref):
         if priref:
             for brain in self.all_objectentries:
-                obj = brain.getObject()
-                if hasattr(obj, 'priref'):
-                    if obj.priref == priref:
-                        return obj
+                try:
+                    obj = brain.getObject()
+                    if hasattr(obj, 'priref'):
+                        if obj.priref == priref:
+                            return obj
+                except:
+                    continue
 
         return None
 
