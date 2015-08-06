@@ -570,8 +570,6 @@ class Updater:
                 linkref = xml_element.get('linkref')
 
             value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
-            if grid:
-                print value
 
 
         elif field_type == "datagridfield":

@@ -8683,8 +8683,7 @@ class APIMigrator:
                     item = res.getObject()
                     if hasattr(item, 'priref'):
                         if item.priref == priref:
-                            obj = item.getObject()
-                            return obj
+                            return item
         return None
 
     def find_article_by_priref(self, priref):
