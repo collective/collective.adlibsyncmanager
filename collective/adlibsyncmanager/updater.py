@@ -670,12 +670,12 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = False
-        collection_xml = collection_path_prod
+        collection_xml = collection_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_path_prod
+            collection_xml = collection_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -687,7 +687,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:21]:
             curr += 1
            
             transaction.begin()
