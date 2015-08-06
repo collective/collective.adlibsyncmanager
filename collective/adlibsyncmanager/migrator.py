@@ -8675,6 +8675,18 @@ class APIMigrator:
 
         return None
 
+    def find_bibliotheek_by_priref(self, priref):
+        if priref:
+            results = self.portal_catalog(path={"query":"/zm/nl/bibliotheek", "depth": 2})
+            if results:
+                for res in results:
+                    item = res.getObject()
+                    if hasattr(item, 'priref'):
+                        if item.priref == priref:
+                            obj = item.getObject()
+                            return obj
+        return None
+
     def find_article_by_priref(self, priref):
         if priref:
             for brain in self.all_articles:

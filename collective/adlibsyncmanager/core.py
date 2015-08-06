@@ -9,7 +9,7 @@ CORE = {
     #
     "priref": "priref",
     "title": "identification_titleDescription_title-title",
-    "description": "description",
+    "description": "identification_titleDescription_description",
 
     "institution.name":"identification_identification_institutionNames",
     "institution.name-name":"",# value is in the relation - parent
@@ -166,12 +166,12 @@ CORE = {
     "content.subject.identifier":"iconography_contentSubjects-identifier",
 
 
-    "content.date.position": "iconography_contentPeriodDate-position",
+    "content.date.position": "iconography_contentPeriodDates-position",
     "content.date.period":"",# parent
-    "content.date.period-term":"iconography_contentPeriodDate-period",
-    "content.date.start":"iconography_contentPeriodDate-startDate",
-    "content.date.end":"iconography_contentPeriodDate-endDate",
-    "content.date.note":"iconography_contentPeriodDate-notes",
+    "content.date.period-term":"iconography_contentPeriodDates-period",
+    "content.date.start":"iconography_contentPeriodDates-startDate",
+    "content.date.end":"iconography_contentPeriodDates-endDate",
+    "content.date.note":"iconography_contentPeriodDates-notes",
 
     # Iconografisch bron
     "content.source.general":"iconography_iconographySource_sourceGeneral",
@@ -243,7 +243,7 @@ CORE = {
 
     # Documentation (free text)
     "documentation.free_text": "documentationFreeArchive_documentationFreeText-title",
-    "archive.number": "documentationFreeArchive_archives",
+    "archive.number": "documentationFreeArchive_archiveNumber-number",#relation
     "archive.number-number":"documentationFreeArchive_archive-archiveNumber",
     "archive.number-content": "documentationFreeArchive_archive-content",
     
@@ -359,7 +359,7 @@ CORE = {
     "acquisition.date":"acquisition_date",
     "acquisition.method-term":"acquisition_methods",
     "acquisition.conditions":"acquisition_conditions",
-    "acquisition.source":"acquisition_acquisition_from",
+    "acquisition.source":"acquisition_acquisition_acquisitionFrom-aquisitionFrom",
     "acquisition.source-name":"",# name is in the relation
     "acquisition.place-term":"acquisition_places",
     "acquisition.notes":"acquisition_notes",
@@ -419,13 +419,13 @@ CORE = {
     #
     # Associations
     #
-    "association.person":"associations_associatedPersonInstitution-names",
-    "association.person.type-text":"associations_associatedPersonInstitution-nameType",
+    "association.person":"associations_associatedPersonInstitutions-names",
+    "association.person.type-text":"associations_associatedPersonInstitutions-nameType",
     "association.person-name":"",#name is in the relation
-    "association.person.association-term":"associations_associatedPersonInstitution-association",
-    "association.person.date.start":"associations_associatedPersonInstitution-startDate",# removed based on feedback
-    "association.person.date.end":"associations_associatedPersonInstitution-endDate",# removed based on feedback
-    "association.person.note":"associations_associatedPersonInstitution-notes",
+    "association.person.association-term":"associations_associatedPersonInstitutions-associations",
+    "association.person.date.start":"associations_associatedPersonInstitutions-startDate",# removed based on feedback
+    "association.person.date.end":"associations_associatedPersonInstitutions-endDate",# removed based on feedback
+    "association.person.note":"associations_associatedPersonInstitutions-notes",
 
     "association.subject.tax.rank-text": "associations_associatedSubjects-taxonomicRank",
     "association.subject.tax-scientific_name": "associations_associatedSubjects-scientificName",
@@ -464,7 +464,7 @@ CORE = {
     "owner_hist.acquired_from":"ownershipHistory_history_acquiredFrom",
     "owner_hist.acquired_from-name":"",#value is in the relation - parent
     "owner_hist.auction":"",#parent
-    "owner_hist.auction-auction":"ownershipHistory_auction",
+    "owner_hist.auction-auction":"ownershipHistory_auction",#relation in the parent (future)
     "owner_hist.auction.lot_number":"ownershipHistory_lot_no",
     "owner_hist.auction.lref":"ownershipHistory_rec_no",
     "owner_hist.place":"",#parent

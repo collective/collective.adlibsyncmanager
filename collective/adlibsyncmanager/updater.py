@@ -73,7 +73,6 @@ class Updater:
         self.dev = False
 
     def log(self, text=""):
-
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
@@ -311,6 +310,7 @@ class Updater:
                 else:
                     current_value = []
                     current_value.append(obj)
+                    print current_value
             else:
                 self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -326,6 +326,7 @@ class Updater:
                 else:
                     current_value = []
                     current_value.append(obj)
+                    print current_value
             else:
                 self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -343,6 +344,21 @@ class Updater:
                     current_value.append(obj)
             else:
                 self.error("%s - %s - Cannot find Article %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+
+        elif objecttype_relatedto == "Bibliotheek":
+            obj = self.api.find_bibliotheek_by_priref(priref)
+            if obj:
+                if not grid:
+                    current_value = []
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("%s - %s - Cannot find Bibliotheek object %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "ObjectEntry":
             obj = self.api.find_objectentry_by_priref(priref)
@@ -421,11 +437,20 @@ class Updater:
             return CORE[xml_path]
         return False
 
+    def escape_empty_string(self, old_value):
+        value = old_value
+        for val in value:
+            for k in val:
+                if val[k] == " ":
+                    val[k] = ""
+
+        return value
+
     def update_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         
         default_test = " "
         if subfield_type == "choice":
-            if xml_element.get('language') != "0":
+            if xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
         updated = False
@@ -453,7 +478,7 @@ class Updater:
 
     def create_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         if subfield_type == "choice":
-            if xml_element.get('language') != "0":
+            if xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
         new_value = self.get_schema_gridfield(plone_fieldroot)
@@ -496,14 +521,13 @@ class Updater:
 
         return field_value
 
-    def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname):
-        
+    def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname, grid=False):
         # Text
         if field_type == "text":
             return self.api.trim_white_spaces(xml_element.text)
 
         elif field_type == "choice":
-            if xml_element.get('language') == "0":
+            if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 value = self.api.trim_white_spaces(xml_element.text)
                 if value == "":
                     return "No value"
@@ -548,11 +572,13 @@ class Updater:
                 linkref = xml_element.get('linkref')
 
             value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
+            if grid:
+                print value
 
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
-
+        
         # Unknown
         else:
             value = None

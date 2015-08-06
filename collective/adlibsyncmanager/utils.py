@@ -8,7 +8,7 @@ subfields_types = {
 	"Determination-determination.name": "relation",
 	"object_name-term": "gridlist",
 	"Taxonomy-taxonomy.rank-text": "choice",
-	
+	"dimension.type-term": "choice",
 	"creator": "relation",
 	"creator.role-term": "gridlist",
 	"production.place-term": "gridlist",
@@ -17,7 +17,6 @@ subfields_types = {
 	"technique-term": "gridlist",
 	"material-term": "gridlist",
 	"dimension.type-term": "gridlist",
-	"dimension.unit-term": "choice",
 	"association.person.type-text": "choice",
 	"phys_characteristic.keyword-term":"gridlist",
 	"phys_characteristic.aspect-term": "gridlist",
@@ -63,7 +62,12 @@ subfields_types = {
 	"acquisition.funding.currency":"gridlist",
 	"entry.number":"relation",
 	"Loan_out-loan.out.number":"relation",
-	"Loan-in-loan.in.number":"relation"
+	"Loan-in-loan.in.number":"relation",
+	"archive.number":"relation",
+	"association.person.association-term":"gridlist",
+	"content.date.period-term":"gridlist",
+	"acquisition.source": "relation",
+	#"owner_hist.auction": "relation"
 }
 
 relation_types = {
@@ -82,5 +86,8 @@ relation_types = {
 	"documentation-documentation.title": "Article",
 	"entry.number": "ObjectEntry",
 	"Loan_out-loan.out.number":"OutgoingLoan",
-	"Loan-in-loan.in.number": "IncomingLoan"
+	"Loan-in-loan.in.number": "IncomingLoan",
+	"archive.number": "Bibliotheek",
+	"acquisition.source": "PersonOrInstitution",
+	#"owner_hist.auction": "Auction"
 }

@@ -16,11 +16,16 @@ collective.adlibsyncmanager.egg-info/top_level.txt
 collective/adlibsyncmanager/__init__.py
 collective/adlibsyncmanager/archive_migrator.py
 collective/adlibsyncmanager/book_migrator.py
+collective/adlibsyncmanager/converter.py
+collective/adlibsyncmanager/core.py
 collective/adlibsyncmanager/incomingloan_migrator.py
 collective/adlibsyncmanager/migrator.py
 collective/adlibsyncmanager/objectentry_migrator.py
+collective/adlibsyncmanager/relations.py
 collective/adlibsyncmanager/sync_mechanism.py
 collective/adlibsyncmanager/tests.py
+collective/adlibsyncmanager/updater.py
+collective/adlibsyncmanager/utils.py
 collective/adlibsyncmanager/Extensions/__init__.py
 collective/adlibsyncmanager/Extensions/adlib_migration.py
 collective/adlibsyncmanager/Extensions/adlib_sync_manager.py
