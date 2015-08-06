@@ -310,7 +310,6 @@ class Updater:
                 else:
                     current_value = []
                     current_value.append(obj)
-                    print current_value
             else:
                 self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -326,7 +325,6 @@ class Updater:
                 else:
                     current_value = []
                     current_value.append(obj)
-                    print current_value
             else:
                 self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 

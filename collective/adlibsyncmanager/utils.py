@@ -83,11 +83,11 @@ relation_types = {
 	"Collector-field_coll.name":"PersonOrInstitution",
 	"exhibition-exhibition": "Exhibition",
 	"association.person":"PersonOrInstitution",
-	"documentation-documentation.title": "Article",
+	"documentation-documentation.title": "Bibliotheek",
 	"entry.number": "ObjectEntry",
 	"Loan_out-loan.out.number":"OutgoingLoan",
 	"Loan-in-loan.in.number": "IncomingLoan",
-	"archive.number": "Bibliotheek",
+	"archive.number": "Archive",
 	"acquisition.source": "PersonOrInstitution",
 	#"owner_hist.auction": "Auction"
 }
