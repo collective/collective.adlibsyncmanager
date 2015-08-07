@@ -694,7 +694,7 @@ class Updater:
             
             object_number = self.get_object_number(xml_record)
             if object_number:
-                if object_number == "M81-006":
+                if object_number == "m81-006":
                     print "FOUND"
                     plone_object = self.api.find_object(self.api.all_objects, object_number)
                     if plone_object:
