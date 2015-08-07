@@ -14,7 +14,7 @@ from z3c.relationfield.schema import RelationList
 from zope.component import getUtility
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import IChoice, ITextLine, IList, IText
+from zope.schema.interfaces import IChoice, ITextLine, IList, IText, IBool
 from collective.z3cform.datagridfield.interfaces import IDataGridField
 from plone.app.textfield.interfaces import IRichText
 from collective.object.utils.interfaces import IListField
@@ -193,6 +193,8 @@ class Updater:
             type_field = " "
         elif IRichText.providedBy(field):
             type_field = " "
+        elif IBool.providedBy(field):
+            type_field = False
         else:
             type_field = " "
 
@@ -572,7 +574,6 @@ class Updater:
             value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
 
         elif field_type == "bool":
-            return False
             if xml_element.text == "x":
                 return True
             else:
