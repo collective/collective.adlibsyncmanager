@@ -572,6 +572,7 @@ class Updater:
             value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
 
         elif field_type == "bool":
+            return False
             if xml_element.text == "x":
                 return True
             else:
