@@ -67,6 +67,10 @@ subfields_types = {
 	"association.person.association-term":"gridlist",
 	"content.date.period-term":"gridlist",
 	"acquisition.source": "relation",
+	"owner_hist.place-term":"gridlist",
+	"owner_hist.acquisition.method-term":"gridlist",
+	"owner_hist.acquired_from":"relation",
+	"owner_hist.owner":"relation"
 	#"owner_hist.auction": "relation"
 }
 
@@ -89,5 +93,7 @@ relation_types = {
 	"Loan-in-loan.in.number": "IncomingLoan",
 	"archive.number": "Archive",
 	"acquisition.source": "PersonOrInstitution",
+	"owner_hist.acquired_from":"PersonOrInstitution",
+	"owner_hist.owner":"PersonOrInstitution"
 	#"owner_hist.auction": "Auction"
 }

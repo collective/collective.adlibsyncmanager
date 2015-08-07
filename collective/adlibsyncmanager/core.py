@@ -455,25 +455,24 @@ CORE = {
     "current_owner": "ownershipHistory_ownership_currentOwner",
     "current_owner-name":"",#value its in the relation (parent)
 
-    "owner_hist.owner":"ownershipHistory_history_owner",
+    "owner_hist.owner":"ownershipHistory_historyOwner-owner",
     "owner_hist.owner-name":"",#parent
-    "owner_hist.date.start":"ownershipHistory_from",
-    "owner_hist.date.end":"ownershipHistory_until",
+    "owner_hist.date.start":"ownershipHistory_historyOwner-startDate",
+    "owner_hist.date.end":"ownershipHistory_historyOwner-endDate",
     "owner_hist.acquisition.method":"",
-    "owner_hist.acquisition.method-term":"ownershipHistory_history_exchangeMethod",
-    "owner_hist.acquired_from":"ownershipHistory_history_acquiredFrom",
+    "owner_hist.acquisition.method-term":"ownershipHistory_historyOwner-method",
+    "owner_hist.acquired_from":"ownershipHistory_historyOwner-acquiredFrom",
     "owner_hist.acquired_from-name":"",#value is in the relation - parent
     "owner_hist.auction":"",#parent
-    "owner_hist.auction-auction":"ownershipHistory_auction",#relation in the parent (future)
-    "owner_hist.auction.lot_number":"ownershipHistory_lot_no",
-    "owner_hist.auction.lref":"ownershipHistory_rec_no",
+    "owner_hist.auction-auction":"ownershipHistory_historyOwner-auction",#relation in the parent (future)
+    "owner_hist.auction.lot_number":"ownershipHistory_historyOwner-lotnr",
     "owner_hist.place":"",#parent
-    "owner_hist.place-term":"ownershipHistory_history_place",
+    "owner_hist.place-term":"ownershipHistory_historyOwner-place",
 
-    "owner_hist.notes":"ownershipHistory_notes",
-    "owner_hist.price":"ownershipHistory_price",
-    "owner_hist.ownership_category":"ownershipHistory_category",
-    "owner_hist.access":"ownershipHistory_access",
+    "owner_hist.notes":"ownershipHistory_historyOwner-notes",
+    "owner_hist.price":"ownershipHistory_historyOwner-price",
+    "owner_hist.ownership_category":"ownershipHistory_historyOwner-category",
+    "owner_hist.access":"ownershipHistory_historyOwner-access",
 
 
     #
