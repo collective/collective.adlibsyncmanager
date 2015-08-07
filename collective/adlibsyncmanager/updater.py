@@ -680,7 +680,7 @@ class Updater:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_total
+            collection_xml = collection_path_prod
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
