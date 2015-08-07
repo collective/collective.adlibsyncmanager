@@ -707,8 +707,9 @@ class Updater:
                         self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                         self.update(xml_record, plone_object, object_number)
                         self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                else:
-                    self.error("Object is corrupt.")
+                        break
+                    else:
+                        self.error("Object is corrupt.")
             else:
                 self.error("Cannot find object number in XML record")
 
