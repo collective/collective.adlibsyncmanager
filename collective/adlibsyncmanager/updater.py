@@ -571,6 +571,11 @@ class Updater:
 
             value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
 
+        elif field_type == "bool":
+            if xml_element.text == "x":
+                return True
+            else:
+                return False
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
@@ -670,7 +675,7 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = False
-        collection_xml = collection_total
+        collection_xml = collection_path_prod
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -694,17 +699,16 @@ class Updater:
             
             object_number = self.get_object_number(xml_record)
             if object_number:
-                if object_number.lower() == "m81-006":
-                    print "FOUND"
-                    plone_object = self.api.find_object(self.api.all_objects, object_number)
-                    if plone_object:
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.update(xml_record, plone_object, object_number)
-                        self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    else:
-                        self.error("Object is corrupt.")
+                #if object_number.lower() == "m81-006":
+                plone_object = self.api.find_object(self.api.all_objects, object_number)
+                if plone_object:
+                    self.object_number = str(object_number)
+                    self.generate_field_types()
+                    self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                    self.update(xml_record, plone_object, object_number)
+                    self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                else:
+                    self.error("Object is corrupt.")
             else:
                 self.error("Cannot find object number in XML record")
 

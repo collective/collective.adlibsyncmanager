@@ -70,7 +70,8 @@ subfields_types = {
 	"owner_hist.place-term":"gridlist",
 	"owner_hist.acquisition.method-term":"gridlist",
 	"owner_hist.acquired_from":"relation",
-	"owner_hist.owner":"relation"
+	"owner_hist.owner":"relation",
+	"free_field.confidential":"bool"
 	#"owner_hist.auction": "relation"
 }
 
