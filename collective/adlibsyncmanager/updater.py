@@ -573,9 +573,9 @@ class Updater:
 
         elif field_type == "bool":
             if xml_element.text == "x":
-                return True
-            else:
                 return False
+            else:
+                return True
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
@@ -707,8 +707,8 @@ class Updater:
                         self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                         self.update(xml_record, plone_object, object_number)
                         self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    else:
-                        self.error("Object is corrupt.")
+                else:
+                    self.error("Object is corrupt.")
             else:
                 self.error("Cannot find object number in XML record")
 
