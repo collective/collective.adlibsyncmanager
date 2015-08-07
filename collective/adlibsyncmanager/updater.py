@@ -701,17 +701,16 @@ class Updater:
             
             object_number = self.get_object_number(xml_record)
             if object_number:
-                if object_number.lower() == "m81-006":
-                    plone_object = self.api.find_object(self.api.all_objects, object_number)
-                    if plone_object:
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.update(xml_record, plone_object, object_number)
-                        self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                        break
-                    else:
-                        self.error("Object is corrupt.")
+                #if object_number.lower() == "m81-006":
+                plone_object = self.api.find_object(self.api.all_objects, object_number)
+                if plone_object:
+                    self.object_number = str(object_number)
+                    self.generate_field_types()
+                    self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                    self.update(xml_record, plone_object, object_number)
+                    self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                else:
+                    self.error("Object is corrupt.")
             else:
                 self.error("Cannot find object number in XML record")
 
