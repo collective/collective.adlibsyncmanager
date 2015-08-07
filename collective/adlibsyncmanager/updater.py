@@ -573,9 +573,9 @@ class Updater:
 
         elif field_type == "bool":
             if xml_element.text == "x":
-                return False
-            else:
                 return True
+            else:
+                return False
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
