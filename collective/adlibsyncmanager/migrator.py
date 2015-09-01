@@ -609,11 +609,19 @@ class APIMigrator:
 
     def trim_white_spaces(self, text):
         if text != "" and text != None:
+            if text == "\nNLG":
+                return "NLG"
+
             if text == "\nEUR":
                 return "EUR"
+
             if type(text) == unicode:
                 if text == u'\n\u20ac':
                     return "EUR"
+
+            if text[0] == "\n":
+                text = text[1:]
+
             if len(text) > 0:
                 if text[0] == " ":
                     text = text[1:]

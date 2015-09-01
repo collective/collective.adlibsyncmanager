@@ -458,7 +458,7 @@ class Updater:
         for line in current_value:
             if subfield in line:
                 found = True
-                if line[subfield] == default_test or line[subfield] == [] or line[subfield] == 'No value':
+                if line[subfield] == default_test or line[subfield] == [] or line[subfield] == 'No value' or line[subfield] == False:
                     if line[subfield] == 'No value' and value == "":
                         line[subfield] = 'No value'
                     else:
@@ -665,7 +665,7 @@ class Updater:
         return True
 
     def start(self):
-        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v35.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v37-test.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v35.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
@@ -676,9 +676,10 @@ class Updater:
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
-        self.dev = False
+        self.dev = True
         collection_xml = collection_total
         if self.dev:
+            collection_xml = collection_path
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:

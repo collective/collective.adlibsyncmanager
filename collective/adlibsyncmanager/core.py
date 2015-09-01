@@ -92,7 +92,7 @@ CORE = {
     "production.date.start":"productionDating_dating_period-date_early",
     "production_date.start.prec":"productionDating_dating_period-date_early_precision",
     "production.date.end":"productionDating_dating_period-date_late",
-    "production_date.end.prec":"productionDating_dating_period-date_late_precision",
+    "production.date.end.prec":"productionDating_dating_period-date_late_precision",
 
     "production.period": "",#parent
     "production.period-term": "productionDating_production_periods",
