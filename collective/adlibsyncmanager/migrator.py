@@ -9871,6 +9871,8 @@ class APIMigrator:
         
         transaction.begin()
         
+        self.folder_path = "personen-en-instellingen".split('/')
+
         container = self.get_container()
         dirty_id = str(obj["priref"] + " " + obj['nameInformation_name_institutionNumber'].encode('ascii', 'ignore').decode('ascii') + " " + obj['nameInformation_name_name'].encode('ascii', 'ignore').decode('ascii'))
 
@@ -10036,7 +10038,7 @@ class APIMigrator:
         total = len(list(objects))
         curr = 0
 
-        for obj in list(objects):
+        for obj in list(objects)[:100]:
             try:
                 curr += 1
                 print "%s / %s" %(str(curr), str(total))
@@ -10484,7 +10486,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = "updater"
+            self.type_migrator = ""
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)
@@ -10521,8 +10523,10 @@ class APIMigrator:
                 archive_migrator.start()
             else:
                 #self.import_zm_collection_test()
-                converter = Converter(self)
-                converter.start()
+                #converter = Converter(self)
+                #converter.start()
+                print "Import persons!"
+                self.import_persons_institutions()
 
 
             ###
