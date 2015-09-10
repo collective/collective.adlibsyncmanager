@@ -10529,6 +10529,7 @@ class APIMigrator:
                     else:
                         source = obj
                         target = self.get_folder('%s/meer' %(base_folder))
+                        self.move_obj_folder(source, target)
                         print "Unknown type - id: %s - letter: %s" %(str(_id), first_letter)
                 else:
                     print "No title - %s" %(str(_id))
