@@ -10483,7 +10483,8 @@ class APIMigrator:
         print "Create alphabetic folders"
         
         import string
-        self.folder_path = "nl/personen-en-instellingen/personen-en-instellingen".split('/')
+        base_folder = "personen-en-instellingen"
+        self.folder_path = base_folder.split('/')
         container = self.get_container()
 
         alphabet = list(string.ascii_uppercase)
