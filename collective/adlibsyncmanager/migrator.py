@@ -10479,6 +10479,61 @@ class APIMigrator:
 
         return None
 
+    def create_alphabetic_folders(self):
+        print "Create alphabetic folders"
+        
+        import string
+        self.folder_path = "nl/personen-en-instellingen/personen-en-instellingen".split('/')
+        container = self.get_container()
+
+        alphabet = list(string.ascii_uppercase)
+        for letter in alphabet:
+            transaction.begin()
+            container.invokeFactory(type_name="Folder", id=letter, title=letter)
+            created_folder = container[letter]
+            created_folder.portal_workflow.doActionFor(created_folder, "publish", comment="Folder published")
+            transaction.commit()
+
+        return True
+
+    def move_persons_folder(self):
+        import string
+        base_folder = "personen-en-instellingen"
+
+        self.folder_path = base_folder.split('/')
+        container = self.get_container()
+
+        alphabet = list(string.ascii_uppercase)
+        numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+            
+        total = len(container)
+        curr = 0
+        for _id in container:
+            curr += 1
+            print "Moving %s / %s" %(str(curr), str(total))
+            transaction.begin()
+            obj = container[_id]
+            if obj.portal_type == "PersonOrInstitution":
+                if obj.title:
+                    title = obj.title
+                    first_letter = title[0]
+                    if first_letter.upper() in alphabet:
+                        source = obj
+                        target = self.get_folder('%s/%s' %(base_folder, first_letter.upper()))
+                        self.move_obj_folder(source, target)
+                    elif first_letter.upper() in numbers:
+                        source = obj
+                        target = self.get_folder('%s/0-9' %(base_folder))
+                        self.move_obj_folder(source, target)
+                    else:
+                        print "Unknown type - id: %s - letter: %s" %(str(_id), first_letter)
+                else:
+                    print "No title - %s" %(str(_id))
+
+            transaction.commit()
+
+        return True
+
 
     def start_migration(self):
         if self.portal is not None:
@@ -10525,8 +10580,10 @@ class APIMigrator:
                 #self.import_zm_collection_test()
                 #converter = Converter(self)
                 #converter.start()
-                print "Import persons!"
-                self.import_persons_institutions()
+                #print "Import persons!"
+                #self.import_persons_institutions()
+                self.create_alphabetic_folders()
+                #self.move_persons_folder()
 
 
             ###
