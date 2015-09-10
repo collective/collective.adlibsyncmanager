@@ -23,7 +23,7 @@ import fnmatch
 from lxml import etree
 import urllib2, urllib
 from plone.namedfile.file import NamedBlobImage, NamedBlobFile
-from plone.multilingual.interfaces import ITranslationManager
+#from plone.multilingual.interfaces import ITranslationManager
 import datetime
 import os
 import csv
@@ -677,13 +677,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = True
-        collection_xml = collection_total
+        collection_xml = collection_path_prod
         if self.dev:
-            collection_xml = collection_path
+            collection_xml = collection_path_prod
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_total
+            collection_xml = collection_path_prod
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         

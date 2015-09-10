@@ -91,12 +91,12 @@ class APIMigrator:
 
         self.skipped_ids = []
 
-        #self.folder_path = "nl/collectie".split('/')
-        #container = self.get_container()
-        #catalog = getToolByName(container, 'portal_catalog')
-        #self.portal_catalog = catalog
+        self.folder_path = "personen-en-instellingen".split('/')
+        container = self.get_container()
+        catalog = getToolByName(container, 'portal_catalog')
+        self.portal_catalog = catalog
 
-        #all_objects = catalog(portal_type='Object', Language="all")
+        all_objects = catalog(portal_type='Object', Language="all")
         #all_persons = catalog(portal_type='PersonOrInstitution', Language="all")
         #all_archives = catalog(portal_type='Archive', Language="all")
         #all_treatments = catalog(portal_type='treatment', Language="all")
@@ -106,7 +106,7 @@ class APIMigrator:
         #all_articles = catalog(portal_type='Article', Language="all")
         #all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
 
-        #self.all_objects = all_objects
+        self.all_objects = all_objects
         #self.all_persons = all_persons
         #self.all_archives = all_archives
         #self.all_treatments = all_treatments
@@ -8530,17 +8530,17 @@ class APIMigrator:
         pass
 
     def find_object(self, all_objects, object_number):
-        """for brain in all_objects:
+        for brain in all_objects:
             obj = brain.getObject()
             if hasattr(obj, 'identification_identification_objectNumber'):
                 if obj.identification_identification_objectNumber == object_number:
                     return obj
-        """
-        results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
+        
+        """results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
         if results:
             item = results[0]
             obj = item.getObject()
-            return obj
+            return obj"""
 
         return None
 
@@ -10545,7 +10545,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = ""
+            self.type_migrator = "updater"
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)
