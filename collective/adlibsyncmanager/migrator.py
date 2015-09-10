@@ -9,7 +9,7 @@ Supposed to be run as an external method trhough the boilerplate script migratio
 from Acquisition import aq_parent, aq_inner
 
 from plone import api
-from plone.multilingual.interfaces import ILanguage
+#from plone.multilingual.interfaces import ILanguage
 
 import fnmatch
 from lxml import etree
@@ -91,30 +91,30 @@ class APIMigrator:
 
         self.skipped_ids = []
 
-        self.folder_path = "nl/collectie".split('/')
-        container = self.get_container()
-        catalog = getToolByName(container, 'portal_catalog')
-        self.portal_catalog = catalog
+        #self.folder_path = "nl/collectie".split('/')
+        #container = self.get_container()
+        #catalog = getToolByName(container, 'portal_catalog')
+        #self.portal_catalog = catalog
 
-        all_objects = catalog(portal_type='Object', Language="all")
-        all_persons = catalog(portal_type='PersonOrInstitution', Language="all")
-        all_archives = catalog(portal_type='Archive', Language="all")
-        all_treatments = catalog(portal_type='treatment', Language="all")
-        all_exhibitions = catalog(portal_type='Exhibition', Language="all")
-        all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
-        all_incoming = catalog(portal_type='IncomingLoan', Language="all")
-        all_articles = catalog(portal_type='Article', Language="all")
-        all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
+        #all_objects = catalog(portal_type='Object', Language="all")
+        #all_persons = catalog(portal_type='PersonOrInstitution', Language="all")
+        #all_archives = catalog(portal_type='Archive', Language="all")
+        #all_treatments = catalog(portal_type='treatment', Language="all")
+        #all_exhibitions = catalog(portal_type='Exhibition', Language="all")
+        #all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
+        #all_incoming = catalog(portal_type='IncomingLoan', Language="all")
+        #all_articles = catalog(portal_type='Article', Language="all")
+        #all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
 
-        self.all_objects = all_objects
-        self.all_persons = all_persons
-        self.all_archives = all_archives
-        self.all_treatments = all_treatments
-        self.all_exhibitions = all_exhibitions
-        self.all_outgoing = all_outgoing
-        self.all_incoming = all_incoming
-        self.all_articles = all_articles
-        self.all_objectentries = all_objectentries
+        #self.all_objects = all_objects
+        #self.all_persons = all_persons
+        #self.all_archives = all_archives
+        #self.all_treatments = all_treatments
+        #self.all_exhibitions = all_exhibitions
+        #self.all_outgoing = all_outgoing
+        #self.all_incoming = all_incoming
+        #self.all_articles = all_articles
+        #self.all_objectentries = all_objectentries
 
     def build_api_request_all(self):
         url = ""
