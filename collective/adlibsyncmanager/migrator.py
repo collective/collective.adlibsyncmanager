@@ -15,7 +15,7 @@ import fnmatch
 from lxml import etree
 import urllib2, urllib
 from plone.namedfile.file import NamedBlobImage, NamedBlobFile
-from plone.multilingual.interfaces import ITranslationManager
+#from plone.multilingual.interfaces import ITranslationManager
 import datetime
 import os
 import csv
@@ -42,13 +42,13 @@ from plone.app.textfield.value import RichTextValue
 from z3c.relationfield import RelationValue
 from zope import component
 
-from .book_migrator import BookMigrator
-from .incomingloan_migrator import IncomingLoanMigrator
-from .objectentry_migrator import ObjectEntryMigrator
-from .archive_migrator import ArchiveMigrator
-from .converter import Converter
-from .relations import Relations
-from .updater import Updater
+#from .book_migrator import BookMigrator
+#from .incomingloan_migrator import IncomingLoanMigrator
+#from .objectentry_migrator import ObjectEntryMigrator
+#from .archive_migrator import ArchiveMigrator
+#from .converter import Converter
+#from .relations import Relations
+#from .updater import Updater
 
 ORGANIZATION = "teylers"
 API_REQUEST_URL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicebooks&search=(shelf_mark='%s')&xmltype=structured"
