@@ -10497,6 +10497,25 @@ class APIMigrator:
 
         return True
 
+
+    def move_folders(self):
+
+        origin = 'nl/intern/uitgaande-bruiklenen/uitgaande-bruiklenen'
+        target = 'nl/intern/uitgaande-bruiklenen'
+
+        origin_folder = self.get_folder(origin)
+        target_folder = self.get_folder(target)
+
+        total = len(origin_folder)
+        curr = 0
+        for _id in origin_folder:
+            curr += 1
+            print "Moving %s / %s" %(str(curr), str(total))
+            obj = origin_folder[_id]
+            self.move_obj_folder(obj, target_folder)
+
+        return True
+
     def move_persons_folder(self):
         import string
         base_folder = "personen-en-instellingen"
@@ -10545,7 +10564,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = "updater"
+            self.type_migrator = ""
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)
@@ -10586,7 +10605,8 @@ class APIMigrator:
                 #converter.start()
                 #print "Import persons!"
                 #self.import_persons_institutions()
-                self.create_alphabetic_folders()
+                self.move_folders()
+                #self.create_alphabetic_folders()
                 #self.move_persons_folder()
 
 
