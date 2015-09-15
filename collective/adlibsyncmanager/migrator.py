@@ -10509,10 +10509,12 @@ class APIMigrator:
         total = len(origin_folder)
         curr = 0
         for _id in origin_folder:
+            transaction.begin()
             curr += 1
             print "Moving %s / %s" %(str(curr), str(total))
             obj = origin_folder[_id]
             self.move_obj_folder(obj, target_folder)
+            transaction.commit()
 
         return True
 
