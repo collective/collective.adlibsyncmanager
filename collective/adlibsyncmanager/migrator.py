@@ -10498,23 +10498,51 @@ class APIMigrator:
         return True
 
 
-    def move_folders(self):
+    def move_all_folders_content(self):
+        total = 13041 + 2600 + 270
+        curr = 0
+        transaction.begin()
+        origin = 'nl/intern/conserverings-behandelingen/conserverings-behandelingen'
+        target = 'nl/intern/conserverings-behandelingen'
+        self.move_folders(origin, target, total, curr)
+        transaction.commit()
 
-        origin = 'nl/intern/uitgaande-bruiklenen/uitgaande-bruiklenen'
-        target = 'nl/intern/uitgaande-bruiklenen'
+        curr = 2600
+        transaction.begin()
+        origin = 'nl/intern/archiefstukken/archiefstukken'
+        target = 'nl/intern/archiefstukken'
+        self.move_folders(origin, target, total, curr)
+        transaction.commit()
+
+        curr = 2870
+        transaction.begin()
+        origin = 'nl/intern/personen-en-instellingen/personen-en-instellingen'
+        target = 'nl/intern/personen-en-instellingen'
+        self.move_folders(origin, target, total, curr)
+        transaction.commit()
+
+        self.success = True
+        return True
+
+    def move_folders(self, origin, target, total, curr):
+
+        origin = origin
+        target = target
 
         origin_folder = self.get_folder(origin)
         target_folder = self.get_folder(target)
 
-        total = len(origin_folder)
-        curr = 0
+        total = total
+        curr = curr
         for _id in origin_folder:
-            transaction.begin()
+            #transaction.begin()
             curr += 1
             print "Moving %s / %s" %(str(curr), str(total))
             obj = origin_folder[_id]
             self.move_obj_folder(obj, target_folder)
-            transaction.commit()
+            #transaction.commit()
+
+
 
         return True
 
@@ -10607,7 +10635,7 @@ class APIMigrator:
                 #converter.start()
                 #print "Import persons!"
                 #self.import_persons_institutions()
-                self.move_folders()
+                self.move_all_folders_content()
                 #self.create_alphabetic_folders()
                 #self.move_persons_folder()
 
