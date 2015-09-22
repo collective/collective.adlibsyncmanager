@@ -51,8 +51,12 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
-from .core import CORE
-from .utils import *
+#from .core import CORE
+#from .utils import *
+from .book_utils import book_subfields_types as subfields_types
+from .book_utils import book_relation_types as relation_types
+
+from .book_core import BOOK_CORE as CORE
 
 
 DEBUG = False
@@ -64,8 +68,13 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.schema = getUtility(IDexterityFTI, name='Object').lookupSchema()
-        self.fields = getFieldsInOrder(self.schema)
+        self.is_book = True
+        if self.is_book:
+            self.schema = getUtility(IDexterityFTI, name='Book').lookupSchema()
+            self.fields = getFieldsInOrder(self.schema)
+        else:
+            self.schema = getUtility(IDexterityFTI, name='Object').lookupSchema()
+            self.fields = getFieldsInOrder(self.schema)
         self.field_types = {}
         self.datagrids = {}
         self.object_number = ""
@@ -418,9 +427,13 @@ class Updater:
             pass
 
 
-    def get_object_number(self, xml_record):
-        if xml_record.find('object_number') != None:
-            return xml_record.find('object_number').text
+    def get_object_number(self, xml_record, is_book=False):
+        if is_book:
+            if xml_record.find('priref') != None:
+                return xml_record.find('priref').text
+        else:
+            if xml_record.find('object_number') != None:
+                return xml_record.find('object_number').text
         return None
     
     def get_xml_path(self, xml_element):
@@ -566,6 +579,12 @@ class Updater:
                 linkref = xml_element.get('linkdata')
                 if not linkref:
                     linkref = xml_element.get('linkterm')
+                    if not linkref:
+                        linkref = xml_element.find('object_number')
+                        if not linkref:
+                            linkref = ""
+                        else:
+                            linkref = linkref.text
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
             else:
@@ -665,10 +684,14 @@ class Updater:
         return True
 
     def start(self):
-        collection_path = "/Users/AG/Projects/collectie-zm/single-object-v37-test.xml"
+        # Special case for books
+        self.is_book = True
+
+        collection_path = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v35.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
+        book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v2/logs/error_%s.log" %(str(timestamp))
@@ -676,20 +699,28 @@ class Updater:
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
-        self.dev = True
-        collection_xml = collection_path_prod
+        self.dev = False
+        collection_xml = book_total
         if self.dev:
-            collection_xml = collection_path_prod
+            collection_xml = book_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_path_prod
+            collection_xml = book_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
 
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
         self.generate_field_types()
+
+
+
+        if self.is_book:
+            #CORE = BOOK_CORE
+            #subfields_types = book_subfields_types
+            #relation_types = book_relation_types
+            pass
 
         total = len(list(self.collection))
         curr = 0
@@ -699,17 +730,17 @@ class Updater:
             curr += 1
            
             transaction.begin()
-            
-            object_number = self.get_object_number(xml_record)
+            object_number = self.get_object_number(xml_record, self.is_book)
             if object_number:
                 #if object_number.lower() == "m81-006":
-                plone_object = self.api.find_object(self.api.all_objects, object_number)
+                plone_object = self.api.find_object(self.api.all_objects, object_number, self.is_book)
                 if plone_object:
                     self.object_number = str(object_number)
                     self.generate_field_types()
                     self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                     self.update(xml_record, plone_object, object_number)
                     self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                    self.log("URL: %s" %(str(plone_object.absolute_url())))
                 else:
                     self.error("Object is corrupt.")
             else:

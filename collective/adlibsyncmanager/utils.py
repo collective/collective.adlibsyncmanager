@@ -30,6 +30,7 @@ subfields_types = {
 	"content.subject.tax.rank-text": "choice",
 	"content.subject.name-term": "gridlist",
 	"content.subject-term": "gridlist",
+	"object_name.type-term":"gridlist",
 
 	"inscription.type-term": "gridlist",
 	"inscription.maker": "relation",

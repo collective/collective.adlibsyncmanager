@@ -48,7 +48,7 @@ from zope import component
 #from .archive_migrator import ArchiveMigrator
 #from .converter import Converter
 #from .relations import Relations
-#from .updater import Updater
+from .updater import Updater
 
 ORGANIZATION = "teylers"
 API_REQUEST_URL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicebooks&search=(shelf_mark='%s')&xmltype=structured"
@@ -91,7 +91,7 @@ class APIMigrator:
 
         self.skipped_ids = []
 
-        self.folder_path = "personen-en-instellingen".split('/')
+        self.folder_path = "nl/intern".split('/')
         container = self.get_container()
         catalog = getToolByName(container, 'portal_catalog')
         self.portal_catalog = catalog
@@ -8529,12 +8529,20 @@ class APIMigrator:
 
         pass
 
-    def find_object(self, all_objects, object_number):
-        for brain in all_objects:
-            obj = brain.getObject()
-            if hasattr(obj, 'identification_identification_objectNumber'):
-                if obj.identification_identification_objectNumber == object_number:
-                    return obj
+    def find_object(self, all_objects, object_number, is_book=False):
+        if is_book:
+            results = self.portal_catalog(portal_type="Book")
+            if results:
+                for res in results:
+                    obj = res.getObject()
+                    if object_number == obj.priref:
+                        return obj
+        else:
+            for brain in all_objects:
+                obj = brain.getObject()
+                if hasattr(obj, 'identification_identification_objectNumber'):
+                    if obj.identification_identification_objectNumber == object_number:
+                        return obj
         
         """results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
         if results:
@@ -10594,7 +10602,7 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = ""
+            self.type_migrator = "updater"
 
             if self.type_migrator == "books":
                 book_migrator = BookMigrator(self)
