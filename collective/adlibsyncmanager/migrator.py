@@ -8538,17 +8538,11 @@ class APIMigrator:
                     if object_number == obj.priref:
                         return obj
         else:
-            for brain in all_objects:
-                obj = brain.getObject()
-                if hasattr(obj, 'identification_identification_objectNumber'):
-                    if obj.identification_identification_objectNumber == object_number:
-                        return obj
-        
-        """results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
-        if results:
-            item = results[0]
-            obj = item.getObject()
-            return obj"""
+            results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
+            if results:
+                item = results[0]
+                obj = item.getObject()
+                return obj
 
         return None
 
