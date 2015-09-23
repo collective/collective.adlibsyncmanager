@@ -580,11 +580,10 @@ class Updater:
                 if not linkref:
                     linkref = xml_element.get('linkterm')
                     if not linkref:
-                        linkref = xml_element.find('object_number')
-                        if not linkref:
-                            linkref = ""
+                        if xml_element.find('object_number') != None:
+                            linkref = xml_element.find('object_number').text
                         else:
-                            linkref = linkref.text
+                            linkref = ""
                             
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
@@ -701,13 +700,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = False
-        collection_xml = collection_path_prod
+        collection_xml = book_total
         if self.dev:
-            collection_xml = collection_path_prod
+            collection_xml = book_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_path_prod
+            collection_xml = book_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
