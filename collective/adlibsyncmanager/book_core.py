@@ -13,14 +13,14 @@ BOOK_CORE = {
     'Illustrator-illustrator.name':'titleAuthorImprintCollation_titleAuthor_illustrator-illustrators',
     'Illustrator-illustrator.role-term':'titleAuthorImprintCollation_titleAuthor_illustrator-roles',
     'Illustrator-illustrator.name-name':'',
-    'corporate_author-name':'titleAuthorImprintCollation_titleAuthor_corpAuthor', 
-    'corporate_author':'',
+    'corporate_author-name':'', 
+    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor',
     'edition':'titleAuthorImprintCollation_edition_edition',
     'place_of_publication':'titleAuthorImprintCollation_imprint_place-term', 
     'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',
     'publisher-name':'',
     'year_of_publication':'titleAuthorImprintCollation_imprint_year', 
-    'print.place-term':'titleAuthorImprintCollation_imprint_placePrinted-term',
+    'print.place-term':'titleAuthorImprintCollation_imprint_placesPrinted',
     'print.name':'titleAuthorImprintCollation_imprint_printer-printer', 
     'print.name-name':'',
     'sort_year':'titleAuthorImprintCollation_sortYear_sortYear',
@@ -36,7 +36,7 @@ BOOK_CORE = {
     'series.number':'seriesNotesISBN_series_series-seriesNo',
     'series.issn': 'seriesNotesISBN_series_series-ISSNSeries',
     'subseries.article':'seriesNotesISBN_series_subseries-subseriesArticle',
-    'subseries.title-series':'seriesNotesISBN_subseries_series-subseries',
+    'subseries.title-series':'seriesNotesISBN_series_subseries-subseries',
     'subseries.number':'seriesNotesISBN_series_subseries-subseriesNo',
     'subseries.issn': 'seriesNotesISBN_series_subseries-ISSNSubseries',
 	'notes':'seriesNotesISBN_notes_bibliographicalNotes-term',
@@ -58,7 +58,8 @@ BOOK_CORE = {
     'keyword.proper_name-term':'abstractAndSubjectTerms_subjectTerm-properName', 
 
     'person.keyword.type-text':'abstractAndSubjectTerms_personKeywordType-personKeywordType',
-    'person.keyword.name-name':'abstractAndSubjectTerms_personKeywordType-name',
+    'person.keyword.name':'abstractAndSubjectTerms_personKeywordType-name',
+    'person.keyword.name-name':'',
     'person.keyword.role-term':'abstractAndSubjectTerms_personKeywordType-role',
 
     'geographical_keyword-term':'abstractAndSubjectTerms_geographicalKeyword', 
@@ -97,10 +98,11 @@ BOOK_CORE = {
 
     # Copies and shelf marks
     'shelf_mark':'copiesAndShelfMarks_defaultShelfMark',
-    'copy.number':'copiesAndShelfMarks_copyDetails-copyNumber',
+    'copy.number-copy_number':'copiesAndShelfMarks_copyDetails-copyNumber',
     #'copy.number-loan_status-text','copiesAndShelfMarks_copyDetails-availability',
     'copy.number-shelfmark':'copiesAndShelfMarks_copyDetails-shelfMark',
     'loan_category-term':'copiesAndShelfMarks_copyDetails-loanCategory',
     'site-term':'copiesAndShelfMarks_copyDetails-site',
     "copy.remarks": 'copiesAndShelfMarks_copyDetails-locationNotes'
 }
+

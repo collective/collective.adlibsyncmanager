@@ -10,8 +10,6 @@ book_subfields_types = {
 	"Illustrator-illustrator.role-term": "gridlist",
 	"author.role-term":"gridlist",
 	"publisher": "relation",
-	"series.title-series": "gridlist",
-	"subseries.title-subseries": "gridlist",
 	"keyword.type-text":"choice",
 	"keyword.contents-term": "gridlist",
 	"keyword.proper_name-term":"gridlist",
@@ -26,7 +24,9 @@ book_subfields_types = {
 	"site":"gridlist",
 	"print.name": "relation",
 	"loan_category-term":"gridlist",
-	"site-term": "gridlist"
+	"site-term": "gridlist",
+	"corporate_author":"relation",
+	"person.keyword.name":"relation"
 }
 
 book_relation_types = {
@@ -36,5 +36,7 @@ book_relation_types = {
 	"exhibition-exhibition": "Exhibition",
 	"object.object_number":"Object",
 	"copy.number": "Bibliotheek",
-	"print.name": "PersonOrInstitution"
+	"print.name": "PersonOrInstitution",
+	"corporate_author": "PersonOrInstitution",
+	"person.keyword.name": "PersonOrInstitution"
 }

@@ -8668,6 +8668,8 @@ class APIMigrator:
         return None
 
     def find_person_by_priref(self, all_persons, priref):
+        print "person:"
+        print priref
         """if priref:
             for brain in all_persons:
                 obj = brain.getObject()

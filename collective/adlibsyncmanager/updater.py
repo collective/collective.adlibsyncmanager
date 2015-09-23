@@ -248,7 +248,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.identification_identification_objectNumber == priref:
-                            self.warning("%s - %s - Object relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s - %s - Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
@@ -585,6 +585,7 @@ class Updater:
                             linkref = ""
                         else:
                             linkref = linkref.text
+                            
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
             else:
@@ -688,7 +689,7 @@ class Updater:
         self.is_book = True
 
         collection_path = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
-        collection_path_prod = "/var/www/zm-collectie-v2/xml/single-object-v35.xml"
+        collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
         book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
@@ -700,13 +701,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         self.dev = False
-        collection_xml = book_total
+        collection_xml = collection_path_prod
         if self.dev:
-            collection_xml = book_total
+            collection_xml = collection_path_prod
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = book_total
+            collection_xml = collection_path_prod
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -726,7 +727,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection)[43:]:
+        for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
