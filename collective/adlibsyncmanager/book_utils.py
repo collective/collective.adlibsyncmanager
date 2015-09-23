@@ -26,7 +26,8 @@ book_subfields_types = {
 	"loan_category-term":"gridlist",
 	"site-term": "gridlist",
 	"corporate_author":"relation",
-	"person.keyword.name":"relation"
+	"person.keyword.name":"relation",
+	"accompanying_material": "gridlist"
 }
 
 book_relation_types = {
