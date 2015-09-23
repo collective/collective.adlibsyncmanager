@@ -14,7 +14,7 @@ BOOK_CORE = {
     'Illustrator-illustrator.role-term':'titleAuthorImprintCollation_titleAuthor_illustrator-roles',
     'Illustrator-illustrator.name-name':'',
     'corporate_author-name':'', 
-    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor',
+    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor-corpAuthor',
     'edition':'titleAuthorImprintCollation_edition_edition',
     'place_of_publication':'titleAuthorImprintCollation_imprint_place-term', 
     'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',
