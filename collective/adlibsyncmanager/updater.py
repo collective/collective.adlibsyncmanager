@@ -714,8 +714,6 @@ class Updater:
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
         self.generate_field_types()
 
-
-
         if self.is_book:
             #CORE = BOOK_CORE
             #subfields_types = book_subfields_types
