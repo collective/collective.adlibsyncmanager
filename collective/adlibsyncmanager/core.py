@@ -16,7 +16,7 @@ CORE = {
     "institution.place":"",#repeated
     "institution.name-address.place":"identification_identification_institutionPlace",
     "institution.code":"",#repeated
-    "institution.name-institution_code":"identification_identification_institutionCode",
+    "institution.name-institution_code":"",
     "object_number":"identification_identification_objectNumber",
     "administration_name": "identification_identification_administrativeName",
     "collection": "",#parent
@@ -151,8 +151,10 @@ CORE = {
     "content.person.note":"iconography_contentPersonInstitution-notes",
 
     "content.subject.position":"iconography_contentSubjects-position",
-    "content.subject.type": "",#parent
+    
+    "content.subject.type": "iconography_contentSubjects-subjectType",#parent
     "content.subject.type-text":"iconography_contentSubjects-subjectType",
+    
     "content.subject.name": "",#parent
     "content.subject.name-term": "iconography_contentSubjects-properName",
     "content.subject.tax.rank": "",#parent

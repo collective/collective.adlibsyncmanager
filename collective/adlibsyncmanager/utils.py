@@ -27,6 +27,8 @@ subfields_types = {
 	"content.person.name.type-text":"choice",
 
 	"content.subject.type-text":"choice",
+	"content.subject.type": "choice",
+	
 	"content.subject.tax.rank-text": "choice",
 	"content.subject.name-term": "gridlist",
 	"content.subject-term": "gridlist",

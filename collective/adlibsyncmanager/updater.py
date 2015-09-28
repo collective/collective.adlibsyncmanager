@@ -51,12 +51,13 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
-#from .core import CORE
-#from .utils import *
-from .book_utils import book_subfields_types as subfields_types
-from .book_utils import book_relation_types as relation_types
+from .core import CORE
+from .utils import *
 
-from .book_core import BOOK_CORE as CORE
+#from .book_utils import book_subfields_types as subfields_types
+##from .book_utils import book_relation_types as relation_types
+
+#from .book_core import BOOK_CORE as CORE
 
 
 DEBUG = False
@@ -68,7 +69,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.is_book = True
+        self.is_book = False
         if self.is_book:
             self.schema = getUtility(IDexterityFTI, name='Book').lookupSchema()
             self.fields = getFieldsInOrder(self.schema)
@@ -87,7 +88,6 @@ class Updater:
                 timestamp = datetime.datetime.today().isoformat()
                 text = text.encode('ascii', 'ignore')
                 final_log = "[%s] %s" %(str(timestamp), str(text))
-                print final_log
             else:
                 pass
         elif RUNNING:
@@ -96,14 +96,14 @@ class Updater:
                 text = text.encode('ascii', 'ignore')
 
                 final_log = "[%s] %s" %(str(timestamp), str(text))
-                
+                print final_log
+
                 if ".lref" not in text and "Warning" not in text:
                     self.error_log_file.write(final_log+"\n")
 
                 if "Warning" in text or ".lref" in text or "STATUS" in text:
                     self.warning_log_file.write(final_log+"\n")
 
-                print final_log
             else:
                 pass
 
@@ -112,6 +112,20 @@ class Updater:
             if name == fieldname:
                 return field
         return None
+
+    def fix_all_choices(self, obj):
+        for name, field in self.fields:
+            field_type = self.get_fieldtype_by_schema(field)
+            if field_type == "datagridfield":
+                obj_field = getattr(obj, name, None)
+                if obj_field:
+                    for line in obj_field:
+                        for key in line:
+                            if line[key] == "_No value":
+                                line[key] = "No value"
+                    setattr(obj, name, obj_field)
+        return True
+
 
     def get_subfield(self, plone_fieldname):
         split_name = plone_fieldname.split('-')
@@ -460,30 +474,43 @@ class Updater:
         return value
 
     def update_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
-        
         default_test = " "
         if subfield_type == "choice":
-            if xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
+            if xml_element.get('option') != "" and xml_element.get('option') != None:
+                if len(xml_element.findall('text')) > 0:
+                    return current_value
+                else:
+                    value = ""
+            elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
         updated = False
         found = False
+
         for line in current_value:
             if subfield in line:
                 found = True
                 if line[subfield] == default_test or line[subfield] == [] or line[subfield] == 'No value' or line[subfield] == False:
                     if line[subfield] == 'No value' and value == "":
-                        line[subfield] = 'No value'
+                        line[subfield] = '_No value'
                     else:
-                        line[subfield] = value
+                        if subfield_type == "choice":
+                            if type(value) != list:
+                                line[subfield] = value
+                            else:
+                                line[subfield] = '_No value'
+                        else:
+                            line[subfield] = value
                     
                     updated = True
                     break
-        
+
         if not found:
             return current_value
 
         if not updated:
+            if subfield_type == "choice" and type(value) == list:
+                value = "_No value"
             val = self.create_dictionary(subfield, current_value, value, xml_element, subfield_type, plone_fieldroot)
             return val
         else:
@@ -498,7 +525,7 @@ class Updater:
 
         if subfield not in new_value:
             return current_value
-
+            
         new_value[subfield] = value
         current_value.append(new_value)
 
@@ -535,6 +562,7 @@ class Updater:
         return field_value
 
     def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname, grid=False):
+
         # Text
         if field_type == "text":
             return self.api.trim_white_spaces(xml_element.text)
@@ -546,6 +574,13 @@ class Updater:
                     return "No value"
                 else:
                     return value
+
+            elif xml_element.get("option") != "" and xml_element.get("option") != None:
+                if len(xml_element.findall('text')) > 0:
+                    return current_value
+                else:
+                    return "_No value"
+
             else:
                 return current_value
         
@@ -606,6 +641,8 @@ class Updater:
         else:
             value = None
             self.error("Unkown type of field for fieldname %s" %(plone_fieldname))
+
+        
         return value
 
     def setattribute(self, plone_object, plone_fieldname, field_type, value):
@@ -686,9 +723,9 @@ class Updater:
 
     def start(self):
         # Special case for books
-        self.is_book = True
+        self.dev = False
 
-        collection_path = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/single-br72-008.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
@@ -700,14 +737,14 @@ class Updater:
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
-        self.dev = False
-        collection_xml = book_total
+        
+        collection_xml = collection_total
         if self.dev:
-            collection_xml = book_total
+            collection_xml = collection_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = book_total
+            collection_xml = collection_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -725,14 +762,14 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             curr += 1
            
             transaction.begin()
             object_number = self.get_object_number(xml_record, self.is_book)
             if object_number:
                 #if object_number.lower() == "m81-006":
-                plone_object = self.api.find_object(self.api.all_objects, object_number, self.is_book)
+                plone_object = self.api.find_object(self.api.all_objects, object_number.lower(), self.is_book)
                 if plone_object:
                     self.object_number = str(object_number)
                     self.generate_field_types()
@@ -740,6 +777,9 @@ class Updater:
                     self.update(xml_record, plone_object, object_number)
                     self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                     self.log("URL: %s" %(str(plone_object.absolute_url())))
+                    self.fix_all_choices(plone_object)
+                    plone_object.reindexObject()
+                    print str(plone_object.absolute_url())
                 else:
                     self.error("Object is corrupt.")
             else:
