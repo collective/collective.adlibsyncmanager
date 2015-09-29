@@ -8529,6 +8529,19 @@ class APIMigrator:
 
         pass
 
+    def find_item_by_type(self, object_number, portal_type):
+        result = None
+        if portal_type == "Object":
+            result = self.find_object(self.all_objects, object_number, False)
+        elif portal_type == "Book":
+            result = self.find_object(self.all_objects, object_number, True)
+        elif portal_type == "PersonOrInstitution":
+            result = self.find_person_by_priref(self.all_persons, object_number)
+        else:
+            print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
+
+        return result
+ 
     def find_object(self, all_objects, object_number, is_book=False):
         if is_book:
             results = self.portal_catalog(portal_type="Book")

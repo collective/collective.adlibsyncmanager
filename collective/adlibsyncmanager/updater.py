@@ -51,13 +51,18 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
-from .core import CORE
-from .utils import *
+#from .core import CORE
+#from .utils import *
 
 #from .book_utils import book_subfields_types as subfields_types
-##from .book_utils import book_relation_types as relation_types
+#from .book_utils import book_relation_types as relation_types
 
 #from .book_core import BOOK_CORE as CORE
+
+
+from .persons_utils import persons_subfields_types as subfields_types
+from .persons_utils import persons_relation_types as relation_types
+from .persons_core import PERSON_CORE as CORE
 
 
 DEBUG = False
@@ -69,13 +74,11 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.is_book = False
-        if self.is_book:
-            self.schema = getUtility(IDexterityFTI, name='Book').lookupSchema()
-            self.fields = getFieldsInOrder(self.schema)
-        else:
-            self.schema = getUtility(IDexterityFTI, name='Object').lookupSchema()
-            self.fields = getFieldsInOrder(self.schema)
+        self.portal_type = "PersonOrInstitution"
+
+        self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
+        self.fields = getFieldsInOrder(self.schema)
+
         self.field_types = {}
         self.datagrids = {}
         self.object_number = ""
@@ -441,8 +444,8 @@ class Updater:
             pass
 
 
-    def get_object_number(self, xml_record, is_book=False):
-        if is_book:
+    def get_object_number(self, xml_record, portal_type=""):
+        if portal_type != "Object":
             if xml_record.find('priref') != None:
                 return xml_record.find('priref').text
         else:
@@ -725,11 +728,12 @@ class Updater:
         # Special case for books
         self.dev = False
 
-        collection_path = "/Users/AG/Projects/collectie-zm/single-br72-008.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/person.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
         book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
+        persons_total = "/var/www/zm-collectie-v2/xml/persons.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v2/logs/error_%s.log" %(str(timestamp))
@@ -738,25 +742,19 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         
-        collection_xml = collection_total
+        collection_xml = persons_total
         if self.dev:
-            collection_xml = collection_total
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = collection_total
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
 
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
         self.generate_field_types()
-
-        if self.is_book:
-            #CORE = BOOK_CORE
-            #subfields_types = book_subfields_types
-            #relation_types = book_relation_types
-            pass
 
         total = len(list(self.collection))
         curr = 0
@@ -766,10 +764,10 @@ class Updater:
             curr += 1
            
             transaction.begin()
-            object_number = self.get_object_number(xml_record, self.is_book)
+            object_number = self.get_object_number(xml_record, self.portal_type)
             if object_number:
                 #if object_number.lower() == "m81-006":
-                plone_object = self.api.find_object(self.api.all_objects, object_number.lower(), self.is_book)
+                plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                 if plone_object:
                     self.object_number = str(object_number)
                     self.generate_field_types()
