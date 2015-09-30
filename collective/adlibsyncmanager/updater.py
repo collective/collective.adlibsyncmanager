@@ -582,14 +582,17 @@ class Updater:
 
         elif field_type == "date":
             field_val = self.api.trim_white_spaces(xml_element.text)
-            try: 
-                datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
-                value = datetime_value
-            except:
-                year = field_val
-                new_date = "%s-%s-%s" %(year, "01", "01")
-                datetime_value = datetime.datetime.strptime(field_val, new_date)
-                value = datetime_value
+            if field_val:
+                try: 
+                    datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
+                    value = datetime_value
+                except:
+                    year = field_val
+                    new_date = "%s-%s-%s" %(year, "01", "01")
+                    datetime_value = datetime.datetime.strptime(field_val, new_date)
+                    value = datetime_value
+            else:
+                return current_value
 
         elif field_type == "choice":
             if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
