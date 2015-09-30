@@ -230,7 +230,7 @@ class Updater:
         elif IBool.providedBy(field):
             type_field = False
         elif IDatetime.providedBy(field):
-            type_field = datetime.datetime.today()
+            type_field = None
         else:
             type_field = " "
 
