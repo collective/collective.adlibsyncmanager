@@ -8,8 +8,9 @@ PERSON_CORE = {
 	'institution_code':'nameInformation_name_institutionNumber',
     'name.type-text':'nameInformation_name_nameType-type', 
     'name.note':'nameInformation_name_nameNotes',
-    #'':'nameInformation_relationWithOtherNames_use', 
-    #'':'nameInformation_relationWithOtherNames_usedFor',
+
+    'use':'nameInformation_relationWithOtherNames_use-use', 
+    'used_for':'nameInformation_relationWithOtherNames_usedFor-usedFor',
     'equivalent_name':'nameInformation_relationWithOtherNames_equivalent-name', 
 
     'address.place':'',

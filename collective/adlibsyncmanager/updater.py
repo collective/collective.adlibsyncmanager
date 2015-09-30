@@ -61,14 +61,14 @@ from zope import component
 #from .book_core import BOOK_CORE as CORE
 
 # Persons
-#from .persons_utils import persons_subfields_types as subfields_types
-#from .persons_utils import persons_relation_types as relation_types
-#from .persons_core import PERSON_CORE as CORE
+from .persons_utils import persons_subfields_types as subfields_types
+from .persons_utils import persons_relation_types as relation_types
+from .persons_core import PERSON_CORE as CORE
 
 # Exhibitions
-from .exhibition_utils import exhibition_subfields_types as subfields_types
-from .exhibition_utils import exhibition_relation_types as relation_types
-from .exhibition_core import EXHIBITION_CORE as CORE
+#from .exhibition_utils import exhibition_subfields_types as subfields_types
+#from .exhibition_utils import exhibition_relation_types as relation_types
+#from .exhibition_core import EXHIBITION_CORE as CORE
 
 
 DEBUG = False
@@ -80,7 +80,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.portal_type = "Exhibition"
+        self.portal_type = "PersonOrInstitution"
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
@@ -107,7 +107,7 @@ class Updater:
                 final_log = "[%s] %s" %(str(timestamp), str(text))
                 print final_log
 
-                if ".lref" not in text and "Warning" not in text:
+                if ".lref" not in text and "Warning" not in text and "STATUS" not in text:
                     self.error_log_file.write(final_log+"\n")
 
                 if "Warning" in text or ".lref" in text or "STATUS" in text:
@@ -244,12 +244,15 @@ class Updater:
         self.field_types['title'] = "text"
         self.field_types['description'] = 'text'
 
-    def create_relation(self, current_value, objecttype_relatedto, priref, grid=False):
+    def create_relation(self, current_value, objecttype_relatedto, priref, grid=False, by_name=False):
         if grid:
             current_value = []
         
         if objecttype_relatedto == "PersonOrInstitution":
-            person = self.api.find_person_by_priref(self.api.all_persons, priref)
+            if by_name:
+                person = self.api.find_person_by_name(priref)
+            else:
+                person = self.api.find_person_by_priref(self.api.all_persons, priref)
             if person:
                 if not grid:
                     intids = component.getUtility(IIntIds)
@@ -641,6 +644,7 @@ class Updater:
         # Create relation type
         elif field_type == "relation":
             value = []
+            by_name = False
             objecttype_relatedto, grid = self.get_objecttype_relation(plone_fieldname)
             if objecttype_relatedto == "Object":
                 linkref = xml_element.get('linkdata')
@@ -651,13 +655,23 @@ class Updater:
                             linkref = xml_element.find('object_number').text
                         else:
                             linkref = ""
+
+            elif objecttype_relatedto == "PersonOrInstitution":
+                linkref = xml_element.get('linkref')
+                if not linkref:
+                    linkdata = xml_element.get('linkdata')
+                    if linkdata:
+                        linkref = linkdata
+                        by_name = True
+                    else:
+                        linkref = ""
                             
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
             else:
                 linkref = xml_element.get('linkref')
 
-            value = self.create_relation(current_value, objecttype_relatedto, linkref, grid)
+            value = self.create_relation(current_value, objecttype_relatedto, linkref, grid, by_name)
 
         elif field_type == "bool":
             if xml_element.text == "x":
@@ -753,9 +767,10 @@ class Updater:
         return True
 
     def start(self):
-        # Special case for books
+
         self.dev = False
 
+        person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
@@ -771,13 +786,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         
-        collection_xml = exhibitions_total
+        collection_xml = persons_total
         if self.dev:
-            collection_xml = exhibitions_total
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = exhibitions_total
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -805,7 +820,7 @@ class Updater:
                     self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                     self.log("URL: %s" %(str(plone_object.absolute_url())))
                     self.fix_all_choices(plone_object)
-                    #plone_object.reindexObject()
+                    plone_object.reindexObject()
                     print str(plone_object.absolute_url())
                 else:
                     self.error("Object is corrupt.")

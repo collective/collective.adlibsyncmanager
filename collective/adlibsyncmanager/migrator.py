@@ -8700,6 +8700,16 @@ class APIMigrator:
 
         return None
 
+    def find_person_by_name(self, name):
+        if name:
+            for brain in self.all_persons:
+                obj = brain.getObject()
+                if hasattr(obj, 'nameInformation_name_name'):
+                    if obj.nameInformation_name_name == name:
+                        return obj
+
+        return None
+
     def find_bibliotheek_by_priref(self, priref):
         if priref:
             results = self.portal_catalog(path={"query":"/zm/nl/bibliotheek", "depth": 2})

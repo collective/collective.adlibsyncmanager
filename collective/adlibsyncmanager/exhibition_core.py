@@ -9,9 +9,6 @@ EXHIBITION_CORE = {
 	'alternativetitle-title.alternative':'exhibitionsDetails_exhibition_altTitle-title',
 	'alternativetitle-title.alternative.type':'exhibitionsDetails_exhibition_altTitle-type',
 
-    #'date.start':'exhibitionsDetails_exhibition_startDate', 
-    #'date.end':'exhibitionsDetails_exhibition_endDate',
-
     'notes':'exhibitionsDetails_exhibitions_notes-note', 
     'organiser-organiser':'exhibitionsDetails_organizingInstitutions-name', # relation
     'organiser-organiser-name': '',
@@ -27,7 +24,6 @@ EXHIBITION_CORE = {
     'documentation-documentation.title':'documentation_documentation-title', # relation
     'documentation-documentation.page_reference':'documentation_documentation-pageMark',
     'documentation-documentation.notes':'documentation_documentation-notes',
-
 
     'object.object_number':'linkedObjects_linkedObjects-objectNumber' # relation
 }
