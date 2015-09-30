@@ -9,8 +9,8 @@ EXHIBITION_CORE = {
 	'alternativetitle-title.alternative':'exhibitionsDetails_exhibition_altTitle-title',
 	'alternativetitle-title.alternative.type':'exhibitionsDetails_exhibition_altTitle-type',
 
-    'date.start':'exhibitionsDetails_exhibition_startDate', 
-    'date.end':'exhibitionsDetails_exhibition_endDate',
+    #'date.start':'exhibitionsDetails_exhibition_startDate', 
+    #'date.end':'exhibitionsDetails_exhibition_endDate',
 
     'notes':'exhibitionsDetails_exhibitions_notes-note', 
     'organiser-organiser':'exhibitionsDetails_organizingInstitutions-name', # relation

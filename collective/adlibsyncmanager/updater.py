@@ -190,6 +190,8 @@ class Updater:
         type_field = ""
         if IRelationList.providedBy(field):
             type_field = "relation"
+        elif IDatetime.providedBy(field):
+            type_field = "date"
         elif "ListField" in str(field):
             type_field = "datagridfield"
             self.datagrids[field.__name__] = False
@@ -203,8 +205,6 @@ class Updater:
             type_field = "text"
         elif IRichText.providedBy(field):
             type_field = "text"
-        elif IDatetime.providedBy(field):
-            type_field = "date"
         else:
             type_field = "unknown"
 
@@ -576,6 +576,7 @@ class Updater:
 
     def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname, grid=False):
 
+        print xml_path, field_type
         # Text
         if field_type == "text":
             return self.api.trim_white_spaces(xml_element.text)
@@ -591,8 +592,9 @@ class Updater:
                     new_date = "%s-%s-%s" %(year, "01", "01")
                     datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
                     value = datetime_value
+                    pass
             else:
-                return current_value
+                return ""
 
         elif field_type == "choice":
             if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
@@ -801,7 +803,7 @@ class Updater:
                     self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                     self.log("URL: %s" %(str(plone_object.absolute_url())))
                     self.fix_all_choices(plone_object)
-                    plone_object.reindexObject()
+                    #plone_object.reindexObject()
                     print str(plone_object.absolute_url())
                 else:
                     self.error("Object is corrupt.")
