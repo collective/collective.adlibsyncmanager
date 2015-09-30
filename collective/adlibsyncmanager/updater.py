@@ -589,7 +589,7 @@ class Updater:
                 except:
                     year = field_val
                     new_date = "%s-%s-%s" %(year, "01", "01")
-                    datetime_value = datetime.datetime.strptime(field_val, new_date)
+                    datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
                     value = datetime_value
             else:
                 return current_value
