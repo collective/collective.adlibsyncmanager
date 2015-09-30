@@ -14,7 +14,7 @@ from z3c.relationfield.schema import RelationList
 from zope.component import getUtility
 from plone.dexterity.interfaces import IDexterityFTI
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import IChoice, ITextLine, IList, IText, IBool
+from zope.schema.interfaces import IChoice, ITextLine, IList, IText, IBool, IDatetime
 from collective.z3cform.datagridfield.interfaces import IDataGridField
 from plone.app.textfield.interfaces import IRichText
 from collective.object.utils.interfaces import IListField
@@ -51,18 +51,24 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
+# Objects
 #from .core import CORE
 #from .utils import *
 
+# Books
 #from .book_utils import book_subfields_types as subfields_types
 #from .book_utils import book_relation_types as relation_types
-
 #from .book_core import BOOK_CORE as CORE
 
+# Persons
+#from .persons_utils import persons_subfields_types as subfields_types
+#from .persons_utils import persons_relation_types as relation_types
+#from .persons_core import PERSON_CORE as CORE
 
-from .persons_utils import persons_subfields_types as subfields_types
-from .persons_utils import persons_relation_types as relation_types
-from .persons_core import PERSON_CORE as CORE
+# Exhibitions
+from .exhibition_utils import exhibition_subfields_types as subfields_types
+from .exhibition_utils import exhibition_relation_types as relation_types
+from .exhibition_core import EXHIBITION_CORE as CORE
 
 
 DEBUG = False
@@ -74,7 +80,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.portal_type = "PersonOrInstitution"
+        self.portal_type = "Exhibition"
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
@@ -197,6 +203,8 @@ class Updater:
             type_field = "text"
         elif IRichText.providedBy(field):
             type_field = "text"
+        elif IDatetime.providedBy(field):
+            type_field = "date"
         else:
             type_field = "unknown"
 
@@ -221,6 +229,8 @@ class Updater:
             type_field = " "
         elif IBool.providedBy(field):
             type_field = False
+        elif IDatetime.providedBy(field):
+            type_field = datetime.datetime.today()
         else:
             type_field = " "
 
@@ -570,6 +580,17 @@ class Updater:
         if field_type == "text":
             return self.api.trim_white_spaces(xml_element.text)
 
+        elif field_type == "date":
+            field_val = self.api.trim_white_spaces(xml_element.text)
+            try: 
+                datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
+                value = datetime_value
+            except:
+                year = field_val
+                new_date = "%s-%s-%s" %(year, "01", "01")
+                datetime_value = datetime.datetime.strptime(field_val, new_date)
+                value = datetime_value
+
         elif field_type == "choice":
             if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 value = self.api.trim_white_spaces(xml_element.text)
@@ -728,12 +749,13 @@ class Updater:
         # Special case for books
         self.dev = False
 
-        collection_path = "/Users/AG/Projects/collectie-zm/person.xml"
+        collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
         collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
         book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
         persons_total = "/var/www/zm-collectie-v2/xml/persons.xml"
+        exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v2/logs/error_%s.log" %(str(timestamp))
@@ -742,13 +764,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
         
         
-        collection_xml = persons_total
+        collection_xml = exhibitions_total
         if self.dev:
-            collection_xml = persons_total
+            collection_xml = exhibitions_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = persons_total
+            collection_xml = exhibitions_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -760,7 +782,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()

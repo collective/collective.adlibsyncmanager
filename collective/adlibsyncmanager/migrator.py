@@ -8537,6 +8537,8 @@ class APIMigrator:
             result = self.find_object(self.all_objects, object_number, True)
         elif portal_type == "PersonOrInstitution":
             result = self.find_person_by_priref(self.all_persons, object_number)
+        elif portal_type == "Exhibition":
+            result = self.find_exhibition_by_priref(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
