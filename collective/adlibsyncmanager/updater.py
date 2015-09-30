@@ -576,7 +576,6 @@ class Updater:
 
     def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname, grid=False):
 
-        print xml_path, field_type
         # Text
         if field_type == "text":
             return self.api.trim_white_spaces(xml_element.text)
@@ -584,15 +583,18 @@ class Updater:
         elif field_type == "date":
             field_val = self.api.trim_white_spaces(xml_element.text)
             if field_val:
-                try: 
-                    datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
-                    value = datetime_value
+                try:
+                    try: 
+                        datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
+                        value = datetime_value
+                    except:
+                        year = field_val
+                        new_date = "%s-%s-%s" %(year, "01", "01")
+                        datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
+                        value = datetime_value
+                        pass
                 except:
-                    year = field_val
-                    new_date = "%s-%s-%s" %(year, "01", "01")
-                    datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
-                    value = datetime_value
-                    pass
+                    return ""
             else:
                 return ""
 
