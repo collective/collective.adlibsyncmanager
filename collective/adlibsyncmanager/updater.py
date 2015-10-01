@@ -848,7 +848,9 @@ class Updater:
                     else:
                         self.error("Object is corrupt.")
 
-            transaction.commit()
+
+                    transaction.commit()
+                    break
 
             else:
                 self.error("Cannot find object number in XML record")
