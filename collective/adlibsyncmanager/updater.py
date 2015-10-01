@@ -632,7 +632,6 @@ class Updater:
         elif field_type == "list":
             if current_value != None:
                 new_value = self.api.trim_white_spaces(xml_element.text)
-                current_value = []
                 if new_value not in current_value:
                     current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
