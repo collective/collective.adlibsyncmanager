@@ -836,11 +836,13 @@ class Updater:
                         print str(plone_object.absolute_url())
                     else:
                         self.error("Object is corrupt.")
+
+                    transaction.commit()
                     break
             else:
                 self.error("Cannot find object number in XML record")
 
-            transaction.commit()
+            
 
         self.api.success = True
 
