@@ -6,6 +6,7 @@ PERSON_CORE = {
     'priref':'priref',
 	'name':'nameInformation_name_name', 
 	'institution_code':'nameInformation_name_institutionNumber',
+    'name.type':'',
     'name.type-text':'nameInformation_name_nameType-type', 
     'name.note':'nameInformation_name_nameNotes',
 
@@ -54,8 +55,11 @@ PERSON_CORE = {
     'language':'',
     'language-term':'personDetails_nationality_language',
     
+    'occupation':'',
     'occupation-term':'personDetails_ocupation_ocupation', 
+    'school_style':'',
     'school_style-term':'personDetails_ocupation_schoolStyle',
+
 
     'place_activity-term':'personDetails_placeOfActivity-place', 
     'place_activity.date.start':'personDetails_placeOfActivity-dateStart',
@@ -75,6 +79,7 @@ PERSON_CORE = {
     'supplier.letter.ser.renew':'',
     'supplier.letter.ser.order.claim':'',
 
+    'Edit':'',
     'Edit-edit.name':'',
     'Edit-edit.time':'',
     'Edit-edit.date':'',
@@ -83,6 +88,6 @@ PERSON_CORE = {
     'input.source':'',
     'input.date':'',
     'input.name':'',
-    'input.time': ''
+    'input.time': '',
 
 }
