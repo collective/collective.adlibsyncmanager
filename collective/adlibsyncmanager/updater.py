@@ -783,7 +783,7 @@ class Updater:
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
 
         timestamp = datetime.datetime.today().isoformat()
-        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s_%s.log" %(self.portal_type. str(timestamp))
+        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
