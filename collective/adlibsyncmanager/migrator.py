@@ -8714,8 +8714,8 @@ class APIMigrator:
                 obj = brain.getObject()
                 if hasattr(obj, 'nameInformation_name_name'):
                     if obj.nameInformation_name_name == name:
-                        relations.append[obj]
-                        
+                        relations.append(obj)
+
         return relations
 
     def find_bibliotheek_by_priref(self, priref):
