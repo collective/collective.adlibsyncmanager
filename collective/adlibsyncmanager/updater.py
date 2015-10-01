@@ -92,6 +92,7 @@ class Updater:
         self.dev = False
 
     def log(self, text=""):
+        return
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
@@ -250,7 +251,13 @@ class Updater:
         
         if objecttype_relatedto == "PersonOrInstitution":
             if by_name:
+                print "by name"
+                print priref
+
                 persons = self.api.find_person_by_name(priref)
+                print "persons"
+                print persons
+
                 if len(persons) > 1:
                     person = persons[0]
                     other_persons = [str(p.priref) for p in persons[1:]]
@@ -260,6 +267,9 @@ class Updater:
                         person = persons[0]
                     else:
                         person = None
+
+                print "person"
+                print person
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
             
@@ -838,15 +848,14 @@ class Updater:
                     else:
                         self.error("Object is corrupt.")
 
-                    transaction.commit()
-                    break
+            transaction.commit()
 
             else:
                 self.error("Cannot find object number in XML record")
 
-            
+        
 
-        for xml_record in list(self.collection)[:100]:
+        """for xml_record in list(self.collection)[:100]:
             curr += 1
            
             transaction.begin()
@@ -869,7 +878,7 @@ class Updater:
             else:
                 self.error("Cannot find object number in XML record")
 
-            transaction.commit()
+            transaction.commit()"""
 
         self.api.success = True
 

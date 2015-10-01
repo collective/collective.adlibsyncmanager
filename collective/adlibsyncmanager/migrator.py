@@ -8707,7 +8707,7 @@ class APIMigrator:
 
         return None
 
-    def find_person_by_name(self, name, updater=None):
+    def find_person_by_name(self, name):
         relations = []
         if name:
             for brain in self.all_persons:
