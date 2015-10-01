@@ -783,7 +783,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = True
+        self.dev = False
 
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
@@ -801,13 +801,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
         
-        collection_xml = person_single
+        collection_xml = persons_total
         if self.dev:
-            collection_xml = person_single
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = person_single
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
