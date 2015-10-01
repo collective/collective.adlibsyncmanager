@@ -8558,6 +8558,13 @@ class APIMigrator:
                 item = results[0]
                 obj = item.getObject()
                 return obj
+            else:
+                lower_number = object_number.lower()
+                results = self.portal_catalog(identification_identification_objectNumber=lower_number, portal_type="Object")
+                if results:
+                    item = results[0]
+                    obj = item.getObject()
+                    return obj
 
         return None
 
