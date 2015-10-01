@@ -641,7 +641,10 @@ class Updater:
                 if new_value not in current_value:
                     if new_value:
                         #current_value.append(self.api.trim_white_spaces(xml_element.text))
-                        self.error("%s - %s - Not possible to add value to the vocabulary: %s" %(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii', 'ignore'))))
+                        if "group-term" in xml_path:
+                            self.error("%s - %s - Not possible to add value to the vocabulary: %s" %(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii', 'ignore'))))
+                        else:
+                            current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
                     try:
                         self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
