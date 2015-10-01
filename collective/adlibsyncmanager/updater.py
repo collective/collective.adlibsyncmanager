@@ -633,6 +633,8 @@ class Updater:
             if current_value != None:
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 if new_value not in current_value:
+                    if 'group-term' in xml_path:
+                        print self.api.trim_white_spaces(xml_element.text)
                     current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
                     try:
@@ -835,32 +837,6 @@ class Updater:
                     else:
                         self.error("Object is corrupt.")
                     break
-            else:
-                self.error("Cannot find object number in XML record")
-
-            transaction.commit()
-
-        # First 100
-        for xml_record in list(self.collection)[:100]:
-            curr += 1
-           
-            transaction.begin()
-            object_number = self.get_object_number(xml_record, self.portal_type)
-            if object_number:
-                #if object_number.lower() == "m81-006":
-                plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                if plone_object:
-                    self.object_number = str(object_number)
-                    self.generate_field_types()
-                    self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    self.update(xml_record, plone_object, object_number)
-                    self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    self.log("URL: %s" %(str(plone_object.absolute_url())))
-                    self.fix_all_choices(plone_object)
-                    plone_object.reindexObject()
-                    print str(plone_object.absolute_url())
-                else:
-                    self.error("Object is corrupt.")
             else:
                 self.error("Cannot find object number in XML record")
 
