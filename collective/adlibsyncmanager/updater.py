@@ -838,10 +838,38 @@ class Updater:
                     else:
                         self.error("Object is corrupt.")
 
+                    transaction.commit()
+                    break
+
             else:
                 self.error("Cannot find object number in XML record")
 
-        transaction.commit()
+            
+
+        for xml_record in list(self.collection)[:100]:
+            curr += 1
+           
+            transaction.begin()
+            object_number = self.get_object_number(xml_record, self.portal_type)
+            if object_number:
+                plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                if plone_object:
+                    self.object_number = str(object_number)
+                    self.generate_field_types()
+                    self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                    self.update(xml_record, plone_object, object_number)
+                    self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                    self.log("URL: %s" %(str(plone_object.absolute_url())))
+                    self.fix_all_choices(plone_object)
+                    plone_object.reindexObject()
+                    print str(plone_object.absolute_url())
+                else:
+                    self.error("Object is corrupt.")
+
+            else:
+                self.error("Cannot find object number in XML record")
+
+            transaction.commit()
 
         self.api.success = True
 
