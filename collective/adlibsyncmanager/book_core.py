@@ -3,8 +3,9 @@
 
 BOOK_CORE = {
 	"priref":"priref",
-	# Title and author
-	'lead_word':'titleAuthorImprintCollation_titleAuthor_article', 
+	
+    # Title and author
+    'lead_word':'titleAuthorImprintCollation_titleAuthor_article', 
 	'title':'titleAuthorImprintCollation_titleAuthor_title-title',
     'statement_of_responsibility':'titleAuthorImprintCollation_titleAuthor_statementOfRespsib', 
     'author.name':'titleAuthorImprintCollation_titleAuthor_author-authors',
@@ -30,7 +31,6 @@ BOOK_CORE = {
     'accompanying_material':'titleAuthorImprintCollation_collation_accompanyingMaterial-term',
 
     # Series, Notes ISBN
-
     'series.article':'seriesNotesISBN_series_series-seriesArticle',
     'series.title-series':'seriesNotesISBN_series_series-series',
     'series.number':'seriesNotesISBN_series_series-seriesNo',
@@ -86,6 +86,9 @@ BOOK_CORE = {
  	'use':'relations_analyticalCataloguing_partOf',
     'used_for':'relations_analyticalCataloguing_consistsOf',
     'object.object_number':'relations_museumObjects-objectNo',
+
+    # Ignore fields from relation with object
+    
 
     # Free fields
     'free_field.date':'freeFieldsAndNumbers_freeFields-date',

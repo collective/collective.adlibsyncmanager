@@ -92,7 +92,7 @@ class Updater:
         self.dev = False
 
     def log(self, text=""):
-        return
+
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
@@ -251,13 +251,7 @@ class Updater:
         
         if objecttype_relatedto == "PersonOrInstitution":
             if by_name:
-                print "by name"
-                print priref
-
                 persons = self.api.find_person_by_name(priref)
-                print "persons"
-                print persons
-
                 if len(persons) > 1:
                     person = persons[0]
                     other_persons = [str(p.priref) for p in persons[1:]]
@@ -267,9 +261,6 @@ class Updater:
                         person = persons[0]
                     else:
                         person = None
-
-                print "person"
-                print person
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
             
@@ -644,9 +635,11 @@ class Updater:
         # Vocabulary
         elif field_type == "list":
             if current_value != None:
+                current_value = []
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 if new_value not in current_value:
-                    current_value.append(self.api.trim_white_spaces(xml_element.text))
+                    if new_value:
+                        current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
                     try:
                         self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
@@ -658,7 +651,7 @@ class Updater:
 
         elif field_type == "gridlist":
             new_value = self.api.trim_white_spaces(xml_element.text)
-            if new_value != None:
+            if new_value != None and new_value != "":
                 value = [new_value]
             else:
                 value = []
@@ -790,7 +783,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = False
+        self.dev = True
 
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
@@ -808,13 +801,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
         
-        collection_xml = persons_total
+        collection_xml = person_single
         if self.dev:
-            collection_xml = persons_total
+            collection_xml = person_single
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = persons_total
+            collection_xml = person_single
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -827,7 +820,7 @@ class Updater:
         limit = 0
 
         # Special case
-        for xml_record in list(self.collection):
+        """for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
@@ -853,11 +846,11 @@ class Updater:
                     break
 
             else:
-                self.error("Cannot find object number in XML record")
+                self.error("Cannot find object number in XML record")"""
 
         
 
-        """for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
@@ -880,7 +873,7 @@ class Updater:
             else:
                 self.error("Cannot find object number in XML record")
 
-            transaction.commit()"""
+            transaction.commit()
 
         self.api.success = True
 
