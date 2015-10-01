@@ -25,6 +25,13 @@ EXHIBITION_CORE = {
     'documentation-documentation.page_reference':'documentation_documentation-pageMark',
     'documentation-documentation.notes':'documentation_documentation-notes',
 
-    'object.object_number':'linkedObjects_linkedObjects-objectNumber' # relation
+    'object.object_number':'linkedObjects_linkedObjects-objectNumber', # relation
+
+    'Edit-edit.name':'',
+    'Edit-edit.time':'',
+    'Edit-edit.date':'',
+    'Edit-edit.source':'',
+    'Edit-edit.notes':'',
+    'input.source':''
 }
 

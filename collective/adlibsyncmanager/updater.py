@@ -56,9 +56,9 @@ from zope import component
 #from .utils import *
 
 # Books
-from .book_utils import book_subfields_types as subfields_types
-from .book_utils import book_relation_types as relation_types
-from .book_core import BOOK_CORE as CORE
+#from .book_utils import book_subfields_types as subfields_types
+#from .book_utils import book_relation_types as relation_types
+#from .book_core import BOOK_CORE as CORE
 
 # Persons
 #from .persons_utils import persons_subfields_types as subfields_types
@@ -66,9 +66,9 @@ from .book_core import BOOK_CORE as CORE
 #from .persons_core import PERSON_CORE as CORE
 
 # Exhibitions
-#from .exhibition_utils import exhibition_subfields_types as subfields_types
-#from .exhibition_utils import exhibition_relation_types as relation_types
-#from .exhibition_core import EXHIBITION_CORE as CORE
+from .exhibition_utils import exhibition_subfields_types as subfields_types
+from .exhibition_utils import exhibition_relation_types as relation_types
+from .exhibition_core import EXHIBITION_CORE as CORE
 
 
 DEBUG = False
@@ -80,7 +80,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.portal_type = "Book"
+        self.portal_type = "Exhibition"
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
@@ -789,13 +789,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
         
-        collection_xml = book_total
+        collection_xml = exhibitions_total
         if self.dev:
-            collection_xml = book_total
+            collection_xml = exhibitions_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = book_total
+            collection_xml = exhibitions_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         

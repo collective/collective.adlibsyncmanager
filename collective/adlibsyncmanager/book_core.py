@@ -83,8 +83,8 @@ BOOK_CORE = {
 
  	# Relations
  	'volume':'relations_volume', 
- 	#'':'relations_analyticalCataloguing_partOf',
-    #'':'relations_analyticalCataloguing_consistsOf',
+ 	'use':'relations_analyticalCataloguing_partOf',
+    'used_for':'relations_analyticalCataloguing_consistsOf',
     'object.object_number':'relations_museumObjects-objectNo',
 
     # Free fields
@@ -99,7 +99,8 @@ BOOK_CORE = {
     # Copies and shelf marks
     'shelf_mark':'copiesAndShelfMarks_defaultShelfMark',
     'copy.number-copy_number':'copiesAndShelfMarks_copyDetails-copyNumber',
-    #'copy.number-loan_status-text','copiesAndShelfMarks_copyDetails-availability',
+    'copy.number-loan_status-text':'', # availability, do not show
+    'copy.status-text': '',
     'copy.number-shelfmark':'copiesAndShelfMarks_copyDetails-shelfMark',
     'loan_category-term':'copiesAndShelfMarks_copyDetails-loanCategory',
     'site-term':'copiesAndShelfMarks_copyDetails-site',
