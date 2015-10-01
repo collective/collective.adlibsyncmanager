@@ -277,7 +277,7 @@ class Updater:
                 try:
                     self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
                 except:
-                    pass
+                    self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
 
         elif objecttype_relatedto == "Object":
             obj = self.api.find_object(self.api.all_objects, priref)
