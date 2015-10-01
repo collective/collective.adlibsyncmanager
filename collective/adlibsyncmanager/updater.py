@@ -815,7 +815,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        """for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -844,10 +844,9 @@ class Updater:
                     self.error("Cannot find object number/priref in XML record")
             except Exception, e:
                 self.error("An unknown exception ocurred. %s" %(str(e)))
-                raise
+                raise"""
 
-        # Special case
-        for xml_record in list(self.collection)[200:300]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -876,8 +875,6 @@ class Updater:
             except Exception, e:
                 self.error("An unknown exception ocurred. %s" %(str(e)))
                 raise
-
-        
 
         self.api.success = True
 
