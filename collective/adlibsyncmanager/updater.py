@@ -868,10 +868,12 @@ class Updater:
                     else:
                         self.error("Object is not found on Plone.")
 
-                    transaction.commit()
+                    
 
                 else:
                     self.error("Cannot find object number/priref in XML record")
+
+                transaction.commit()
             except Exception, e:
                 self.error("An unknown exception ocurred. %s" %(str(e)))
                 raise
