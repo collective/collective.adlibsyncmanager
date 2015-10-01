@@ -820,7 +820,7 @@ class Updater:
         limit = 0
 
         # Special case
-        """for xml_record in list(self.collection):
+        for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
@@ -846,11 +846,11 @@ class Updater:
                     break
 
             else:
-                self.error("Cannot find object number in XML record")"""
+                self.error("Cannot find object number in XML record")
 
         
 
-        for xml_record in list(self.collection):
+        """for xml_record in list(self.collection):
             curr += 1
            
             transaction.begin()
@@ -873,7 +873,7 @@ class Updater:
             else:
                 self.error("Cannot find object number in XML record")
 
-            transaction.commit()
+            transaction.commit()"""
 
         self.api.success = True
 
