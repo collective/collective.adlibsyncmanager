@@ -8689,7 +8689,7 @@ class APIMigrator:
                         return obj
         return None
 
-    def find_person_by_priref(self, all_persons, priref):
+    def find_person_by_priref(self, all_persons, priref, updater=None):
         """if priref:
             for brain in all_persons:
                 obj = brain.getObject()
@@ -8707,15 +8707,16 @@ class APIMigrator:
 
         return None
 
-    def find_person_by_name(self, name):
+    def find_person_by_name(self, name, updater=None):
+        relations = []
         if name:
             for brain in self.all_persons:
                 obj = brain.getObject()
                 if hasattr(obj, 'nameInformation_name_name'):
                     if obj.nameInformation_name_name == name:
-                        return obj
-
-        return None
+                        relations.append[obj]
+                        
+        return relations
 
     def find_bibliotheek_by_priref(self, priref):
         if priref:

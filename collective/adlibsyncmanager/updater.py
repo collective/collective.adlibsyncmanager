@@ -250,9 +250,16 @@ class Updater:
         
         if objecttype_relatedto == "PersonOrInstitution":
             if by_name:
-                person = self.api.find_person_by_name(priref)
+                persons = self.api.find_person_by_name(priref)
+                if len(persons) > 1:
+                    person = persons[0]
+                    other_persons = [str(p.priref) for p in persons[1:]]
+                    self.error("%s - %s - Relation with more than one result - First result: %s - Other results: %s" %(str(self.object_number), str(self.xml_path), person.priref, str(other_persons)))
+                else:
+                    person = persons
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
+            
             if person:
                 if not grid:
                     intids = component.getUtility(IIntIds)
@@ -807,6 +814,34 @@ class Updater:
         curr = 0
         limit = 0
 
+        # Special case
+        for xml_record in list(self.collection):
+            curr += 1
+           
+            transaction.begin()
+            object_number = self.get_object_number(xml_record, self.portal_type)
+            if object_number:
+                if object_number.lower() == "1819":
+                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    if plone_object:
+                        self.object_number = str(object_number)
+                        self.generate_field_types()
+                        self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.update(xml_record, plone_object, object_number)
+                        self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log("URL: %s" %(str(plone_object.absolute_url())))
+                        self.fix_all_choices(plone_object)
+                        plone_object.reindexObject()
+                        print str(plone_object.absolute_url())
+                    else:
+                        self.error("Object is corrupt.")
+                    break
+            else:
+                self.error("Cannot find object number in XML record")
+
+            transaction.commit()
+
+        # First 100
         for xml_record in list(self.collection)[:100]:
             curr += 1
            
