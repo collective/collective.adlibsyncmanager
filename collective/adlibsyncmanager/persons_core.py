@@ -62,6 +62,27 @@ PERSON_CORE = {
     'place_activity.date.end':'personDetails_placeOfActivity-dateEnd',
     'place_activity.notes':'personDetails_placeOfActivity-notes',
 
-    'biography':'personDetails_biographies-biography'
+    'biography':'personDetails_biographies-biography',
+
+    # Suplier - ignore this field
+    'supplier.language':'',
+    'supplier.currency':'',
+    'supplier.letter.ser.order':'',
+    'supplier.letter.ser.cancel':'',
+    'supplier.letter.ser.claim':'',
+    'supplier.letter.ser.order':'',
+    'supplier.letter.ser.cancel':'',
+    'supplier.letter.ser.renew':'',
+    'supplier.letter.ser.order.claim':'',
+
+    'Edit-edit.name':'',
+    'Edit-edit.time':'',
+    'Edit-edit.date':'',
+    'Edit-edit.source':'',
+    'Edit-edit.notes':'',
+    'input.source':'',
+    'input.date':'',
+    'input.name':'',
+    'input.time': ''
 
 }
