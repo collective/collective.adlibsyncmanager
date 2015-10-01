@@ -468,7 +468,7 @@ class Updater:
 
             return True
         except:
-            pass
+            return True
 
 
     def get_object_number(self, xml_record, portal_type=""):
@@ -478,6 +478,7 @@ class Updater:
         else:
             if xml_record.find('object_number') != None:
                 return xml_record.find('object_number').text
+
         return None
     
     def get_xml_path(self, xml_element):
@@ -492,6 +493,7 @@ class Updater:
     def check_dictionary(self, xml_path):
         if xml_path in CORE.keys():
             return CORE[xml_path]
+
         return False
 
     def escape_empty_string(self, old_value):
@@ -609,8 +611,8 @@ class Updater:
                         new_date = "%s-%s-%s" %(year, "01", "01")
                         datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
                         value = datetime_value
-                        pass
                 except:
+                    self.error("Unable to create datetime value.", str(self.object_number), str(xml_path), str(field_val))
                     return ""
             else:
                 return ""
@@ -635,11 +637,11 @@ class Updater:
         # Vocabulary
         elif field_type == "list":
             if current_value != None:
-                current_value = []
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 if new_value not in current_value:
                     if new_value:
-                        current_value.append(self.api.trim_white_spaces(xml_element.text))
+                        #current_value.append(self.api.trim_white_spaces(xml_element.text))
+                        self.error("%s - %s - Not possible to add value to the vocabulary: %s" %(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii', 'ignore'))))
                 else:
                     try:
                         self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
@@ -702,7 +704,6 @@ class Updater:
             value = None
             self.error("Unkown type of field for fieldname %s" %(plone_fieldname))
 
-        
         return value
 
     def setattribute(self, plone_object, plone_fieldname, field_type, value):
@@ -720,24 +721,20 @@ class Updater:
         if plone_fieldname:
             plone_fieldroot = plone_fieldname.split('-')[0]
             has_field = hasattr(plone_object, plone_fieldroot)
+
             if has_field:
                 current_value = getattr(plone_object, plone_fieldroot)
                 field_type = self.get_type_of_field(plone_fieldroot)
-
                 value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
-
                 self.setattribute(plone_object, plone_fieldroot, field_type, value)
             else:
                 self.error("Field not available in Plone object: %s" %(plone_fieldroot))
 
-        elif len(xml_element.getchildren()):
-            pass
+        elif plone_fieldname == "":
+            self.warning("%s - %s - Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
 
         else:
-            object_number = object_number
-            value = getattr(xml_element, 'text', 'No value')
-            if plone_fieldname != "":
-                self.error("", object_number, xml_path, value)
+            self.error("%s - %s - Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
 
         return True
 
@@ -801,13 +798,13 @@ class Updater:
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
         
-        collection_xml = persons_total
+        collection_xml = person_single
         if self.dev:
-            collection_xml = persons_total
+            collection_xml = person_single
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = persons_total
+            collection_xml = person_single
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
@@ -819,14 +816,45 @@ class Updater:
         curr = 0
         limit = 0
 
-        # Special case
         for xml_record in list(self.collection):
-            curr += 1
-           
-            transaction.begin()
-            object_number = self.get_object_number(xml_record, self.portal_type)
-            if object_number:
-                if object_number.lower() == "1819":
+            try:
+                curr += 1
+                transaction.begin()
+                object_number = self.get_object_number(xml_record, self.portal_type)
+                if object_number:
+                    if object_number.lower() == "1819":
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                        if plone_object:
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.update(xml_record, plone_object, object_number)
+                            self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log("URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
+                            
+                            plone_object.reindexObject()
+                            print str(plone_object.absolute_url())
+                        else:
+                            self.error("Object is not found on Plone.")
+
+                        transaction.commit()
+                        break
+
+                else:
+                    self.error("Cannot find object number/priref in XML record")
+            except Exception, e:
+                self.error("An unknown exception ocurred. %s" %(str(e)))
+                raise
+
+        # Special case
+        for xml_record in list(self.collection)[200:300]:
+            try:
+                curr += 1
+                transaction.begin()
+                object_number = self.get_object_number(xml_record, self.portal_type)
+                if object_number:
+                    #if object_number.lower() == "1819":
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
                         self.object_number = str(object_number)
@@ -836,44 +864,21 @@ class Updater:
                         self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log("URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
+                        
                         plone_object.reindexObject()
                         print str(plone_object.absolute_url())
                     else:
-                        self.error("Object is corrupt.")
-
+                        self.error("Object is not found on Plone.")
 
                     transaction.commit()
-                    break
 
-            else:
-                self.error("Cannot find object number in XML record")
+                else:
+                    self.error("Cannot find object number/priref in XML record")
+            except Exception, e:
+                self.error("An unknown exception ocurred. %s" %(str(e)))
+                raise
 
         
-
-        """for xml_record in list(self.collection):
-            curr += 1
-           
-            transaction.begin()
-            object_number = self.get_object_number(xml_record, self.portal_type)
-            if object_number:
-                plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                if plone_object:
-                    self.object_number = str(object_number)
-                    self.generate_field_types()
-                    self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    self.update(xml_record, plone_object, object_number)
-                    self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                    self.log("URL: %s" %(str(plone_object.absolute_url())))
-                    self.fix_all_choices(plone_object)
-                    plone_object.reindexObject()
-                    print str(plone_object.absolute_url())
-                else:
-                    self.error("Object is corrupt.")
-
-            else:
-                self.error("Cannot find object number in XML record")
-
-            transaction.commit()"""
 
         self.api.success = True
 
