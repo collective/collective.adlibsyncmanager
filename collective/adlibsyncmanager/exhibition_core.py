@@ -6,6 +6,7 @@ EXHIBITION_CORE = {
 	'priref': 'priref',
 	'date.start': 'start_date', 
 	'date.end':'end_date', 
+    'title': 'title',
 	'alternativetitle-title.alternative':'exhibitionsDetails_exhibition_altTitle-title',
 	'alternativetitle-title.alternative.type':'exhibitionsDetails_exhibition_altTitle-type',
 
