@@ -256,7 +256,10 @@ class Updater:
                     other_persons = [str(p.priref) for p in persons[1:]]
                     self.error("%s - %s - Relation with more than one result - First result: %s - Other results: %s" %(str(self.object_number), str(self.xml_path), person.priref, str(other_persons)))
                 else:
-                    person = persons
+                    if persons:
+                        person = persons[0]
+                    else:
+                        person = None
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
             
@@ -633,8 +636,6 @@ class Updater:
             if current_value != None:
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 if new_value not in current_value:
-                    if 'group-term' in xml_path:
-                        print self.api.trim_white_spaces(xml_element.text)
                     current_value.append(self.api.trim_white_spaces(xml_element.text))
                 else:
                     try:
