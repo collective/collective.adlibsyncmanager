@@ -56,14 +56,14 @@ from zope import component
 #from .utils import *
 
 # Books
-#from .book_utils import book_subfields_types as subfields_types
-#from .book_utils import book_relation_types as relation_types
-#from .book_core import BOOK_CORE as CORE
+from .book_utils import book_subfields_types as subfields_types
+from .book_utils import book_relation_types as relation_types
+from .book_core import BOOK_CORE as CORE
 
 # Persons
-from .persons_utils import persons_subfields_types as subfields_types
-from .persons_utils import persons_relation_types as relation_types
-from .persons_core import PERSON_CORE as CORE
+#from .persons_utils import persons_subfields_types as subfields_types
+#from .persons_utils import persons_relation_types as relation_types
+#from .persons_core import PERSON_CORE as CORE
 
 # Exhibitions
 #from .exhibition_utils import exhibition_subfields_types as subfields_types
@@ -80,7 +80,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.portal_type = "PersonOrInstitution"
+        self.portal_type = "Book"
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
@@ -267,7 +267,10 @@ class Updater:
                     current_value = []
                     current_value.append(person)
             else:
-                self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+                try:
+                    self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
+                except:
+                    pass
 
         elif objecttype_relatedto == "Object":
             obj = self.api.find_object(self.api.all_objects, priref)
@@ -780,19 +783,19 @@ class Updater:
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
 
         timestamp = datetime.datetime.today().isoformat()
-        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s.log" %(str(timestamp))
-        self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s.log" %(str(timestamp))
-        self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s.log" %(str(timestamp))
-        self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s.log" %(str(timestamp))
+        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s_%s.log" %(self.portal_type. str(timestamp))
+        self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
+        self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
+        self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
         
-        collection_xml = persons_total
+        collection_xml = book_total
         if self.dev:
-            collection_xml = persons_total
+            collection_xml = book_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
         else:
-            collection_xml = persons_total
+            collection_xml = book_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
         
