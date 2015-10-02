@@ -898,9 +898,9 @@ class Updater:
                         self.fix_all_choices(plone_object)
                         plone_object.reindexObject()
                     else:
-                        self.error(" __ __Object is not found on Plone with priref/object_number %s."%(str(object_number)))
+                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
                 else:
-                    self.error(" __ __Cannot find object number/priref in XML record")
+                    self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
                 transaction.commit()
             except Exception, e:
