@@ -263,7 +263,7 @@ class Updater:
                         person = persons[0]
                     else:
                         person = None
-                        self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with name '%s'" %(str(self.object_number), str(self.xml_path), str(priref)))
+                        self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with name '%s'" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
                         return current_value
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
