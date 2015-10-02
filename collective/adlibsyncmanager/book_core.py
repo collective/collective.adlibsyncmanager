@@ -165,13 +165,14 @@ BOOK_CORE = {
     'copy.serial.holding':'',
     'copy.serial.missing':'',
     'copy.shelfmark': '',
-    'copy.number-location.notes':'', 
+    'copy.number-location.note':'', 
     'copy.number-L1':'', 
     'copy.number-la':'', 
-
+    'source.volume':'',
+    
     # Conference
     'conference':'',
-
+    'parent':'',
     'Edit':'',
     'Edit-edit.name':'',
     'Edit-edit.time':'',
