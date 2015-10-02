@@ -4,7 +4,7 @@
 BOOK_CORE = {
     
 	"priref":"priref",
-    "record":"",
+    "record":'',
 	
     # Title and author
     'lead_word':'titleAuthorImprintCollation_titleAuthor_article', 

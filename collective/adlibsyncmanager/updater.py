@@ -115,12 +115,12 @@ class Updater:
                 list_log = final_log.split('__')
 
                 if ".lref" not in text and "Warning" not in text and "STATUS" not in text:
-                    wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
-                    wr.writerow(list_log)
+                    
+                    self.error_wr.writerow(list_log)
 
                 if "Warning" in text or ".lref" in text or "STATUS" in text:
                     wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
-                    wr.writerow(list_log)
+                    self.warning_wr.writerow(list_log)
 
             else:
                 pass
@@ -762,7 +762,7 @@ class Updater:
                 self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
             else:
                 if xml_path == "":
-                    xml_path = "record"
+                    xml_path = xml_element.tag
                     self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
                 else:
                     self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
@@ -842,6 +842,10 @@ class Updater:
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
             self.status_log_file = open(self.status_path, "w+")
+
+        self.error_wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
+        self.warning_wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
+        self.status_wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
         
 
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
