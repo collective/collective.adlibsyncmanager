@@ -9,7 +9,6 @@ Supposed to be run as an external method trhough the boilerplate script migratio
 from Acquisition import aq_parent, aq_inner
 from z3c.relationfield.interfaces import IRelationList
 from plone import api
-import csv
 
 from z3c.relationfield.schema import RelationList
 from zope.component import getUtility
@@ -52,24 +51,31 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
-# Objects
-#from .core import CORE
-#from .utils import *
 
-# Books
-#from .book_utils import book_subfields_types as subfields_types
-#from .book_utils import book_relation_types as relation_types
-#from .book_core import BOOK_CORE as CORE
+PORTAL_TYPE = "PersonOrInstitution"
+
+# Objects
+if PORTAL_TYPE == "Object":
+    from .core import CORE
+    from .utils import *
+
+elif PORTAL_TYPE == "Book":
+    # Books
+    from .book_utils import book_subfields_types as subfields_types
+    from .book_utils import book_relation_types as relation_types
+    from .book_core import BOOK_CORE as CORE
 
 # Persons
-from .persons_utils import persons_subfields_types as subfields_types
-from .persons_utils import persons_relation_types as relation_types
-from .persons_core import PERSON_CORE as CORE
+elif PORTAL_TYPE == "PersonOrInstitution":
+    from .persons_utils import persons_subfields_types as subfields_types
+    from .persons_utils import persons_relation_types as relation_types
+    from .persons_core import PERSON_CORE as CORE
 
-# Exhibitions
-#from .exhibition_utils import exhibition_subfields_types as subfields_types
-#from .exhibition_utils import exhibition_relation_types as relation_types
-#from .exhibition_core import EXHIBITION_CORE as CORE
+elif PORTAL_TYPE == "Exhibition":
+    # Exhibitions
+    from .exhibition_utils import exhibition_subfields_types as subfields_types
+    from .exhibition_utils import exhibition_relation_types as relation_types
+    from .exhibition_core import EXHIBITION_CORE as CORE
 
 
 DEBUG = False
@@ -93,6 +99,7 @@ class Updater:
         self.dev = False
 
     def log(self, text=""):
+
         if DEBUG:
             if text:
                 timestamp = datetime.datetime.today().isoformat()
@@ -105,18 +112,16 @@ class Updater:
                 timestamp = datetime.datetime.today().isoformat()
                 text = text.encode('ascii', 'ignore')
 
-                final_log = "[%s]__%s" %(str(timestamp), str(text).replace('\n', ''))
-                list_log = final_log.split('__')
+                final_log = "[%s] %s" %(str(timestamp), str(text))
+                print final_log
 
                 if ".lref" not in text and "Warning" not in text and "STATUS" not in text:
-                    wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
-                    wr.writerow(list_log)
+                    self.error_log_file.write(final_log+"\n")
 
                 if "Warning" in text or ".lref" in text or "STATUS" in text:
-                    wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
-                    wr.writerow(list_log)
+                    self.warning_log_file.write(final_log+"\n")
 
-            else:
+            else: # do not log
                 pass
 
     def get_field(self, fieldname):
@@ -124,20 +129,6 @@ class Updater:
             if name == fieldname:
                 return field
         return None
-
-    def fix_all_choices(self, obj):
-        for name, field in self.fields:
-            field_type = self.get_fieldtype_by_schema(field)
-            if field_type == "datagridfield":
-                obj_field = getattr(obj, name, None)
-                if obj_field:
-                    for line in obj_field:
-                        for key in line:
-                            if line[key] == "_No value":
-                                line[key] = "No value"
-                    setattr(obj, name, obj_field)
-        return True
-
 
     def get_subfield(self, plone_fieldname):
         split_name = plone_fieldname.split('-')
@@ -155,9 +146,7 @@ class Updater:
 
         return gridfield_schema
 
-
     def get_objecttype_relation(self, plone_fieldname):
-
         relation_type = ""
         for name, field in self.fields:
             if name == plone_fieldname:
@@ -257,14 +246,12 @@ class Updater:
                 if len(persons) > 1:
                     person = persons[0]
                     other_persons = [str(p.priref) for p in persons[1:]]
-                    self.error("%s__%s__Relation with more than one result. First result: %s Other results: %s" %(str(self.object_number), str(self.xml_path), person.priref, str(other_persons)))
+                    self.error("%s - %s - Relation with more than one result - First result: %s - Other results: %s" %(str(self.object_number), str(self.xml_path), person.priref, str(other_persons)))
                 else:
                     if persons:
                         person = persons[0]
                     else:
                         person = None
-                        self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with name '%s'" %(str(self.object_number), str(self.xml_path), str(priref)))
-                        return current_value
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
             
@@ -275,7 +262,7 @@ class Updater:
                     relation_value = RelationValue(person_id)
                     for relation in current_value:
                         if relation.to_object.id == person.id:
-                            self.warning("%s__%s__PersonOrInstitution Relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s - %s - PersonOrInstitution Relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
@@ -283,9 +270,9 @@ class Updater:
                     current_value.append(person)
             else:
                 try:
-                    self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                    self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
                 except:
-                    self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with priref %s" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
+                    self.error("%s - %s - Cannot find PersonOrInstitution %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
 
         elif objecttype_relatedto == "Object":
             obj = self.api.find_object(self.api.all_objects, priref)
@@ -296,14 +283,14 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.identification_identification_objectNumber == priref:
-                            self.warning("%s_%s_Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s - %s - Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type Object with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Object %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Exhibition":
             obj = self.api.find_exhibition_by_priref(priref)
@@ -314,14 +301,14 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.id == obj.id:
-                            self.warning("%s_%s_Exhibition relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s - %s - Exhibition relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type Exhibition with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Exhibition %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Archive":
             obj = self.api.find_archive_by_priref(priref)
@@ -332,7 +319,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.id == obj.id:
-                            self.warning("%s_%s_Archive relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s - %s - Archive relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
 
                     current_value.append(relation_value)
@@ -340,7 +327,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type Archive priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Archive %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "treatment":
             obj = self.api.find_treatment_by_treatmentnumber(priref)
@@ -355,7 +342,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type Treatment with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Treatment %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "OutgoingLoan":
             obj = self.api.find_outgoingloan_by_priref(priref)
@@ -370,7 +357,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type OutgoingLoan with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Outgoing Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "IncomingLoan":
             obj = self.api.find_incomingloan_by_priref(priref)
@@ -385,7 +372,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type IncomingLoan with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Incoming Loan %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Article":
             obj = self.api.find_article_by_priref(priref)
@@ -400,7 +387,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type Article priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Article %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "Bibliotheek":
             obj = self.api.find_bibliotheek_by_priref(priref)
@@ -415,7 +402,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with an item from the Bibliotheek with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find Bibliotheek object %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "ObjectEntry":
             obj = self.api.find_objectentry_by_priref(priref)
@@ -430,7 +417,7 @@ class Updater:
                     current_value = []
                     current_value.append(obj)
             else:
-                self.error("%s__%s__Cannot create relation with content type ObjectEntry with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                self.error("%s - %s - Cannot find ObjectEntry %s in Plone" %(str(self.object_number), str(self.xml_path), str(priref)))
                 
 
         else:
@@ -443,16 +430,14 @@ class Updater:
         if text:
             timestamp = datetime.datetime.today().isoformat()
             text = text.encode('ascii', 'ignore')
-            final_log = "[%s]__%s" %(str(timestamp), str(text))
-            list_log = final_log.split('__')
-            wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
-            wr.writerow(list_log)
+            final_log = "[%s] %s" %(str(timestamp), str(text))
+            self.status_log_file.write(final_log+'\n')
         else:
             return True
 
     def error(self, text="", object_number="", xml_path="", value=""):
         if text:
-            self.log("%s%s" %("[ ERROR ]__", text))
+            self.log("%s%s" %("[ ERROR ] ", text))
         else:
             if not object_number:
                 object_numnber = "None"
@@ -462,28 +447,25 @@ class Updater:
                 value = "No value"
             value.encode('ascii', 'ignore')
 
-            self.log("%s%s__%s__%s" %("[ ERROR ]__", object_number, xml_path, value))
+            self.log("%s%s - %s - %s" %("[ ERROR ] ", object_number, xml_path, value))
 
         return True
 
     def warning(self, text="", object_number="", xml_path="", value=""):
-        try:
-            if text:
-                self.log("%s%s" %("[ Warning ]__", text))
-            else:
-                if not object_number:
-                    object_numnber = "None"
-                if not xml_path:
-                    xml_path = "No path"
-                if not value:
-                    value = "No value"
-                value.encode('ascii', 'ignore')
+        if text:
+            self.log("%s%s" %("[ Warning ] ", text))
+        else:
+            if not object_number:
+                object_numnber = "None"
+            if not xml_path:
+                xml_path = "No path"
+            if not value:
+                value = "No value"
+            value.encode('ascii', 'ignore')
 
-                self.log("%s%s__%s__%s" %("[ Warning ]__", object_number, xml_path, value))
+            self.log("%s%s - %s - %s" %("[ Warning ] ", object_number, xml_path, value))
 
-            return True
-        except:
-            return True
+        return True
 
 
     def get_object_number(self, xml_record, portal_type=""):
@@ -511,17 +493,8 @@ class Updater:
 
         return False
 
-    def escape_empty_string(self, old_value):
-        value = old_value
-        for val in value:
-            for k in val:
-                if val[k] == " ":
-                    val[k] = ""
-
-        return value
-
     def update_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
-        default_test = " "
+        default_test = ""
         if subfield_type == "choice":
             if xml_element.get('option') != "" and xml_element.get('option') != None:
                 if len(xml_element.findall('text')) > 0:
@@ -539,13 +512,13 @@ class Updater:
                 found = True
                 if line[subfield] == default_test or line[subfield] == [] or line[subfield] == 'No value' or line[subfield] == False:
                     if line[subfield] == 'No value' and value == "":
-                        line[subfield] = '_No value'
+                        line[subfield] = 'No value'
                     else:
                         if subfield_type == "choice":
                             if type(value) != list:
                                 line[subfield] = value
                             else:
-                                line[subfield] = '_No value'
+                                line[subfield] = 'No value'
                         else:
                             line[subfield] = value
                     
@@ -557,7 +530,7 @@ class Updater:
 
         if not updated:
             if subfield_type == "choice" and type(value) == list:
-                value = "_No value"
+                value = "No value"
             val = self.create_dictionary(subfield, current_value, value, xml_element, subfield_type, plone_fieldroot)
             return val
         else:
@@ -646,7 +619,7 @@ class Updater:
                 else:
                     return "No value"
 
-            else: # rest of the languages_keep the same value
+            else: # rest of the languages
                 return current_value
         
         # Vocabulary
@@ -658,10 +631,10 @@ class Updater:
                         if new_value:
                             current_value.append(self.api.trim_white_spaces(xml_element.text))
                 except:
-                    self.error("%s__%s__Not possible to add value to the vocabulary %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
+                    self.error("%s - %s - Not possible to add value to the vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
                 else:
                     try:
-                        self.warning("%s__%s__Value already in vocabulary %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
+                        self.warning("%s - %s - Value already in vocabulary - %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
                     except:
                         pass
                 value = current_value
@@ -748,17 +721,10 @@ class Updater:
                 self.error("Field not available in Plone object: %s" %(plone_fieldroot))
 
         elif plone_fieldname == "":
-            self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
+            self.warning("%s - %s - Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
 
         else:
-            if ".lref" in xml_path:
-                self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
-            else:
-                if xml_path == "":
-                    xml_path = "record"
-                    self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
-                else:
-                    self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
+            self.error("%s - %s - Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
 
         return True
 
@@ -772,39 +738,9 @@ class Updater:
 
         return True
 
-    def update_indexes(self, targets=[]):
-        
-        self.log("Updating indexes")
-
-        for target in targets:
-            if target == "Object":
-                for obj in self.api.all_objects:
-                    item = obj.getObject()
-                    item.reindexObject(idxs=["identification_identification_objectNumber"])
-
-                self.log("Objects updated!")
-
-            elif target == "PersonOrInstitution":
-                for obj in self.api.all_persons:
-                    item = obj.getObject()
-                    item.reindexObject(idxs=["person_priref"])
-
-                self.log("PersonOrInstitution objects updated!")
-
-            elif target == "Archive":
-                for obj in self.api.all_archives:
-                    item = obj.getObject()
-                    item.reindexObject(idxs=["archive_priref"])
-
-                self.log("Archive objects updated!")
-            else:    
-                self.log("Type %s does not have a method to be reindexed!" %(target))
-
-        return True
-
     def start(self):
 
-        self.dev = False
+        self.dev = True
 
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
@@ -816,16 +752,16 @@ class Updater:
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
 
         timestamp = datetime.datetime.today().isoformat()
-        self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
-        self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.error_path = "/var/www/zm-collectie-v2/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
+        self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
         
-        self.warning_path = "/var/www/zm-collectie-v3/logs/warning_%s_%s.csv" %(self.portal_type, str(timestamp))
-        self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
+        self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
-        self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
-        self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.log" %(self.portal_type, str(timestamp))
+        self.status_path = "/var/www/zm-collectie-v2/logs/status_%s_%s.log" %(self.portal_type, str(timestamp))
         
-        collection_xml = persons_total
+        collection_xml = person_single
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -853,11 +789,10 @@ class Updater:
                     if plone_object:
                         self.object_number = str(object_number)
                         self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log_status("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                         self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
+                        self.log_status("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log_status("URL: %s" %(str(plone_object.absolute_url())))
                         plone_object.reindexObject()
                     else:
                         self.error("Object is not found on Plone.")
@@ -870,7 +805,6 @@ class Updater:
                 raise
 
         self.api.success = True
-
         return True
 
 

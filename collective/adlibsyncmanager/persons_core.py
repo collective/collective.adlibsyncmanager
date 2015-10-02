@@ -60,7 +60,7 @@ PERSON_CORE = {
     'school_style':'',
     'school_style-term':'personDetails_ocupation_schoolStyle',
 
-
+    'place_activity': '',
     'place_activity-term':'personDetails_placeOfActivity-place', 
     'place_activity.date.start':'personDetails_placeOfActivity-dateStart',
     'place_activity.date.end':'personDetails_placeOfActivity-dateEnd',
