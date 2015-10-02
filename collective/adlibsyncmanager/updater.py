@@ -445,6 +445,7 @@ class Updater:
             text = text.encode('ascii', 'ignore')
             final_log = "[%s]__%s" %(str(timestamp), str(text))
             list_log = final_log.split('__')
+            print final_log.replace('__', ' ')
             wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
             wr.writerow(list_log)
         else:
