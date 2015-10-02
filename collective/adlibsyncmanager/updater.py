@@ -814,7 +814,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = True
+        self.dev = False
 
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
