@@ -844,6 +844,35 @@ class Updater:
         curr = 0
         limit = 0
 
+        for xml_record in list(self.collection):
+            try:
+                curr += 1
+                transaction.begin()
+                object_number = self.get_object_number(xml_record, self.portal_type)
+                if object_number:
+                    if object_number == "1819":
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                        if plone_object:
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
+                            plone_object.reindexObject()
+                        else:
+                            self.error("Object is not found on Plone.")
+
+                         transaction.commit()
+                         break
+                else:
+                    self.error("Cannot find object number/priref in XML record")
+               
+            except Exception, e:
+                self.error("An unknown exception ocurred. %s" %(str(e)))
+                raise
+
         for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1

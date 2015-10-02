@@ -55,6 +55,7 @@ from zope import component
 PORTAL_TYPE = "PersonOrInstitution"
 
 # Objects
+
 if PORTAL_TYPE == "Object":
     from .core import CORE
     from .utils import *
@@ -129,6 +130,8 @@ class Updater:
             if name == fieldname:
                 return field
         return None
+
+
 
     def get_subfield(self, plone_fieldname):
         split_name = plone_fieldname.split('-')
@@ -425,15 +428,6 @@ class Updater:
 
 
         return current_value
-
-    def log_status(self, text):
-        if text:
-            timestamp = datetime.datetime.today().isoformat()
-            text = text.encode('ascii', 'ignore')
-            final_log = "[%s] %s" %(str(timestamp), str(text))
-            self.status_log_file.write(final_log+'\n')
-        else:
-            return True
 
     def error(self, text="", object_number="", xml_path="", value=""):
         if text:
@@ -740,7 +734,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = True
+        self.dev = False
 
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
@@ -754,22 +748,19 @@ class Updater:
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v2/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.log" %(self.portal_type, str(timestamp))
-        
         self.warning_path = "/var/www/zm-collectie-v2/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.log" %(self.portal_type, str(timestamp))
         
-        self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.log" %(self.portal_type, str(timestamp))
-        self.status_path = "/var/www/zm-collectie-v2/logs/status_%s_%s.log" %(self.portal_type, str(timestamp))
         
-        collection_xml = person_single
+        collection_xml = persons_total
         if self.dev:
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
-            self.status_log_file = open(self.status_path_dev, "w+")
         else:
+            collection_xml = persons_total
             self.error_log_file = open(self.error_path, "w+")
             self.warning_log_file = open(self.warning_path, "w+")
-            self.status_log_file = open(self.status_path, "w+")
         
 
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
@@ -789,11 +780,12 @@ class Updater:
                     if plone_object:
                         self.object_number = str(object_number)
                         self.generate_field_types()
-                        self.log_status("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log("! STATUS ! Updating [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
                         self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("URL: %s" %(str(plone_object.absolute_url())))
+                        self.log("! STATUS ! Updated [%s] - %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log("URL: %s" %(str(plone_object.absolute_url())))
                         plone_object.reindexObject()
+                        print str(plone_object.absolute_url())
                     else:
                         self.error("Object is not found on Plone.")
                 else:
