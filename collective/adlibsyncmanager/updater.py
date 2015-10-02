@@ -52,24 +52,30 @@ from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
-# Objects
-#from .core import CORE
-#from .utils import *
 
-# Books
-#from .book_utils import book_subfields_types as subfields_types
-#from .book_utils import book_relation_types as relation_types
-#from .book_core import BOOK_CORE as CORE
+PORTAL_TYPE = "Book"
 
-# Persons
-from .persons_utils import persons_subfields_types as subfields_types
-from .persons_utils import persons_relation_types as relation_types
-from .persons_core import PERSON_CORE as CORE
+if PORTAL_TYPE == "Object":
+    from .core import CORE
+    from .utils import *
 
-# Exhibitions
-#from .exhibition_utils import exhibition_subfields_types as subfields_types
-#from .exhibition_utils import exhibition_relation_types as relation_types
-#from .exhibition_core import EXHIBITION_CORE as CORE
+elif PORTAL_TYPE == "Book":
+    # Books
+    from .book_utils import book_subfields_types as subfields_types
+    from .book_utils import book_relation_types as relation_types
+    from .book_core import BOOK_CORE as CORE
+
+elif PORTAL_TYPE == "PersonOrInstitution":
+    # Persons
+    from .persons_utils import persons_subfields_types as subfields_types
+    from .persons_utils import persons_relation_types as relation_types
+    from .persons_core import PERSON_CORE as CORE
+
+elif PORTAL_TYPE == "Exhibition":
+    # Exhibitions
+    from .exhibition_utils import exhibition_subfields_types as subfields_types
+    from .exhibition_utils import exhibition_relation_types as relation_types
+    from .exhibition_core import EXHIBITION_CORE as CORE
 
 
 DEBUG = False
@@ -81,7 +87,7 @@ class Updater:
         self.api = APIMigrator
         self.collection = []
         self.xml_root = []
-        self.portal_type = "PersonOrInstitution"
+        self.portal_type = PORTAL_TYPE
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
@@ -805,8 +811,9 @@ class Updater:
 
     def start(self):
 
-        self.dev = False
+        self.dev = True
 
+        book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
@@ -826,7 +833,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = persons_total
+        collection_xml = book_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -844,7 +851,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        """for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -871,10 +878,10 @@ class Updater:
                
             except Exception, e:
                 self.error("An unknown exception ocurred. %s" %(str(e)))
-                raise
+                raise"""
 
-        curr = 200
-        for xml_record in list(self.collection)[200:300]:
+        curr = 0
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -891,14 +898,14 @@ class Updater:
                         self.fix_all_choices(plone_object)
                         plone_object.reindexObject()
                     else:
-                        self.error("Object is not found on Plone.")
+                        self.error(" __ __Object is not found on Plone with priref/object_number %s."%(str(object_number)))
                 else:
-                    self.error("Cannot find object number/priref in XML record")
+                    self.error(" __ __Cannot find object number/priref in XML record")
 
                 transaction.commit()
             except Exception, e:
-                self.error("An unknown exception ocurred. %s" %(str(e)))
-                raise
+                self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
+                pass
 
         self.api.success = True
 

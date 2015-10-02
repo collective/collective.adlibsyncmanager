@@ -3,6 +3,7 @@
 
 PERSON_CORE = {
 	# Name information tab
+    'record':'',
     'priref':'priref',
 	'name':'nameInformation_name_name', 
 	'institution_code':'nameInformation_name_institutionNumber',
