@@ -811,7 +811,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = True
+        self.dev = False
 
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
@@ -881,7 +881,7 @@ class Updater:
                 raise"""
 
         curr = 0
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
