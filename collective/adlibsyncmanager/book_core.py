@@ -4,7 +4,6 @@
 BOOK_CORE = {
     
 	"priref":"priref",
-    "record":'',
 	
     # Title and author
     'lead_word':'titleAuthorImprintCollation_titleAuthor_article', 
@@ -75,6 +74,7 @@ BOOK_CORE = {
 
     'person.keyword.type':'',
     'person.keyword.type-text':'abstractAndSubjectTerms_personKeywordType-personKeywordType',
+    'keyword.contents-term.code':'', 
     'person.keyword.name':'abstractAndSubjectTerms_personKeywordType-name',
     'person.keyword.name-name':'',
     'person.keyword.role':'',
@@ -165,6 +165,9 @@ BOOK_CORE = {
     'copy.serial.holding':'',
     'copy.serial.missing':'',
     'copy.shelfmark': '',
+    'copy.number-location.notes':'', 
+    'copy.number-L1':'', 
+    'copy.number-la':'', 
 
     # Conference
     'conference':'',
@@ -179,5 +182,7 @@ BOOK_CORE = {
     'input.date':'',
     'input.name':'',
     'input.time': '',
+    'input.notes':'',
+    'record':''
 }
 

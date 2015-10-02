@@ -763,7 +763,10 @@ class Updater:
             else:
                 if xml_path == "":
                     xml_path = xml_element.tag
-                    self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
+                    if xml_path == "record":
+                        self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
+                    else:
+                        self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
                 else:
                     self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
 
@@ -811,7 +814,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = False
+        self.dev = True
 
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
@@ -900,7 +903,7 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
-                        plone_object.reindexObject()
+                        #plone_object.reindexObject()
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
                 else:
