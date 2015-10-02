@@ -166,6 +166,9 @@ BOOK_CORE = {
     'copy.serial.missing':'',
     'copy.shelfmark': '',
 
+    # Conference
+    'conference':'',
+
     'Edit':'',
     'Edit-edit.name':'',
     'Edit-edit.time':'',
