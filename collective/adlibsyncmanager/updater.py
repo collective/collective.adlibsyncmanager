@@ -873,8 +873,8 @@ class Updater:
                 self.error("An unknown exception ocurred. %s" %(str(e)))
                 raise
 
-        curr = 0
-        for xml_record in list(self.collection)[:100]:
+        curr = 200
+        for xml_record in list(self.collection)[200:300]:
             try:
                 curr += 1
                 transaction.begin()
