@@ -53,7 +53,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Book"
+PORTAL_TYPE = "PersonOrInstitution"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -651,7 +651,7 @@ class Updater:
                 if len(xml_element.findall('text')) > 0:
                     return current_value
                 else:
-                    return "No value"
+                    return "_No value"
 
             else: # rest of the languages_keep the same value
                 return current_value
@@ -817,7 +817,8 @@ class Updater:
         self.dev = False
 
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
-        person_single = "/Users/AG/Projects/collectie-zm/single-persons-v2.xml"
+        person_single = "/Users/AG/Projects/collectie-zm/single-persons-v3.xml"
+        person_single_prod = "/var/www/zm-collectie-v2/xml/person.xml"
         collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
         collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
         test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
@@ -836,7 +837,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = book_total
+        collection_xml = person_single_prod
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -888,7 +889,7 @@ class Updater:
                 raise"""
 
         curr = 0
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -903,7 +904,7 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
-                        #plone_object.reindexObject()
+                        plone_object.reindexObject()
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
                 else:

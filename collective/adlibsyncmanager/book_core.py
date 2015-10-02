@@ -4,7 +4,9 @@
 BOOK_CORE = {
     
 	"priref":"priref",
-	
+	"internal_link_priref":"",
+    "internal_link_title":"",
+
     # Title and author
     'lead_word':'titleAuthorImprintCollation_titleAuthor_article', 
 	'title':'titleAuthorImprintCollation_titleAuthor_title-title',
@@ -169,7 +171,7 @@ BOOK_CORE = {
     'copy.number-L1':'', 
     'copy.number-la':'', 
     'source.volume':'',
-    
+
     # Conference
     'conference':'',
     'parent':'',
