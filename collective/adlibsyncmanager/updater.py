@@ -864,8 +864,8 @@ class Updater:
                         else:
                             self.error("Object is not found on Plone.")
 
-                         transaction.commit()
-                         break
+                        transaction.commit()
+                        break
                 else:
                     self.error("Cannot find object number/priref in XML record")
                
