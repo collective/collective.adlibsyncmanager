@@ -28,11 +28,12 @@ INCOMMING_CORE = {
     'request-out.template-text':'loanRequest_requestLetter_template',
     'request-out.confirm.date':'loanRequest_requestConfirmation_date',
     'request-out.confirm.reference':'loanRequest_requestConfirmation_digRef',
+    'request-out.confirm.confirmed': 'loanRequest_requestConfirmation_dateCheck'
 
     # Objects
     'object-in':'',
     'object-in-object-in.object_number':'objects_object-objectNumber', # relation
-    'object-in-object-in.status':'objects_object-status',
+    'object-in-object-in.status':'',
     'object-in-object-in.status-text':'objects_object-status', # choice
     'object-in-object-in.status.date':'objects_object-date',
     'object-in-object-in.authoriser_lender':'objects_object-authoriserInternal', # relation
@@ -53,6 +54,7 @@ INCOMMING_CORE = {
     'contract.reference':'contract_contractLetter_digRef',
     'contract.returned.date':'contract_contractLetter_signedReturned',
     'contract.returned.reference':'contract_contractLetter_signedReturnedDigRef',
+    'contract.returned': 'contract_contractLetter_returned'
     
     'extension.request.end_date':'contract_extension-request_newEndDate', 
     'extension.request.template': 'contract_extension-request_template',
