@@ -53,7 +53,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "IncomingLoan"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -76,6 +76,12 @@ elif PORTAL_TYPE == "Exhibition":
     from .exhibition_utils import exhibition_subfields_types as subfields_types
     from .exhibition_utils import exhibition_relation_types as relation_types
     from .exhibition_core import EXHIBITION_CORE as CORE
+
+elif PORTAL_TYPE == "IncomingLoan":
+    # Exhibitions
+    from .loans_utils import incomming_subfields_types as subfields_types
+    from .loans_utils import incomming_relation_types as relation_types
+    from .loans_core import INCOMMING_CORE as CORE
 
 
 DEBUG = False
@@ -141,6 +147,8 @@ class Updater:
                         for key in line:
                             if line[key] == "_No value":
                                 line[key] = "No value"
+                            elif line[key] == ['no value']:
+                                line[key] = []
                     setattr(obj, name, obj_field)
         return True
 
@@ -180,7 +188,7 @@ class Updater:
             if plone_fieldname in relation_types:
                 return relation_types[plone_fieldname], True
 
-        self.error("Cannot find type of relation")
+        self.error("%s__%s__Cannot find type of relation" %(self.object_number, self.xml_path))
         return None, None
 
     def get_type_of_subfield(self, plone_fieldname):
@@ -495,8 +503,11 @@ class Updater:
 
     def get_object_number(self, xml_record, portal_type=""):
         if portal_type != "Object":
-            if xml_record.find('priref') != None:
-                return xml_record.find('priref').text
+            if portal_type == "IncomingLoan":
+                return xml_record.find('loan_number').text
+            else:
+                if xml_record.find('priref') != None:
+                    return xml_record.find('priref').text
         else:
             if xml_record.find('object_number') != None:
                 return xml_record.find('object_number').text
@@ -554,7 +565,10 @@ class Updater:
                             else:
                                 line[subfield] = '_No value'
                         else:
-                            line[subfield] = value
+                            if (subfield_type == "gridlist" and value == []) or (subfield_type == "gridlist" and value == ""):
+                                line[subfield] = ['no value']
+                            else:
+                                line[subfield] = value
                     
                     updated = True
                     break
@@ -565,6 +579,8 @@ class Updater:
         if not updated:
             if subfield_type == "choice" and type(value) == list:
                 value = "_No value"
+            if (subfield_type == "gridlist" and value == []) or (subfield_type == "gridlist" and value == ['no value']):
+                value = ['no value']
             val = self.create_dictionary(subfield, current_value, value, xml_element, subfield_type, plone_fieldroot)
             return val
         else:
@@ -816,6 +832,7 @@ class Updater:
 
         self.dev = False
 
+        incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v3.xml"
         person_single_prod = "/var/www/zm-collectie-v2/xml/person.xml"
@@ -826,6 +843,7 @@ class Updater:
         book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
         persons_total = "/var/www/zm-collectie-v2/xml/persons.xml"
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
+        incoming_total = "/var/www/zm-collectie-v2/xml/incomingloans.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -837,7 +855,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = person_single_prod
+        collection_xml = incoming_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -858,35 +876,6 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-
-        """for xml_record in list(self.collection):
-            try:
-                curr += 1
-                transaction.begin()
-                object_number = self.get_object_number(xml_record, self.portal_type)
-                if object_number:
-                    if object_number == "1819":
-                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                        if plone_object:
-                            self.object_number = str(object_number)
-                            self.generate_field_types()
-                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.update(xml_record, plone_object, object_number)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            self.fix_all_choices(plone_object)
-                            plone_object.reindexObject()
-                        else:
-                            self.error("Object is not found on Plone.")
-
-                        transaction.commit()
-                        break
-                else:
-                    self.error("Cannot find object number/priref in XML record")
-               
-            except Exception, e:
-                self.error("An unknown exception ocurred. %s" %(str(e)))
-                raise"""
 
         curr = 0
         for xml_record in list(self.collection):
@@ -913,7 +902,7 @@ class Updater:
                 transaction.commit()
             except Exception, e:
                 self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
-                pass
+                raise
 
         self.api.success = True
 
