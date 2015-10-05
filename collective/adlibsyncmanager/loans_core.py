@@ -29,6 +29,8 @@ INCOMMING_CORE = {
     'request-out.confirm.date':'loanRequest_requestConfirmation_date',
     'request-out.confirm.reference':'loanRequest_requestConfirmation_digRef',
     'request-out.confirm.confirmed': 'loanRequest_requestConfirmation_dateCheck'
+    'requester':'',
+    'requester-name':'',
 
     # Objects
     'object-in':'',
@@ -55,7 +57,7 @@ INCOMMING_CORE = {
     'contract.returned.date':'contract_contractLetter_signedReturned',
     'contract.returned.reference':'contract_contractLetter_signedReturnedDigRef',
     'contract.returned': 'contract_contractLetter_returned'
-    
+
     'extension.request.end_date':'contract_extension-request_newEndDate', 
     'extension.request.template': 'contract_extension-request_template',
     'extension.request.template-text':'contract_extension-request_template', # choice
@@ -157,6 +159,8 @@ INCOMMING_CORE = {
     'Despatch-despatch.shipper':'',
     'Despatch-despatch.courier':'',
     'Despatch-despatch.date_expected':'',
+
+    'old.name.contact':''
 }
 
 
