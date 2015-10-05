@@ -56,7 +56,7 @@ INCOMMING_CORE = {
     'contract.reference':'contract_contractLetter_digRef',
     'contract.returned.date':'contract_contractLetter_signedReturned',
     'contract.returned.reference':'contract_contractLetter_signedReturnedDigRef',
-    'contract.returned': 'contract_contractLetter_returned'
+    'contract.returned': 'contract_contractLetter_returned',
 
     'extension.request.end_date':'contract_extension-request_newEndDate', 
     'extension.request.template': 'contract_extension-request_template',
