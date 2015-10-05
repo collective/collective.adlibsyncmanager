@@ -7,8 +7,11 @@ INCOMMING_CORE = {
 	'record':'',
 	'loan_number':'loanRequest_general_loanNumber',
 	'lender':'loanRequest_general_lender',
+	'lender-name':'',
     'lender.contact':'loanRequest_general_contact',
+    'lender.contact-name':'',
     'co-ordinator':'loanRequest_internalCoordination_coordinator',
+    'co-ordinator-name':'',
 
     'administration_concerned':'loanRequest_internalCoordination_administrConcerned-name', # grid
 
@@ -21,12 +24,13 @@ INCOMMING_CORE = {
     'exhibition':'loanRequest_requestDetails_exhibition',
     'request.date':'loanRequest_requestLetter_date',
     'request-out.reference':'loanRequest_requestLetter_digRef',
-    'request-out.template':'loanRequest_requestLetter_template',
+    'request-out.template':'',
+    'request-out.template-text':'loanRequest_requestLetter_template',
     'request-out.confirm.date':'loanRequest_requestConfirmation_date',
     'request-out.confirm.reference':'loanRequest_requestConfirmation_digRef',
 
     # Objects
-
+    'object-in':'',
     'object-in-object-in.object_number':'objects_object-objectNumber', # relation
     'object-in-object-in.status':'objects_object-status',
     'object-in-object-in.status-text':'objects_object-status', # choice
@@ -37,6 +41,8 @@ INCOMMING_CORE = {
     'object-in-object-in.insurance_value':'objects_object-miscellaneous_insurancevalue',
     'object-in-object-in.insurance.value.curren':'objects_object-miscellaneous_currency', #gridfield
     'object-in-object-in.notes':'objects_object-miscellaneous_notes',
+    'loan_status':'',
+    'loan_status-text':'',
 
     # Contract
     'contract.period.start':'contract_contractDetails_requestPeriodFrom',
@@ -65,6 +71,7 @@ INCOMMING_CORE = {
     'Entry-entry.number':'transport_entryDetails-entryNumber', # grid
 
     # Correspondence
+    'Correspondence':'',
     'Correspondence-correspondence.reference':'correspondence_otherCorrespondence-digitalReference',
     'Correspondence-correspondence.date':'correspondence_otherCorrespondence-date',
     'Correspondence-correspondence.sender':'correspondence_otherCorrespondence-sender',
@@ -73,8 +80,81 @@ INCOMMING_CORE = {
 
     # Related loans
 	'Relatedloan-related_loan':'relatedLoans_relatedLoans-loanNumber',
-	'Relatedloan-related_loan.relation_type':'relatedLoans_relatedLoans-relationType'
+	'Relatedloan-related_loan.relation_type':'relatedLoans_relatedLoans-relationType',
 
+	# Ignored fields
+	'Edit':'',
+    'Edit-edit.name':'',
+    'Edit-edit.time':'',
+    'Edit-edit.date':'',
+    'Edit-edit.source':'',
+    'Edit-edit.notes':'',
+    'input.source':'',
+    'input.date':'',
+    'input.name':'',
+    'input.time': '',
+
+    'datasets.collect':'',
+    'datasets.collect-text':'',
+
+    'object-in-object-in.authoriser_lender-name':'',
+    'object-in-object-in.object_number-object_number':'',
+    'object-in-object-in.object_number-object_name':'',
+    'object-in-object-in.object_number-title':'',
+    'object-in-object-in.object_number-creator':'',
+    'object-in-object-in.object_name':'',
+    'object-in-object-in.title':'',
+    'object-in-object-in.creator':'',
+
+    'exhibition':'',
+    'exhibition-title':'',
+    'exhibition-date.start':'',
+    'exhibition-date.end':'',
+    'exhibition.date.start':'',
+	'exhibition.date.end':'',
+	'exhibition.duration':'',
+
+
+    'Relatedloan':'',
+
+    'Entry':'',
+    'Entry-entry.number':'',
+    'Entry-entry.number-transport_number':'',
+    'Entry-entry.number-transport_method':'',
+    'Entry-entry.number-number_of_objects.stated':'',
+    'Entry-entry.number-number_of_objects.sent':'',
+    'Entry-entry.number-entry_date.expected':'',
+    'Entry-entry.number-entry_date':'',
+    'Entry-entry.number-shipper':'',
+    'Entry-entry.number-courier':'',
+    'Entry-entry.number_stated':'',
+    'Entry-entry.number_sent':'',
+    'Entry-entry.date_expected':'',
+    'Entry-entry.date':'',
+    'Entry-entry.method':'',
+    'Entry-entry.shipper':'',
+    'Entry-entry.courier':'',
+
+    'Despatch':'',
+    'Despatch-despatch.number':'',
+    'Despatch-despatch.number-number_of_objects.sent':'',
+    'Despatch-despatch.number-despatch_date':'',
+    'Despatch-despatch.number-delivery_date':'',
+    'Despatch-despatch.number-delivered':'',
+    'Despatch-despatch.number-delivered.date':'',
+    'Despatch-despatch.number-transport_method':'',
+    'Despatch-despatch.number-shipper':'',
+    'Despatch-despatch.number-courier':'',
+    'Despatch-despatch.number-despatch_date.expected':'',
+    'Despatch-despatch.number_of_objects':'',
+    'Despatch-despatch.date':'',
+    'Despatch-despatch.delivered':'',
+    'Despatch-despatch.delivered.date':'',
+    'Despatch-despatch.delivery_date':'',
+    'Despatch-despatch.method':'',
+    'Despatch-despatch.shipper':'',
+    'Despatch-despatch.courier':'',
+    'Despatch-despatch.date_expected':'',
 }
 
 

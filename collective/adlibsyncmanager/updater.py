@@ -264,6 +264,8 @@ class Updater:
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False, by_name=False):
         if grid:
             current_value = []
+
+        current_value = []
         
         if objecttype_relatedto == "PersonOrInstitution":
             if by_name:
