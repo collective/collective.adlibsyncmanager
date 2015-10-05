@@ -28,7 +28,7 @@ INCOMMING_CORE = {
     'request-out.template-text':'loanRequest_requestLetter_template',
     'request-out.confirm.date':'loanRequest_requestConfirmation_date',
     'request-out.confirm.reference':'loanRequest_requestConfirmation_digRef',
-    'request-out.confirm.confirmed': 'loanRequest_requestConfirmation_dateCheck'
+    'request-out.confirm.confirmed': 'loanRequest_requestConfirmation_dateCheck',
     'requester':'',
     'requester-name':'',
 
