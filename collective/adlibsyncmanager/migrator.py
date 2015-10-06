@@ -8549,27 +8549,27 @@ class APIMigrator:
         return result
  
     def find_object(self, all_objects, object_number, is_book=False):
-        if is_book:
-            results = self.portal_catalog(portal_type="Book")
-            if results:
-                for res in results:
-                    obj = res.getObject()
-                    if object_number == obj.priref:
-                        return obj
-        else:
-            results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
-            if results:
-                item = results[0]
-                obj = item.getObject()
-                return obj
+        if object_number:
+            if is_book:
+                results = self.portal_catalog(portal_type="Book")
+                if results:
+                    for res in results:
+                        obj = res.getObject()
+                        if object_number == obj.priref:
+                            return obj
             else:
-                lower_number = object_number.lower()
-                results = self.portal_catalog(identification_identification_objectNumber=lower_number, portal_type="Object")
+                results = self.portal_catalog(identification_identification_objectNumber=object_number, portal_type="Object")
                 if results:
                     item = results[0]
                     obj = item.getObject()
                     return obj
-
+                else:
+                    lower_number = object_number.lower()
+                    results = self.portal_catalog(identification_identification_objectNumber=lower_number, portal_type="Object")
+                    if results:
+                        item = results[0]
+                        obj = item.getObject()
+                        return obj
         return None
 
     def rel_exists(self, rel_obj, related_objects):
