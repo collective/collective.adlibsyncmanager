@@ -912,7 +912,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = True
+        self.dev = False
 
         outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
         incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
@@ -940,7 +940,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibition_single
+        collection_xml = exhibitions_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
