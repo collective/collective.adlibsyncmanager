@@ -912,7 +912,7 @@ class Updater:
 
     def start(self):
 
-        self.dev = False
+        self.dev = True
 
         outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
         incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
@@ -940,7 +940,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibitions_total
+        collection_xml = exhibition_single
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -963,7 +963,7 @@ class Updater:
         limit = 0
 
         curr = 0
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -988,7 +988,7 @@ class Updater:
                 transaction.commit()
             except Exception, e:
                 self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
-                raise
+                pass
 
         self.api.success = True
 

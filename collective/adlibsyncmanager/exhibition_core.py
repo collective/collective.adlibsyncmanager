@@ -69,8 +69,6 @@ EXHIBITION_CORE = {
 
     # from a relation with person
     'venue':'',
-    'venue-venue.date.end':'',
-    'venue-venue.date.start':'',
     'venue-venue.place':'',
 
 
