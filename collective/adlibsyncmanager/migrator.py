@@ -8542,7 +8542,7 @@ class APIMigrator:
         elif portal_type == "IncomingLoan":
             result = self.find_incomingloan_by_nummer(object_number)
         elif portal_type == "OutgoingLoan":
-            result = self.find_outgoingloan_by_nummer(object_number)
+            result = self.find_outgoingloan_by_priref(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 

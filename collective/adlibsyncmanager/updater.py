@@ -514,7 +514,7 @@ class Updater:
 
     def get_object_number(self, xml_record, portal_type=""):
         if portal_type != "Object":
-            if portal_type == "IncomingLoan" or portal_type=="OutgoingLoan":
+            if portal_type == "IncomingLoan":
                 return xml_record.find('loan_number').text
             else:
                 if xml_record.find('priref') != None:
@@ -966,6 +966,7 @@ class Updater:
             try:
                 curr += 1
                 transaction.begin()
+                self.object_number = ""
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)

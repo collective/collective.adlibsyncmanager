@@ -169,6 +169,10 @@ OUTGOING_CORE = {
 	
 	'requester':'loanRequest_general_requester',
 	'requester-name':'',
+	'lender':'',
+	'lender-name':'',
+	'lender.contact':'',
+	'lender.contact-name':'',
     'requester.contact':'loanRequest_general_contact',
     'requester.contact-name':'',
     
