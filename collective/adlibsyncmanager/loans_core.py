@@ -110,14 +110,12 @@ INCOMMING_CORE = {
     'object-in-object-in.title':'',
     'object-in-object-in.creator':'',
 
-    'exhibition':'',
     'exhibition-title':'',
     'exhibition-date.start':'',
     'exhibition-date.end':'',
     'exhibition.date.start':'',
 	'exhibition.date.end':'',
 	'exhibition.duration':'',
-
 
     'Relatedloan':'',
 
@@ -219,12 +217,17 @@ OUTGOING_CORE = {
     'object-out-object-out.perm_owner.result-text':'objects_object-permissionOwner_permissionResult',
     'object-out-object-out.perm_owner.result.ref':'objects_object-permissionOwner_permissionDigRef',
 
+    'object-out-object-out.perm_owner.req.start':'',
+    'object-out-object-out.review_request.start':'',
+
     'object-out-object-out.loan_conditions':'objects_object-miscellaneous_conditions',
     'object-out-object-out.insurance_value':'objects_object-miscellaneous_insurancevalue',
     'object-out-object-out.insurance_value.curr':'objects_object-miscellaneous_currency', #gridfield
     'object-out-object-out.notes':'objects_object-miscellaneous_notes',
     'loan_status':'',
     'loan_status-text':'',
+
+
 
     # Contract
     'contract.period.start':'contract_contractDetails_requestPeriodFrom',
@@ -241,8 +244,6 @@ OUTGOING_CORE = {
     #'':'contract_conditionReport_template', needs fix
     'condition_report.date':'contract_conditionReport_date',
     'condition_report.reference':'contract_conditionReport_digRef',
-
-
     'extension.request.end_date':'contract_extension-request_newEndDate',
     'extension.request.date':'contract_extension-request_date',
     'extension.request.reference':'contract_extension-request_digRef',
@@ -297,15 +298,17 @@ OUTGOING_CORE = {
     'object-out-object-out.object_name':'',
     'object-out-object-out.title':'',
     'object-out-object-out.creator':'',
+    'object-out-object-out.object_number-current_owner':'',
+    'object-out-object-out.current_owner':'',
+    'object-out-object-out.object_number-administration_name':'',
+    'object-out-object-out.administration_name':'',
 
-    'exhibition':'',
     'exhibition-title':'',
     'exhibition-date.start':'',
     'exhibition-date.end':'',
     'exhibition.date.start':'',
 	'exhibition.date.end':'',
 	'exhibition.duration':'',
-
 
     'Relatedloan':'',
 
