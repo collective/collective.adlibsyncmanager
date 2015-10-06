@@ -8541,6 +8541,8 @@ class APIMigrator:
             result = self.find_exhibition_by_priref(object_number)
         elif portal_type == "IncomingLoan":
             result = self.find_incomingloan_by_nummer(object_number)
+        elif portal_type == "OutgoingLoan":
+            result = self.find_outgoingloan_by_nummer(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
@@ -8768,6 +8770,17 @@ class APIMigrator:
 
         if nummer:
             for brain in self.all_incoming:
+                obj = brain.getObject()
+                if hasattr(obj, 'loanRequest_general_loanNumber'):
+                    if obj.loanRequest_general_loanNumber == nummer:
+                        return obj
+
+        return None
+
+    def find_outgoingloan_by_nummer(self, nummer):
+
+        if nummer:
+            for brain in self.all_outgoing:
                 obj = brain.getObject()
                 if hasattr(obj, 'loanRequest_general_loanNumber'):
                     if obj.loanRequest_general_loanNumber == nummer:

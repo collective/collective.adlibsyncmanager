@@ -53,7 +53,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "IncomingLoan"
+PORTAL_TYPE = "OutgoingLoan"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -78,10 +78,16 @@ elif PORTAL_TYPE == "Exhibition":
     from .exhibition_core import EXHIBITION_CORE as CORE
 
 elif PORTAL_TYPE == "IncomingLoan":
-    # Exhibitions
-    from .loans_utils import incomming_subfields_types as subfields_types
-    from .loans_utils import incomming_relation_types as relation_types
+    # Incoming loan
+    from .loans_utils import loans_subfields_types as subfields_types
+    from .loans_utils import loans_relation_types as relation_types
     from .loans_core import INCOMMING_CORE as CORE
+
+elif PORTAL_TYPE == "OutgoingLoan":
+    # Outgoing loan
+    from .loans_utils import loans_subfields_types as subfields_types
+    from .loans_utils import loans_relation_types as relation_types
+    from .loans_core import OUTGOING_CORE as CORE
 
 
 DEBUG = False
@@ -149,6 +155,8 @@ class Updater:
                                 line[key] = "No value"
                             elif line[key] == ['no value']:
                                 line[key] = []
+                            elif line[key] == 'False':
+                                line[key] = False
                     setattr(obj, name, obj_field)
         return True
 
@@ -230,22 +238,22 @@ class Updater:
     def get_default_value_by_schema(self, field):
         type_field = " "
         if IRelationList.providedBy(field):
-            type_field = []
+            type_field = ['no value']
         elif "ListField" in str(field):
-            type_field = []
+            type_field = ['no value']
             self.datagrids[field.__name__] = False
         elif IChoice.providedBy(field):
-            type_field = "No value"
+            type_field = "_No value"
         elif ITextLine.providedBy(field):
             type_field = " "
         elif IList.providedBy(field):
-            type_field = []
+            type_field = ['no value']
         elif IText.providedBy(field):
             type_field = " "
         elif IRichText.providedBy(field):
             type_field = " "
         elif IBool.providedBy(field):
-            type_field = False
+            type_field = 'False'
         elif IDatetime.providedBy(field):
             type_field = None
         else:
@@ -505,7 +513,7 @@ class Updater:
 
     def get_object_number(self, xml_record, portal_type=""):
         if portal_type != "Object":
-            if portal_type == "IncomingLoan":
+            if portal_type == "IncomingLoan" or portal_type=="OutgoingLoan":
                 return xml_record.find('loan_number').text
             else:
                 if xml_record.find('priref') != None:
@@ -539,6 +547,77 @@ class Updater:
                     val[k] = ""
 
         return value
+
+
+    def update_dictionary_new(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
+        updated = False
+        found = False
+
+        # Check if first choice
+        if subfield_type == "choice":
+            if xml_element.get('option') != "" and xml_element.get('option') != None:
+                if len(xml_element.findall('text')) > 0:
+                    return current_value
+                else:
+                    value = ""
+            elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
+                return current_value
+
+        for line in current_value:
+            if subfield in line:
+                found = True
+                if subfield_type == "choice":
+                    if line[subfield] == '_No value' and value == "":
+                        line[subfield] = 'No value'
+                        updated = True
+                        break
+                    elif line[subfield] == '_No value' and value != "":
+                        line[subfield] = value
+                        updated = True
+                        break
+                    else:
+                        # there's a value - try next line
+                        pass
+                elif subfield_type == "gridlist" or subfield_type == "relation":
+                    if line[subfield] == ['no value'] and value == []:
+                        line[subfield] = []
+                        updated = True
+                        break
+                    elif line[subfield] == ['no value'] and value != []:
+                        line[subfield] = value
+                        updated = True
+                        break
+                    else:
+                        # there's a value - try next line
+                        pass
+                elif subfield_type == "bool":
+                    if line[subfield] == 'False':
+                        line[subfield] = value
+                        updated = True
+                        break
+                    else: 
+                        # there's a value - try next line
+                        pass
+                else:
+                    if line[subfield] == ' ':
+                        line[subfield] = value
+                        updated = True
+                        break
+                    else:
+                        # there's a value - try next line
+                        pass
+
+        # Not found
+        if not found:
+            return current_value
+
+        # Found
+        if not updated:
+            # create new row
+            val = self.create_dictionary(subfield, current_value, value, xml_element, subfield_type, plone_fieldroot)
+            return val
+        else:
+            return current_value
 
     def update_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         default_test = " "
@@ -624,7 +703,7 @@ class Updater:
         if subfield:
             if length:
                 new_value = self.transform_all_types(xml_element, subfield_type, current_value, xml_path, xml_path)
-                field_value = self.update_dictionary(subfield, current_value, new_value, xml_element, subfield_type, plone_fieldroot)
+                field_value = self.update_dictionary_new(subfield, current_value, new_value, xml_element, subfield_type, plone_fieldroot)
             else:
                 new_value = self.transform_all_types(xml_element, subfield_type, current_value, xml_path, xml_path)
                 field_value = self.create_dictionary(subfield, current_value, new_value, xml_element, subfield_type, plone_fieldroot)
@@ -661,7 +740,7 @@ class Updater:
             if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None: # first entry
                 value = self.api.trim_white_spaces(xml_element.text)
                 if value == "":
-                    return "No value"
+                    return ""
                 else:
                     return value
 
@@ -669,7 +748,7 @@ class Updater:
                 if len(xml_element.findall('text')) > 0:
                     return current_value
                 else:
-                    return "_No value"
+                    return ""
 
             else: # rest of the languages_keep the same value
                 return current_value
@@ -834,6 +913,7 @@ class Updater:
 
         self.dev = False
 
+        outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
         incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
         person_single = "/Users/AG/Projects/collectie-zm/single-persons-v3.xml"
@@ -846,6 +926,7 @@ class Updater:
         persons_total = "/var/www/zm-collectie-v2/xml/persons.xml"
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
         incoming_total = "/var/www/zm-collectie-v2/xml/incomingloans.xml"
+        outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -857,7 +938,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = incoming_total
+        collection_xml = outgoing_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -880,7 +961,7 @@ class Updater:
         limit = 0
 
         curr = 0
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[100:]:
             try:
                 curr += 1
                 transaction.begin()

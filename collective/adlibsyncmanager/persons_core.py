@@ -56,7 +56,6 @@ PERSON_CORE = {
     'language':'',
     'language-term':'personDetails_nationality_language',
     
-    
     'occupation':'',
     'occupation-term':'personDetails_ocupation_ocupation', 
     'school_style':'',
