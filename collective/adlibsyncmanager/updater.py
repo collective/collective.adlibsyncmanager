@@ -20,6 +20,8 @@ from collective.z3cform.datagridfield.interfaces import IDataGridField
 from plone.app.textfield.interfaces import IRichText
 from collective.object.utils.interfaces import IListField
 
+from plone.app.event.dx.behaviors import IEventBasic
+
 import fnmatch
 from lxml import etree
 import urllib2, urllib
@@ -103,6 +105,9 @@ class Updater:
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
+        if self.portal_type == "Exhibition":
+            self.exhibition_fields = getFieldsInOrder(IEventBasic)
+            self.fields.extend(self.exhibition_fields)
 
         self.field_types = {}
         self.datagrids = {}
@@ -843,6 +848,7 @@ class Updater:
         if plone_fieldname:
             plone_fieldroot = plone_fieldname.split('-')[0]
             has_field = hasattr(plone_object, plone_fieldroot)
+            
 
             if has_field:
                 current_value = getattr(plone_object, plone_fieldroot)
@@ -911,7 +917,6 @@ class Updater:
         return True
 
     def start(self):
-
         self.dev = False
 
         outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
@@ -962,8 +967,10 @@ class Updater:
         curr = 0
         limit = 0
 
+        self.fix_all_exhibitions()
+
         curr = 0
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -979,6 +986,10 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
+
+                        plone_object.start = ""
+                        plone_object.end = ""
+                        plone_object.whole_day = True
                         plone_object.reindexObject()
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
@@ -988,7 +999,7 @@ class Updater:
                 transaction.commit()
             except Exception, e:
                 self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
-                pass
+                raise
 
         self.api.success = True
 
