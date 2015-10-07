@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Exhibition"
+PORTAL_TYPE = "treatment"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -90,6 +90,11 @@ elif PORTAL_TYPE == "OutgoingLoan":
     from .loans_utils import loans_subfields_types as subfields_types
     from .loans_utils import loans_relation_types as relation_types
     from .loans_core import OUTGOING_CORE as CORE
+
+elif PORTAL_TYPE == "treatment":
+    from .treatment_utils import treatment_subfields_types as subfields_types
+    from .treatment_utils import treatment_relation_types as relation_types
+    from .treatment_core import TREATMENT_CORE as CORE
 
 
 DEBUG = False
@@ -521,6 +526,8 @@ class Updater:
         if portal_type != "Object":
             if portal_type == "IncomingLoan":
                 return xml_record.find('loan_number').text
+            elif portal_type == "treatment":
+                return xml_record.find('treatment_number').text
             else:
                 if xml_record.find('priref') != None:
                     return xml_record.find('priref').text
@@ -918,7 +925,9 @@ class Updater:
 
     def start(self):
         self.dev = False
-
+        
+        exhibition_single = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
+        treatment_single = "/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
         outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
         incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
         book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
@@ -933,7 +942,8 @@ class Updater:
         exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
         incoming_total = "/var/www/zm-collectie-v2/xml/incomingloans.xml"
         outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
-        exhibition_single = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
+        treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
+
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -945,7 +955,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibitions_total
+        collection_xml = treatment_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -966,8 +976,6 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-
-        self.fix_all_exhibitions()
 
         curr = 0
         for xml_record in list(self.collection):
