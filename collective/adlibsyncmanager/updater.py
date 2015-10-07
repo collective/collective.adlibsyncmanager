@@ -994,10 +994,6 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
-
-                        plone_object.start = ""
-                        plone_object.end = ""
-                        plone_object.whole_day = True
                         plone_object.reindexObject()
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
