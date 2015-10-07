@@ -978,7 +978,7 @@ class Updater:
         limit = 0
 
         curr = 0
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
