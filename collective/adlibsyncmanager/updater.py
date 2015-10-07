@@ -978,7 +978,7 @@ class Updater:
         limit = 0
 
         curr = 0
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
@@ -987,6 +987,10 @@ class Updater:
                 if object_number:
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
+                        plone_object.start = ""
+                        plone_object.end = ""
+                        plone_object.whole_day = True
+
                         self.object_number = str(object_number)
                         self.generate_field_types()
                         self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
