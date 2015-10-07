@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Exhibition"
+PORTAL_TYPE = "Object"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -950,7 +950,6 @@ class Updater:
         outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
         treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
 
-
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -961,7 +960,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = book_total
+        collection_xml = collection_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1004,7 +1003,6 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
-
                         plone_object.reindexObject()
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
