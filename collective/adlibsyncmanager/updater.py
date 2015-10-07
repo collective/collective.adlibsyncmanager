@@ -527,7 +527,7 @@ class Updater:
             if portal_type == "IncomingLoan":
                 return xml_record.find('loan_number').text
             elif portal_type == "treatment":
-                if xml_record.find('treatment_number') != None
+                if xml_record.find('treatment_number') != None:
                     return xml_record.find('treatment_number').text
             else:
                 if xml_record.find('priref') != None:
