@@ -8829,12 +8829,18 @@ class APIMigrator:
         return None
 
     def find_treatment_by_priref(self, priref):
-        if priref:
+        """if priref:
             results = self.portal_catalog(treatment_priref=priref, portal_type="treatment")
             if results:
                 item = results[0]
                 obj = item.getObject()
-                return obj
+                return obj"""
+        if priref:
+            for brain in self.all_treatments:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
         return None
 
     def find_treatment_by_treatmentnumber(self, priref):

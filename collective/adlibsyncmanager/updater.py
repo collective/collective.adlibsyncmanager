@@ -240,6 +240,8 @@ class Updater:
             type_field = "text"
         elif IRichText.providedBy(field):
             type_field = "text"
+        elif IBool.providedBy(field):
+            type_field = 'bool'
         else:
             type_field = "unknown"
 
@@ -526,9 +528,6 @@ class Updater:
         if portal_type != "Object":
             if portal_type == "IncomingLoan":
                 return xml_record.find('loan_number').text
-            elif portal_type == "treatment":
-                if xml_record.find('treatment_number') != None:
-                    return xml_record.find('treatment_number').text
             else:
                 if xml_record.find('priref') != None:
                     return xml_record.find('priref').text
