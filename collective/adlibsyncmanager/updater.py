@@ -739,10 +739,16 @@ class Updater:
                         datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
                         value = datetime_value
                     except:
-                        year = field_val
-                        new_date = "%s-%s-%s" %(year, "01", "01")
-                        datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
-                        value = datetime_value
+                        value_split = field_val.split('-')
+                        if len(value_split) == 2:
+                            new_date = "%s-%s"%(field_val, "01")
+                            datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
+                            value = datetime_value
+                        else:
+                            year = field_val
+                            new_date = "%s-%s-%s" %(year, "01", "01")
+                            datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
+                            value = datetime_value
                 except:
                     self.error("%s__%s__Unable to create datetime value. %s"%(str(self.object_number), str(xml_path), str(field_val)))
                     return ""
@@ -955,7 +961,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibitions_total
+        collection_xml = book_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -977,8 +983,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        curr = 0
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -987,9 +992,10 @@ class Updater:
                 if object_number:
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
-                        plone_object.start = ""
-                        plone_object.end = ""
-                        plone_object.whole_day = True
+                        if self.portal_type == "Exhibition":
+                            plone_object.start = ""
+                            plone_object.end = ""
+                            plone_object.whole_day = True
 
                         self.object_number = str(object_number)
                         self.generate_field_types()
@@ -1011,7 +1017,6 @@ class Updater:
                 raise
 
         self.api.success = True
-
         return True
 
 
