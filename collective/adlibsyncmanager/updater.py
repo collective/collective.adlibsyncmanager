@@ -1003,7 +1003,6 @@ class Updater:
                         if self.portal_type == "Exhibition":
                             plone_object.start = ""
                             plone_object.end = ""
-                            plone_object.timezone = ""
                             plone_object.whole_day = True
 
                         self.object_number = str(object_number)
@@ -1014,8 +1013,10 @@ class Updater:
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
                         if self.portal_type == "Exhibition":
-                            IEventBasic(plone_object).start = plone_object.start
-                            IEventBasic(plone_object).end = plone_object.end
+                            if plone_object.start:
+                                IEventBasic(plone_object).start = plone_object.start
+                            if plone_object.end:
+                                IEventBasic(plone_object).end = plone_object.end
                             
                         plone_object.reindexObject()
                   
