@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Exhibition"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -741,7 +741,7 @@ class Updater:
                     except:
                         value_split = field_val.split('-')
                         if len(value_split) == 2:
-                            new_date = "%s-%s"%(field_val, "01")
+                            new_date = "%s-%s" %(field_val, "01")
                             datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
                             value = datetime_value
                         else:
@@ -960,7 +960,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = collection_total
+        collection_xml = exhibitions_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
