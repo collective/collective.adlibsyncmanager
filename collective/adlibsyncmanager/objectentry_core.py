@@ -25,13 +25,14 @@ OBJECTENTRY_CORE = {
     'destination.contact':'general_entry_destinationContact',
     'destination.contact-name':'',
     
+    'Shipper':'',
     'Shipper-shipper':'general_transport_shipper-shipper',#relation
     'Shipper-shipper.contact':'general_transport_shipper-contact',
     
     'courier':'general_transport_courier', 
     'number_of_objects.stated':'general_numberOfObjects_numberInFreightLetter',
     'number_of_objects.sent':'general_numberOfObjects_numberDelivered', 
-    'general_freightLetter_template':'',
+    'freight_letter_in.template':'',
     'freight_letter_in.template-text':'general_freightLetter_template',
     'freight_letter_in.reference':'general_freightLetter_digRef', 
     'insurance.value':'general_totalInsuranceValue_insuranceValue',
