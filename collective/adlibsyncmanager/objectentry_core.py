@@ -85,6 +85,19 @@ OBJECTENTRY_CORE = {
     'Object-in-object-in.insurance.date':'listWithLinkedObjects_linkedObjects-date',
     'Object-in-object-in.notes':'listWithLinkedObjects_linkedObjects-notes',
 
+    'Object-in-object-in.image':'',
+	'Object-in-object-in.object_number-reproduction.identifier_URL':'',
+	'Object-in-object-in.object_number-object_number':'',
+	'Object-in-object-in.object_number-object_name':'',
+	'Object-in-object-in.object_number-title':'',
+	'Object-in-object-in.object_number-creator':'',
+	'Object-in-object-in.object_name':'',
+	'Object-in-object-in.title':'',
+	'Object-in-object-in.creator':'',
+
+	'datasets.collect':'',
+	'datasets.collect-text':'',
+
     'Edit':'',
     'Edit-edit.name':'',
     'Edit-edit.time':'',
