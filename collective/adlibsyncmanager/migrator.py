@@ -105,7 +105,8 @@ class APIMigrator:
         all_incoming = catalog(portal_type='IncomingLoan', Language="all")
         all_articles = catalog(portal_type='Article', Language="all")
         all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
-
+        all_resources = catalog(portal_type='Resource', Language="all")
+        
         self.all_objects = all_objects
         self.all_persons = all_persons
         self.all_archives = all_archives
@@ -115,6 +116,7 @@ class APIMigrator:
         self.all_incoming = all_incoming
         self.all_articles = all_articles
         self.all_objectentries = all_objectentries
+        self.all_resources = all_resources
 
     def build_api_request_all(self):
         url = ""
@@ -8547,6 +8549,8 @@ class APIMigrator:
             result = self.find_treatment_by_priref(object_number)
         elif portal_type == "ObjectEntry":
             result = self.find_objectentry_by_priref(object_number)
+        elif portal_type == "Resource":
+            result = self.find_resource_by_priref(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
@@ -8800,7 +8804,17 @@ class APIMigrator:
                     if obj.priref == priref:
                         return obj
 
-        return None  
+        return None 
+
+    def find_resource_by_priref(self, priref):
+        if priref:
+            for brain in self.all_resources:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return None
 
     def find_exhibition_by_priref(self, priref):
         if priref:

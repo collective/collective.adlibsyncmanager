@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Exhibition"
+PORTAL_TYPE = "Resource"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -100,6 +100,11 @@ elif PORTAL_TYPE == "ObjectEntry":
     from .objectentry_utils import objectentry_subfields_types as subfields_types
     from .objectentry_utils import objectentry_relation_types as relation_types
     from .objectentry_core import OBJECTENTRY_CORE as CORE
+
+elif PORTAL_TYPE == "Resource":
+    from .resource_utils import resource_subfields_types as subfields_types
+    from .resource_utils import resource_relation_types as relation_types
+    from .resource_core import RESOURCE_CORE as CORE
 
 
 DEBUG = False
@@ -780,6 +785,7 @@ class Updater:
         # Vocabulary
         elif field_type == "list":
             if current_value != None:
+                current_value = []
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 try:
                     if new_value not in current_value:
@@ -937,6 +943,7 @@ class Updater:
     def start(self):
         self.dev = False
         
+        single_resource = "/Users/AG/Projects/collectie-zm/single-resource-v01.xml"
         object_entry_single = "/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
         object_entry_single_prod = "/var/www/zm-collectie-v2/xml/single-object-entry.xml"
         exhibition_single = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
@@ -957,6 +964,7 @@ class Updater:
         outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
         treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
         objectentry_total = "/var/www/zm-collectie-v2/xml/objectentries.xml"
+        resources_total = "/var/www/zm-collectie-v2/xml/Digitalebronnen.xml"
 
 
         timestamp = datetime.datetime.today().isoformat()
@@ -969,7 +977,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibitions_total
+        collection_xml = resources_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -991,7 +999,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
@@ -1012,6 +1020,7 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
+
                         if self.portal_type == "Exhibition":
                             if plone_object.start:
                                 IEventBasic(plone_object).start = plone_object.start
