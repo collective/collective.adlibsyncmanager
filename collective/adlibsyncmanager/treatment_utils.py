@@ -8,3 +8,4 @@ treatment_subfields_types = {
 treatment_relation_types = {
 	"Conservator-conservator": "PersonOrInstitution"
 }
+

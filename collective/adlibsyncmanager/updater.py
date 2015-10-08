@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Exhibition"
+PORTAL_TYPE = "ObjectEntry"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -95,6 +95,11 @@ elif PORTAL_TYPE == "treatment":
     from .treatment_utils import treatment_subfields_types as subfields_types
     from .treatment_utils import treatment_relation_types as relation_types
     from .treatment_core import TREATMENT_CORE as CORE
+
+elif PORTAL_TYPE == "ObjectEntry":
+    from .objectentry_utils import objectentry_subfields_types as subfields_types
+    from .objectentry_utils import objectentry_relation_types as relation_types
+    from .objectentry_core import OBJECTENTRY_CORE as CORE
 
 
 DEBUG = False
@@ -932,6 +937,8 @@ class Updater:
     def start(self):
         self.dev = False
         
+        object_entry_single = "/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
+        object_entry_single_prod = "/var/www/zm-collectie-v2/xml/single-object-entry.xml"
         exhibition_single = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
         treatment_single = "/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
         outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
@@ -960,7 +967,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = exhibitions_total
+        collection_xml = object_entry_single
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
