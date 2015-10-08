@@ -49,13 +49,13 @@ from plone.dexterity.utils import createContentInContainer
 from collective.leadmedia.utils import addCropToTranslation
 from collective.leadmedia.utils import imageObjectCreated
 from plone.app.textfield.value import RichTextValue
-
+from plone.event.interfaces import IEventAccessor
 from collective.object.utils.interfaces import INotes
 
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "ObjectEntry"
+PORTAL_TYPE = "Exhibition"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -969,7 +969,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = objectentry_total
+        collection_xml = exhibitions_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1003,6 +1003,7 @@ class Updater:
                         if self.portal_type == "Exhibition":
                             plone_object.start = ""
                             plone_object.end = ""
+                            plone_object.timezone = ""
                             plone_object.whole_day = True
 
                         self.object_number = str(object_number)
@@ -1012,7 +1013,12 @@ class Updater:
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         self.fix_all_choices(plone_object)
+                        if self.portal_type == "Exhibition":
+                            IEventBasic(plone_object).start = plone_object.start
+                            IEventBasic(plone_object).end = plone_object.end
+                            
                         plone_object.reindexObject()
+                  
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
                 else:
