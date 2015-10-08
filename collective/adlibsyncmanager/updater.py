@@ -956,6 +956,8 @@ class Updater:
         incoming_total = "/var/www/zm-collectie-v2/xml/incomingloans.xml"
         outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
         treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
+        objectentry_total = "/var/www/zm-collectie-v2/xml/objectentries.xml"
+
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -967,7 +969,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = object_entry_single
+        collection_xml = objectentry_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -989,7 +991,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
