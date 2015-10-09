@@ -578,6 +578,8 @@ class Updater:
 
         # Check if first choice
         if subfield_type == "choice":
+            if type(value) == list:
+                return current_value
             if xml_element.get('option') != "" and xml_element.get('option') != None:
                 if len(xml_element.findall('text')) > 0:
                     return current_value
@@ -585,6 +587,12 @@ class Updater:
                     value = ""
             elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
+
+
+        if "dimension.unit-term" in self.xml_path:
+            print current_value
+            print type(value)
+            print subfield_type
 
         for line in current_value:
             if subfield in line:
@@ -778,14 +786,14 @@ class Updater:
                     return current_value
                 else:
                     return ""
-
+            elif xml_element.tag == "term":
+                return xml_element.text
             else: # rest of the languages_keep the same value
                 return current_value
         
         # Vocabulary
         elif field_type == "list":
             if current_value != None:
-                current_value = []
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 try:
                     if new_value not in current_value:
@@ -891,7 +899,7 @@ class Updater:
             else:
                 if xml_path == "":
                     xml_path = xml_element.tag
-                    if xml_path == "record":
+                    if (xml_path == "record") or ("parts_reference" in xml_path):
                         self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
                     else:
                         self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
@@ -965,6 +973,7 @@ class Updater:
         treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
         objectentry_total = "/var/www/zm-collectie-v2/xml/objectentries.xml"
         resources_total = "/var/www/zm-collectie-v2/xml/Digitalebronnen.xml"
+        single_object = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
 
 
         timestamp = datetime.datetime.today().isoformat()
@@ -999,7 +1008,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()

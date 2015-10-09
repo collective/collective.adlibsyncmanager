@@ -74,7 +74,8 @@ subfields_types = {
 	"owner_hist.acquisition.method-term":"gridlist",
 	"owner_hist.acquired_from":"relation",
 	"owner_hist.owner":"relation",
-	"free_field.confidential":"bool"
+	"free_field.confidential":"bool",
+	"dimension.unit-term":"choice"
 	#"owner_hist.auction": "relation"
 }
 

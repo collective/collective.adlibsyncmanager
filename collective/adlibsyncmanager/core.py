@@ -34,7 +34,7 @@ CORE = {
     "object_name":"",#parent
     "object_name-term": "identification_objectName_objectname-name",
     "object_name.notes": "identification_objectName_objectname-notes",
-    "object_name.type-term":"identification_objectName_objectname-type",
+    "object_name.type-term":"identification_objectName_objectname-types",
 
     "title.type":"identification_titleDescription_title-type",
     "description.date": "identification_titleDescription_titleDate",
@@ -82,6 +82,7 @@ CORE = {
     "creator-death.date.start":"productionDating_productionDating-dateDeath",
 
     "production": "",#parent
+    "production.place":"",
     "production.place-term": "productionDating_productionDating-place",
     "production.notes": "productionDating_productionDating-production_notes",
  
@@ -101,7 +102,9 @@ CORE = {
     #
     # Physical characteristics
     #
+    "phys_characteristic.aspect":"",
     "phys_characteristic.aspect-term":"physicalCharacteristics_keyword-aspect",
+    "phys_characteristic.keyword":"",
     "phys_characteristic.keyword-term":"physicalCharacteristics_keyword-keyword",
     "phys_characteristic.notes":"physicalCharacteristics_keyword-notes",
     "phys_characteristic.part":"physicalCharacteristics_keyword-part",
@@ -359,10 +362,12 @@ CORE = {
     "acquisition.number":"acquisition_number",
     "acquisition.reason":"acquisition_reason",
     "acquisition.date":"acquisition_date",
+    "acquisition.method":"",
     "acquisition.method-term":"acquisition_methods",
     "acquisition.conditions":"acquisition_conditions",
     "acquisition.source":"acquisition_acquisition_acquisitionFrom-aquisitionFrom",
     "acquisition.source-name":"",# name is in the relation
+    "acquisition.place":"",
     "acquisition.place-term":"acquisition_places",
     "acquisition.notes":"acquisition_notes",
     "acquisition.date.precision":"acquisition_precision",
@@ -389,6 +394,11 @@ CORE = {
     "acquisition.document.reference":"acquisition_documentation-reference",
 
     "copyright":"acquisition_copyright",
+
+    # DOUBLE CHECK:
+    "acquisition.subject":"",
+    "acquisition.subject.type":"",
+
 
     #
     # Afstoting
@@ -424,6 +434,7 @@ CORE = {
     "association.person":"associations_associatedPersonInstitutions-names",
     "association.person.type-text":"associations_associatedPersonInstitutions-nameType",
     "association.person-name":"",#name is in the relation
+    "association.person.association":"",
     "association.person.association-term":"associations_associatedPersonInstitutions-associations",
     "association.person.date.start":"associations_associatedPersonInstitutions-startDate",# removed based on feedback
     "association.person.date.end":"associations_associatedPersonInstitutions-endDate",# removed based on feedback
@@ -431,9 +442,12 @@ CORE = {
 
     "association.subject.tax.rank-text": "associations_associatedSubjects-taxonomicRank",
     "association.subject.tax-scientific_name": "associations_associatedSubjects-scientificName",
+    "association.subject.name":"",
     "association.subject.name-term":"associations_associatedSubjects-properName",
+    "associatoin.subject.type":"",
     "association.subject.type-text":"associations_associatedSubjects-subjectType",
     "association.subject-term":"associations_associatedSubjects-subject",
+    "association.subject.association":"",
     "association.subject.association-term":"associations_associatedSubjects-associations",
         
     # In the future this two fields are likely to be removed
@@ -443,13 +457,13 @@ CORE = {
     "association.subject.note":"associations_associatedSubjects-notes",
     "association.period.date.start":"associations_associatedPeriods-startDate",
     "association.period.date.end":"associations_associatedPeriods-endDate",
+    "association.period.assoc":"",
     "association.period.assoc-term":"associations_associatedPeriods-associations",
+    "association.period":"",
     "association.period-term":"associations_associatedPeriods-period",
     "association.period.note":"associations_associatedPeriods-notes",
     
     
-
-
     #
     #  Eigendomsgeschiedenis
     #
@@ -630,7 +644,7 @@ CORE = {
     "Loan_in-loan.in.request.reason":"",
     "Loan_in-loan.in.number-request.reason":"loans_incomingLoans-requestReason",
     
-
+    "Loan_in-loan.in.number":'',
     "Loan_in-loan.in.contract.period.start":"",
     "Loan_in-loan.in.number-contract.period.start":"loans_incomingLoans-contractPeriod",
     "Loan_in-loan.in.contract.period.end":"",
@@ -675,6 +689,7 @@ CORE = {
     #
 
     # Edit
+    "Edit":"",
     "input.date":"managementDetails_input-date",
     "input.time":"managementDetails_input-time",
     "input.source":"managementDetails_input-source",
