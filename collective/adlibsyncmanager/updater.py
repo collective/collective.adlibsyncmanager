@@ -588,12 +588,6 @@ class Updater:
             elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
-
-        if "dimension.unit-term" in self.xml_path:
-            print current_value
-            print type(value)
-            print subfield_type
-
         for line in current_value:
             if subfield in line:
                 found = True
