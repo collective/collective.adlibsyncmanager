@@ -1036,7 +1036,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                             
-                        plone_object.reindexObject()
+                        #plone_object.reindexObject()
                   
                     else:
                         self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
