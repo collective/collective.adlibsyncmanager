@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Resource"
+PORTAL_TYPE = "Taxonomie"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -105,6 +105,11 @@ elif PORTAL_TYPE == "Resource":
     from .resource_utils import resource_subfields_types as subfields_types
     from .resource_utils import resource_relation_types as relation_types
     from .resource_core import RESOURCE_CORE as CORE
+
+elif PORTAL_TYPE == "Taxonomie":
+    from .taxonomy_utils import taxonomy_subfields_types as subfields_types
+    from .taxonomy_utils import taxonomy_relation_types as relation_types
+    from .taxonomy_core import TAXONOMY_CORE as CORE
 
 
 DEBUG = False
@@ -297,8 +302,45 @@ class Updater:
             current_value = []
 
         current_value = []
+
+        if objecttype_relatedto == "Taxonomie":
+            if by_name:
+                taxonomies = self.api.find_taxonomie_by_name(priref)
+                if len(taxonomies) > 1:
+                    taxonomy = taxonomies[0]
+                    other_taxonomies = [str(p.priref) for p in taxonomies[1:]]
+                    self.error("%s__%s__Relation with more than one result. First result: %s Other results: %s" %(str(self.object_number), str(self.xml_path), person.priref, str(other_taxonomies)))
+                else:
+                    if taxonomies:
+                        taxonomy = taxonomies[0]
+                    else:
+                        taxonomy = None
+                        self.error("%s__%s__Cannot create relation with content type Taxonomie with name '%s'" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
+                        return current_value
+            else:
+                taxonomy = self.api.find_person_by_priref(self.api.all_persons, priref)
+            
+            if taxonomy:
+                if not grid:
+                    intids = component.getUtility(IIntIds)
+                    person_id = intids.getId(taxonomy)
+                    relation_value = RelationValue(person_id)
+                    for relation in current_value:
+                        if relation.to_object.id == taxonomy.id:
+                            self.warning("%s__%s__Taxonomie Relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(taxonomy)
+            else:
+                try:
+                    self.error("%s__%s__Cannot create relation with content type Taxonomie with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                except:
+                    self.error("%s__%s__Cannot create relation with content type Taxonomie with priref %s" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
+
         
-        if objecttype_relatedto == "PersonOrInstitution":
+        elif objecttype_relatedto == "PersonOrInstitution":
             if by_name:
                 persons = self.api.find_person_by_name(priref)
                 if len(persons) > 1:
@@ -835,6 +877,15 @@ class Updater:
                         by_name = True
                     else:
                         linkref = ""
+            elif objecttype_relatedto == "Taxonomie":
+                linkref = xml_element.get('linkref')
+                if not linkref:
+                    linkdata = xml_element.get('linkdata')
+                    if linkdata:
+                        linkref = linkdata
+                        by_name = True
+                    else:
+                        linkref = ""
                             
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
@@ -942,8 +993,45 @@ class Updater:
 
         return True
 
+    def get_title_by_type(self, xml_record):
+        title = ""
+        if self.portal_type == "Taxonomie":
+            if xml_record.find("scientific_name") != None:
+                title = xml_record.find("scientific_name").text
+        else:
+            self.error("Content type not supported to be created.")
+        return title
+
+    def create_object(self, xml_record):
+
+        REQUIRED_FIELDS = {
+            "Taxonomie": "taxonomicTermDetails_term_scientificName"
+        }
+        required_field = REQUIRED_FIELDS[self.portal_type]
+
+        container = self.api.get_folder('nl/intern/taxonomy')
+        title = self.get_title_by_type(xml_record)
+
+        dirty_id = "%s %s"%(str(self.object_number), str(title))
+        normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+
+        container.invokeFactory(
+            type_name=self.portal_type,
+            id=normalized_id,
+            title=title
+        )
+
+        created_object = container[str(normalized_id)]
+        created_object.portal_workflow.doActionFor(created_object, "publish", comment="Item published")
+        setattr(created_object, required_field, title)
+
+        return created_object
+
+
+
+
     def start(self):
-        self.dev = False
+        self.dev = True
         
         single_resource = "/Users/AG/Projects/collectie-zm/single-resource-v01.xml"
         object_entry_single = "/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
@@ -968,7 +1056,7 @@ class Updater:
         objectentry_total = "/var/www/zm-collectie-v2/xml/objectentries.xml"
         resources_total = "/var/www/zm-collectie-v2/xml/Digitalebronnen.xml"
         single_object = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
-
+        single_taxonomy = "/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -980,7 +1068,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = resources_total
+        collection_xml = single_taxonomy
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1033,7 +1121,10 @@ class Updater:
                         #plone_object.reindexObject()
                   
                     else:
-                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        created_object = self.create_object(xml_record)
+                        self.update(xml_record, created_object, object_number)
+                        #self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
