@@ -432,6 +432,7 @@ CORE = {
     # Associations
     #
     "association.person":"associations_associatedPersonInstitutions-names",
+    "association.person.type":"",
     "association.person.type-text":"associations_associatedPersonInstitutions-nameType",
     "association.person-name":"",#name is in the relation
     "association.person.association":"",
