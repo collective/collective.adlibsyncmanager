@@ -1027,9 +1027,6 @@ class Updater:
 
         return created_object
 
-
-
-
     def start(self):
         self.dev = False
         
@@ -1123,11 +1120,11 @@ class Updater:
                         #plone_object.reindexObject()
                   
                     else:
-                        created_object = self.create_object(xml_record)
-                        self.update(xml_record, created_object, object_number)
-                        #self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                        self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        #created_object = self.create_object(xml_record)
+                        #self.update(xml_record, created_object, object_number)
+                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                        #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
