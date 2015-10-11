@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Taxonomie"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -1012,7 +1012,7 @@ class Updater:
         container = self.api.get_folder('nl/intern/taxonomy')
         title = self.get_title_by_type(xml_record)
 
-        dirty_id = "%s %s"%(str(self.object_number), str(title))
+        dirty_id = "%s %s"%(str(self.object_number), str(title.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
         container.invokeFactory(
@@ -1057,7 +1057,8 @@ class Updater:
         resources_total = "/var/www/zm-collectie-v2/xml/Digitalebronnen.xml"
         single_object = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
         single_taxonomy = "/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
-
+        taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
+        
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -1068,7 +1069,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = collection_total
+        collection_xml = taxonomies_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1097,6 +1098,7 @@ class Updater:
                 self.object_number = ""
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
+                    self.object_number = object_number
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
                         if self.portal_type == "Exhibition":
@@ -1121,10 +1123,11 @@ class Updater:
                         #plone_object.reindexObject()
                   
                     else:
-                        #created_object = self.create_object(xml_record)
-                        #self.update(xml_record, created_object, object_number)
-                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                        created_object = self.create_object(xml_record)
+                        self.update(xml_record, created_object, object_number)
+                        #self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
