@@ -318,7 +318,7 @@ class Updater:
                         self.error("%s__%s__Cannot create relation with content type Taxonomie with name '%s'" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
                         return current_value
             else:
-                taxonomy = self.api.find_person_by_priref(self.api.all_persons, priref)
+                taxonomy = self.api.find_taxonomie_by_priref(priref)
             
             if taxonomy:
                 if not grid:
