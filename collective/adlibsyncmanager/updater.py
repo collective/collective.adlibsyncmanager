@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Taxonomie"
+PORTAL_TYPE = "Object"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -1031,7 +1031,7 @@ class Updater:
 
 
     def start(self):
-        self.dev = True
+        self.dev = False
         
         single_resource = "/Users/AG/Projects/collectie-zm/single-resource-v01.xml"
         object_entry_single = "/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
@@ -1068,7 +1068,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = single_taxonomy
+        collection_xml = collection_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1121,10 +1121,10 @@ class Updater:
                         #plone_object.reindexObject()
                   
                     else:
-                        created_object = self.create_object(xml_record)
-                        self.update(xml_record, created_object, object_number)
-                        #self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                        self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                        #created_object = self.create_object(xml_record)
+                        #self.update(xml_record, created_object, object_number)
+                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
