@@ -1030,6 +1030,19 @@ class Updater:
 
         return created_object
 
+    def reindex_all_taxonomies(self):
+        index = "taxonomicTermDetails_term_rank"
+
+        curr = 0
+        for tax in self.api.all_taxonomies[:400]:
+            curr += 1 
+            print curr
+            obj = tax.getObject()
+            obj.reindexObject(idxs=["taxonomicTermDetails_term_rank"])
+
+        return True
+
+
     def start(self):
         self.dev = False
         
@@ -1060,7 +1073,8 @@ class Updater:
         taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
         thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
 
-        
+        self.reindex_all_taxonomies()
+        return True
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
