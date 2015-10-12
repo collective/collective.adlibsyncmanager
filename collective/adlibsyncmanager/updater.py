@@ -1073,8 +1073,8 @@ class Updater:
         taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
         thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
 
-        self.reindex_all_taxonomies()
-        return True
+        #self.reindex_all_taxonomies()
+        #return True
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -1108,7 +1108,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[3270:]:
             try:
                 curr += 1
                 transaction.begin()
