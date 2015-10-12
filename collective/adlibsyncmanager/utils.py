@@ -5,6 +5,7 @@
 import datetime
 
 subfields_types = {
+	"Taxonomy-taxonomy.scientific_name": "relation",
 	"Determination-determination.name": "relation",
 	"object_name-term": "gridlist",
 	"Taxonomy-taxonomy.rank-text": "choice",
@@ -80,6 +81,7 @@ subfields_types = {
 }
 
 relation_types = {
+	"Taxonomy-taxonomy.scientific_name":"Taxonomie",
 	"creator": "PersonOrInstitution",
 	"inscription.maker": "PersonOrInstitution",
 	"content.person.name": "PersonOrInstitution",

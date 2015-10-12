@@ -48,8 +48,8 @@ CORE = {
     "other_name.type":"identification_objectName_otherName-type",
     
     "Taxonomy": "",#parent
-    "Taxonomy-taxonomy.scientific_name": "",#parent
-    "Taxonomy-taxonomy.scientific_name-scientific_name": "identification_taxonomy-scientific_name",
+    "Taxonomy-taxonomy.scientific_name": "identification_taxonomy-scientific_name",#parent
+    "Taxonomy-taxonomy.scientific_name-scientific_name": "",
     "Taxonomy-taxonomy.scientific_name-common_name": "identification_taxonomy-common_name",
     "Taxonomy-taxonomy.rank": "",#parent
     "Taxonomy-taxonomy.rank-text": "identification_taxonomy-rank",
