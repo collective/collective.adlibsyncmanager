@@ -8,5 +8,6 @@ taxonomy_subfields_types = {
 }
 
 taxonomy_relation_types = {
-	"Child-child.name":"Taxonomie"
+	"Child-child.name":"Taxonomie",
+	"Synonym-synonym": "Taxonomie"
 }

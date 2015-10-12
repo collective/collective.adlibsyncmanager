@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Taxonomie"
+PORTAL_TYPE = "Object"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -523,7 +523,7 @@ class Updater:
                 
 
         else:
-            self.error("Relation type not available %s" %(str(objecttype_relatedto)))
+            self.error("%s__%s__Relation type not available %s" %(str(self.object_number), str(self.xml_path), str(objecttype_relatedto)))
 
 
         return current_value
@@ -1055,7 +1055,10 @@ class Updater:
         single_object = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
         single_taxonomy = "/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
         taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
+        thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
+
         
+
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
@@ -1066,7 +1069,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = taxonomies_total
+        collection_xml = thirdparty
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
