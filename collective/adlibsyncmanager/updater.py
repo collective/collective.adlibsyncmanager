@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Taxonomie"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -944,7 +944,7 @@ class Updater:
             else:
                 if xml_path == "":
                     xml_path = xml_element.tag
-                    if (xml_path == "record") or ("parts_reference" in xml_path):
+                    if (xml_path == "record") or ("parts_reference" in xml_path) or ("Child" in xml_path) or ("Synonym" in xml_path):
                         self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
                     else:
                         self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
@@ -1069,7 +1069,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = thirdparty
+        collection_xml = taxonomies_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1091,7 +1091,7 @@ class Updater:
         curr = 0
         limit = 0
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()

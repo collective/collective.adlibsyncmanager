@@ -41,5 +41,5 @@ TAXONOMY_CORE = {
     'input.date':'',
     'input.name':'',
     'input.time': '',
-}
 
+}
