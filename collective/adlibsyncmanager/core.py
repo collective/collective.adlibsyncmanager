@@ -34,6 +34,7 @@ CORE = {
     "object_name":"",#parent
     "object_name-term": "identification_objectName_objectname-name",
     "object_name.notes": "identification_objectName_objectname-notes",
+    'object_name.type':'',
     "object_name.type-term":"identification_objectName_objectname-types",
 
     "title.type":"identification_titleDescription_title-type",
@@ -723,8 +724,12 @@ CORE = {
     "entry.owner":"",#repeated
     "entry.number-owner":"transport_entry_number-owner",
     "entry.number":"transport_entry_number-transport_number",
-    
 
+    "datasets.document-text":"",
+    "datasets.document":"",
+
+    "object_name.authority-term":"",
+    "object_name.authority":"",
 
 } 
 

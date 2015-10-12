@@ -31,6 +31,8 @@ TAXONOMY_CORE = {
     'other_source':'taxonomicTermDetails_sourceAndDefinition_otherSource-otherSource',
     'notes':'taxonomicTermDetails_notes-notes',
 
+    "Synonym-synonym.rank": "",
+
     'Edit':'',
     'Edit-edit.name':'',
     'Edit-edit.time':'',
