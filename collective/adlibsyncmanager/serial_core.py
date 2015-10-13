@@ -130,7 +130,7 @@ SERIAL_CORE = {
  	# Relations
  	'volume':'relations_volume', 
  	'use':'relations_analyticalCataloguing_partOf',
-    'used_for':'relations_analyticalCataloguing_consistsOf',
+    'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
     'object.object_number':'relations_museumObjects-objectNo',
 
     # Ignore fields from relation with object
@@ -206,6 +206,12 @@ SERIAL_CORE = {
 	"pagination":"",
 	"source.issue":"",
 	"source.publication_years":"",
+
+	"source.title.article":"",
+	"source.material_type":"",
+	"source.title":"",
+	"source.pagination":"",
+	"series.title-lead_word":"",
 
     "reproduction":"",
     "reproduction-reproduction.format":"",

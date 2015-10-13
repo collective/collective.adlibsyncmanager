@@ -26,6 +26,7 @@ serial_subfields_types = {
 	"site":"gridlist",
 	"loan_category-term":"gridlist",
 	"site-term": "gridlist",
+	"used_for":"relation"
 }
 
 serial_relation_types = {
@@ -38,4 +39,6 @@ serial_relation_types = {
 	"person.keyword.name": "PersonOrInstitution",
 	"object.object_number":"Object",
 	"exhibition-exhibition": "Exhibition",
+	"used_for":"Bibliotheek"
 }
+
