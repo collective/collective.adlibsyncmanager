@@ -874,6 +874,7 @@ class Updater:
         # Vocabulary
         elif field_type == "list":
             if current_value != None:
+                current_value = []
                 new_value = self.api.trim_white_spaces(xml_element.text)
                 try:
                     if new_value not in current_value:
