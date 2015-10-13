@@ -196,6 +196,16 @@ SERIAL_CORE = {
 
     'datasets.collect':'',
 	'datasets.collect-text':'',
+	"datasets.document.source":"",
+	"datasets.document.source-text":"",
+
+	"source.title-lead_word":"",
+	"source.title-material_type":"",
+	"source.title-title":"",
+	"source.month":"",
+	"pagination":"",
+	"source.issue":"",
+	"source.publication_years":"",
 
     "reproduction":"",
     "reproduction-reproduction.format":"",
@@ -251,7 +261,6 @@ SERIAL_CORE = {
     "exhibition-exhibition.date.start":"",
     "exhibition-exhibition.date.end":"",
     "exhibition-old.exhibition.date.end":"",
-    "exhibition-exhibition":"",
     "exhibition-exhibition-date.start":"",
     "exhibition-exhibition-date.end":"",
     "exhibition-exhibition-title":"",

@@ -1105,7 +1105,6 @@ class Updater:
         single_serial = "/Users/AG/Projects/collectie-zm/single-serial-v01.xml"
         serial_total = "/var/www/zm-collectie-v2/xml/Tijdschriften.xml"
 
-
         #self.reindex_all_taxonomies()
         #return True
 
