@@ -51,8 +51,8 @@ CORE = {
     "Taxonomy-taxonomy.scientific_name": "identification_taxonomy-scientific_name",#parent
     "Taxonomy-taxonomy.scientific_name-scientific_name": "",
     "Taxonomy-taxonomy.scientific_name-common_name": "identification_taxonomy-common_name",
-    "Taxonomy-taxonomy.rank": "",#parent
-    "Taxonomy-taxonomy.rank-text": "identification_taxonomy-rank",
+    "Taxonomy-taxonomy.rank": "identification_taxonomy-rank",#parent
+    "Taxonomy-taxonomy.rank-text": "",
 
     #"Taxonomy-taxonomy.scientific_name.lref":"",
     #"Taxonomy-taxonomy.scientific_name.lref":"",

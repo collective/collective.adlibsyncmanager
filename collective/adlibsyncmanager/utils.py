@@ -8,7 +8,7 @@ subfields_types = {
 	"Taxonomy-taxonomy.scientific_name": "relation",
 	"Determination-determination.name": "relation",
 	"object_name-term": "gridlist",
-	"Taxonomy-taxonomy.rank-text": "choice",
+	"Taxonomy-taxonomy.rank": "choice",
 	"dimension.type-term": "choice",
 	"creator": "relation",
 	"creator.role-term": "gridlist",

@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Serial"
+PORTAL_TYPE = "Object"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -644,9 +644,11 @@ class Updater:
 
         # Check if first choice
         if subfield_type == "choice":
-            if type(value) == list:
+            if "taxonomy.rank" in self.xml_path:
+                value = value
+            elif type(value) == list:
                 return current_value
-            if xml_element.get('option') != "" and xml_element.get('option') != None:
+            elif xml_element.get('option') != "" and xml_element.get('option') != None:
                 if len(xml_element.findall('text')) > 0:
                     return current_value
                 else:
@@ -657,6 +659,7 @@ class Updater:
         for line in current_value:
             if subfield in line:
                 found = True
+
                 if subfield_type == "choice":
                     if line[subfield] == '_No value' and value == "":
                         line[subfield] = 'No value'
@@ -760,7 +763,11 @@ class Updater:
 
     def create_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         if subfield_type == "choice":
-            if xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
+            if "taxonomy.rank" in self.xml_path:
+                print "create new"
+                print value
+                pass
+            elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
         new_value = self.get_schema_gridfield(plone_fieldroot)
@@ -834,6 +841,14 @@ class Updater:
                 return ""
 
         elif field_type == "choice":
+            if "taxonomy.rank" in self.xml_path:
+                value = xml_element.get("value")
+                if value:
+                    print value
+                    return value.lower()
+                else:
+                    return ""
+
             if xml_element.get('language') == "0" and xml_element.get('language') != "" and xml_element.get('language') != None: # first entry
                 value = self.api.trim_white_spaces(xml_element.text)
                 if value == "":
@@ -1118,7 +1133,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = serial_total
+        collection_xml = collection_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1147,36 +1162,41 @@ class Updater:
                 self.object_number = ""
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
-                    self.object_number = object_number
-                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                    if plone_object:
-                        if self.portal_type == "Exhibition":
-                            plone_object.start = ""
-                            plone_object.end = ""
-                            plone_object.whole_day = True
+                    if object_number.lower() == "NHG00104":
+                        self.object_number = object_number
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                        if plone_object:
+                            if self.portal_type == "Exhibition":
+                                plone_object.start = ""
+                                plone_object.end = ""
+                                plone_object.whole_day = True
 
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
 
-                        if self.portal_type == "Exhibition":
-                            if plone_object.start:
-                                IEventBasic(plone_object).start = plone_object.start
-                            if plone_object.end:
-                                IEventBasic(plone_object).end = plone_object.end
-                            
-                        #plone_object.reindexObject()
-                  
-                    else:
-                        #created_object = self.create_object(xml_record)
-                        #self.update(xml_record, created_object, object_number)
-                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                        #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            if self.portal_type == "Exhibition":
+                                if plone_object.start:
+                                    IEventBasic(plone_object).start = plone_object.start
+                                if plone_object.end:
+                                    IEventBasic(plone_object).end = plone_object.end
+                                
+                            #plone_object.reindexObject()
+
+                            transaction.commit()
+                            break
+                      
+                        else:
+                            #created_object = self.create_object(xml_record)
+                            #self.update(xml_record, created_object, object_number)
+                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                            #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                            #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
