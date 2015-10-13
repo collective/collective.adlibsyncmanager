@@ -1,14 +1,11 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
-
-serial_subfields_types = {
+article_subfields_types = {
 	"author.name":"relation",
+	"Illustrator-illustrator.name": "relation",
+	"Illustrator-illustrator.role-term": "gridlist",
 	"corporate_author":"relation",
-	"publisher":"relation",
-	"print.name":"relation",
 	"serial.continued.from.recordno":"relation",
 	"serial.continued.as.recordno":"relation",
 	"author.role-term":"gridlist",
@@ -26,21 +23,23 @@ serial_subfields_types = {
 	"site":"gridlist",
 	"loan_category-term":"gridlist",
 	"site-term": "gridlist",
-	"used_for":"relation".
-	"use":"relation"
+	"used_for":"relation",
+	"use":"relation",
+	"source.title":"relation"
 }
 
-serial_relation_types = {
-	"author.name":"PersonOrInstitution",
-	"corporate_author":"PersonOrInstitution",
-	"publisher":"PersonOrInstitution",
-	"print.name":"PersonOrInstitution",
+article_relation_types = {
 	"serial.continued.from.recordno":"Serial",
 	"serial.continued.as.recordno":"Serial",
 	"person.keyword.name": "PersonOrInstitution",
 	"object.object_number":"Object",
 	"exhibition-exhibition": "Exhibition",
 	"used_for":"Bibliotheek",
-	"use": "Bibliotheek"
+	"use":"Bibliotheek",
+	"Illustrator-illustrator.name":"PersonOrInstitution",
+	"source.title":"Bibliotheek",
+	"corporate_author":"PersonOrInstitution",
+	"author.name":"PersonOrInstitution",
+	"Illustrator-illustrator.name":"PersonOrInstitution"
 }
 

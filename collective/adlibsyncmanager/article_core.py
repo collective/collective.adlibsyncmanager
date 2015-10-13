@@ -1,65 +1,49 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-SERIAL_CORE = {
+ARTICLE_CORE = {
+    
 	"priref":"priref",
-	"record":"",
 	"internal_link_priref":"",
     "internal_link_title":"",
 
+    'lead_word':'titleAuthorSource_titleAuthor_leadWord', 
+    'title':'titleAuthorSource_titleAuthor_title-title',
+    'statement_of_responsibility':'titleAuthorSource_titleAuthor_statementOfRespsib', 
 
-    'lead_word':'titleAuthorImprintCollation_titleAuthor_leadWord', 
+    'author.name-name':'',
+    'author.name':'titleAuthorSource_titleAuthor_author-authors',#grid
+    'author.role':'',
+	'author.role-term':'titleAuthorSource_titleAuthor_author-roles',#grid
 
-    'title':'titleAuthorImprintCollation_titleAuthor_title-title',#grid
-
-    'statement_of_responsibility':'titleAuthorImprintCollation_titleAuthor_statementOfRespsib', 
-
-    'author.name-name':"",
-    'author.name':'titleAuthorImprintCollation_titleAuthor_author-authors',#grid
-    "author.role":"",
-    'author.role-term':'titleAuthorImprintCollation_titleAuthor_author-roles',#grid
-
-
-    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor-corpAuthor',#grid
+	'Illustrator':'',
+    'Illustrator-illustrator.name':'titleAuthorSource_titleAuthor_illustrator-illustrators',#grid
+    'Illustrator-illustrator.name-name':'',
+    'Illustrator-illustrator.role-term':'titleAuthorSource_titleAuthor_illustrator-roles',#grid
+    'Illustrator-illustrator.role':'',
+    'corporate_author':'titleAuthorSource_titleAuthor_corpAuthors-corpAuthor',#grid
     'corporate_author-name':'',
 
-    'edition':'titleAuthorImprintCollation_edition_edition',
 
-    'issues':'titleAuthorImprintCollation_issues_issues',
-    
-    'place_of_publication':'titleAuthorImprintCollation_imprint_place-term',#grid
+    'source.title.article':'titleAuthorSource_source_source-sourceTitleArticle',
+    'source.title':'titleAuthorSource_source_source-sourceTitle',
+    'source.volume':'titleAuthorSource_source_source-volume',
+    'source.issue':'titleAuthorSource_source_source-issue',
+    'source.day':'titleAuthorSource_source_source-day',
+    'source.month':'titleAuthorSource_source_source-month',
+    'source.publication_years':'titleAuthorSource_source_source-year',
+    'source.pagination':'titleAuthorSource_source_source-pagination',
+    'source.notes':'titleAuthorSource_source_source-notes',
 
-    'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',#grid
-    'publisher-name':'',
+    'source.title-lead_word':'',
+    'source.title-material_type':'',
+    'source.title-title':'',
+    'source.material_type':'',
 
-    'year_of_publication':'titleAuthorImprintCollation_imprint_year', 
-    
-    'print.place':'',
-    'print.place-term':'titleAuthorImprintCollation_imprint_placesPrinted',
-
-    'print.name':'titleAuthorImprintCollation_imprint_printer-printer',#grid
-    'print.name-name':'',
-
-    'sort_year':'titleAuthorImprintCollation_sortYear_sortYear',
-    'illustrations':'titleAuthorImprintCollation_collation_illustrations', 
-    'dimensions':'titleAuthorImprintCollation_collation_dimensions', 
-    'accompanying_material':'titleAuthorImprintCollation_collation_accompanyingMaterial-term',#grid
-
-    # SERIES
-    'series.title':'',
-    'series.article':'seriesNotesISBN_series_series-seriesArticle',#grid
-    'series.title-series':'seriesNotesISBN_series_series-series',#grid
-    'series.number':'seriesNotesISBN_series_series-seriesNo',#grid
-    'series.title-issn':'seriesNotesISBN_series_series-ISSNSeries',#grid
-
-    'notes':'seriesNotesISBN_notes_bibliographicalNotes-term',# grid
-
-    'holding':'seriesNotesISBN_notes_holding-holding',#grid
-    'ISSN':'seriesNotesISBN_ISSN_ISSN-ISSN',#grid
-    #FIX '':'seriesNotesISBN_conference_conference-term',#grid
-    
-    'serial.continued.from.recordno':'seriesNotesISBN_continuation_continuedFrom-continuedFrom',#grid 
-    'serial.continued.as.recordno':'seriesNotesISBN_continuation_continuedAs-continuedAs',#grid
+    'sort_year':'titleAuthorSource_sortYear_sortYear',
+    'illustrations':'titleAuthorSource_illustrations_illustrations-term',#grid
+    'notes':'titleAuthorSource_notes_bibliographicalNotes-term',#grid
+    'conference':'titleAuthorSource_conference_conference-term',#grid
 
     # Abstract
     # Abstract and subject term fields
@@ -175,7 +159,6 @@ SERIAL_CORE = {
     'copy.number-location.note':'', 
     'copy.number-L1':'', 
     'copy.number-la':'', 
-    'source.volume':'',
 
     # Conference
     'child':'',
@@ -198,20 +181,6 @@ SERIAL_CORE = {
 	'datasets.collect-text':'',
 	"datasets.document.source":"",
 	"datasets.document.source-text":"",
-
-	"source.title-lead_word":"",
-	"source.title-material_type":"",
-	"source.title-title":"",
-	"source.month":"",
-	"pagination":"",
-	"source.issue":"",
-	"source.publication_years":"",
-
-	"source.title.article":"",
-	"source.material_type":"",
-	"source.title":"",
-	"source.pagination":"",
-	"series.title-lead_word":"",
 
     "reproduction":"",
     "reproduction-reproduction.format":"",
@@ -291,9 +260,6 @@ SERIAL_CORE = {
     'input.time': '',
 
     'series.issn':"",
+
 }
-
-
-
-
 

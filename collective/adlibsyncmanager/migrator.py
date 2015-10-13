@@ -8560,6 +8560,8 @@ class APIMigrator:
             result = self.find_taxonomie_by_priref(object_number)
         elif portal_type == "Serial":
             result = self.find_serial_by_priref(object_number)
+        elif portal_type == "Article":
+            result = self.find_article_by_priref(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
@@ -8838,6 +8840,16 @@ class APIMigrator:
     def find_serial_by_priref(self, priref):
         if priref:
             for brain in self.all_serials:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return None
+
+    def find_article_by_priref(self, priref):
+        if priref:
+            for brain in self.all_articles:
                 obj = brain.getObject()
                 if hasattr(obj, 'priref'):
                     if obj.priref == priref:

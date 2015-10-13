@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Article"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -115,6 +115,11 @@ elif PORTAL_TYPE == "Serial":
     from .serial_utils import serial_subfields_types as subfields_types
     from .serial_utils import serial_relation_types as relation_types
     from .serial_core import SERIAL_CORE as CORE
+
+elif PORTAL_TYPE == "Article":
+    from .article_utils import article_subfields_types as subfields_types
+    from .article_utils import article_relation_types as relation_types
+    from .article_core import ARTICLE_CORE as CORE
 
 
 DEBUG = False
@@ -1119,6 +1124,8 @@ class Updater:
         thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
         single_serial = "/Users/AG/Projects/collectie-zm/single-serial-v01.xml"
         serial_total = "/var/www/zm-collectie-v2/xml/Tijdschriften.xml"
+        single_article = "/Users/AG/Projects/collectie-zm/single-article-v01.xml"
+        article_total = "/var/www/zm-collectie-v2/xml/Artikelen.xml"
 
         #self.reindex_all_taxonomies()
         #return True
@@ -1133,7 +1140,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = collection_total
+        collection_xml = article_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1163,38 +1170,35 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
                     self.object_number = object_number
-                    if object_number.lower() == "ngh00104":
-                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                        if plone_object:
-                            if self.portal_type == "Exhibition":
-                                plone_object.start = ""
-                                plone_object.end = ""
-                                plone_object.whole_day = True
+                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    if plone_object:
+                        if self.portal_type == "Exhibition":
+                            plone_object.start = ""
+                            plone_object.end = ""
+                            plone_object.whole_day = True
 
-                            self.object_number = str(object_number)
-                            self.generate_field_types()
-                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.update(xml_record, plone_object, object_number)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            self.fix_all_choices(plone_object)
+                        self.object_number = str(object_number)
+                        self.generate_field_types()
+                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.update(xml_record, plone_object, object_number)
+                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        self.fix_all_choices(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                if plone_object.start:
-                                    IEventBasic(plone_object).start = plone_object.start
-                                if plone_object.end:
-                                    IEventBasic(plone_object).end = plone_object.end
-                                
-                            #plone_object.reindexObject()
-                            transaction.commit()
-                            break
-                      
-                        else:
-                            #created_object = self.create_object(xml_record)
-                            #self.update(xml_record, created_object, object_number)
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                            #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        if self.portal_type == "Exhibition":
+                            if plone_object.start:
+                                IEventBasic(plone_object).start = plone_object.start
+                            if plone_object.end:
+                                IEventBasic(plone_object).end = plone_object.end
+                            
+                        #plone_object.reindexObject()
+                  
+                    else:
+                        #created_object = self.create_object(xml_record)
+                        #self.update(xml_record, created_object, object_number)
+                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                        #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
 
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
