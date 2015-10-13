@@ -36,5 +36,6 @@ serial_relation_types = {
 	"serial.continued.from.recordno":"Serial",
 	"serial.continued.as.recordno":"Serial",
 	"person.keyword.name": "PersonOrInstitution",
-	"object.object_number":"Object"
+	"object.object_number":"Object",
+	"exhibition-exhibition": "Exhibition",
 }
