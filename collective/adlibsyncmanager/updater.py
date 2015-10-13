@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Serial"
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -110,6 +110,11 @@ elif PORTAL_TYPE == "Taxonomie":
     from .taxonomy_utils import taxonomy_subfields_types as subfields_types
     from .taxonomy_utils import taxonomy_relation_types as relation_types
     from .taxonomy_core import TAXONOMY_CORE as CORE
+
+elif PORTAL_TYPE == "Serial":
+    from .serial_utils import serial_subfields_types as subfields_types
+    from .serial_utils import serial_relation_types as relation_types
+    from .serial_core import SERIAL_CORE as CORE
 
 
 DEBUG = False
@@ -430,6 +435,25 @@ class Updater:
                     current_value.append(obj)
             else:
                 self.error("%s__%s__Cannot create relation with content type Archive priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+
+        elif objecttype_relatedto == "Serial":
+            obj = self.api.find_serial_by_priref(priref)
+            if obj:
+                if not grid:
+                    intids = component.getUtility(IIntIds)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s_%s_Serial relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+
+                    current_value.append(relation_value)
+                else:
+                    current_value = []
+                    current_value.append(obj)
+            else:
+                self.error("%s__%s__Cannot create relation with content type Serial priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
         elif objecttype_relatedto == "treatment":
             obj = self.api.find_treatment_by_treatmentnumber(priref)
@@ -886,6 +910,12 @@ class Updater:
                         by_name = True
                     else:
                         linkref = ""
+
+            elif objecttype_relatedto == "Serial":
+                linkref = xml_element.get('linkref')
+                if not linkref:
+                    linkdata = xml_element.get('linkdata')
+                    linkref = linkdata
                             
             elif objecttype_relatedto == "treatment":
                 linkref = xml_element.text
@@ -1072,6 +1102,9 @@ class Updater:
         single_taxonomy = "/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
         taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
         thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
+        single_serial = "/Users/AG/Projects/collectie-zm/single-serial-v01.xml"
+        serial_total = "/var/www/zm-collectie-v2/xml/Tijdschriften.xml"
+
 
         #self.reindex_all_taxonomies()
         #return True
@@ -1086,7 +1119,7 @@ class Updater:
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        collection_xml = collection_total
+        collection_xml = serial_total
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")

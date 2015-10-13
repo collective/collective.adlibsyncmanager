@@ -108,7 +108,8 @@ class APIMigrator:
         all_resources = catalog(portal_type='Resource', Language="all")
 
         all_taxonomies = catalog(portal_type='Taxonomie', Language="all")
-        
+        all_serials = catalog(portal_type='Serial', Language="all")
+
         self.all_objects = all_objects
         self.all_persons = all_persons
         self.all_archives = all_archives
@@ -120,6 +121,7 @@ class APIMigrator:
         self.all_objectentries = all_objectentries
         self.all_resources = all_resources
         self.all_taxonomies = all_taxonomies
+        self.all_serials = all_serials
 
     def build_api_request_all(self):
         url = ""
@@ -8556,6 +8558,8 @@ class APIMigrator:
             result = self.find_resource_by_priref(object_number)
         elif portal_type == "Taxonomie":
             result = self.find_taxonomie_by_priref(object_number)
+        elif portal_type == "Serial":
+            result = self.find_serial_by_priref(object_number)
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
@@ -8824,6 +8828,16 @@ class APIMigrator:
     def find_taxonomie_by_priref(self, priref):
         if priref:
             for brain in self.all_taxonomies:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+
+        return None
+
+    def find_serial_by_priref(self, priref):
+        if priref:
+            for brain in self.all_serials:
                 obj = brain.getObject()
                 if hasattr(obj, 'priref'):
                     if obj.priref == priref:
