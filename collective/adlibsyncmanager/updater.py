@@ -763,6 +763,9 @@ class Updater:
 
     def create_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         if subfield_type == "choice":
+            if value == "":
+                value = "No value"
+
             if "taxonomy.rank" in self.xml_path:
                 value = value
             elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
@@ -842,7 +845,6 @@ class Updater:
             if "taxonomy.rank" in self.xml_path:
                 value = xml_element.get("value")
                 if value:
-                    print value
                     return value.lower()
                 else:
                     return ""
@@ -1160,8 +1162,8 @@ class Updater:
                 self.object_number = ""
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
-                    if object_number.lower() == "NHG00104":
-                        self.object_number = object_number
+                    self.object_number = object_number
+                    if object_number.lower() == "ngh00104":
                         plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                         if plone_object:
                             if self.portal_type == "Exhibition":
@@ -1184,7 +1186,6 @@ class Updater:
                                     IEventBasic(plone_object).end = plone_object.end
                                 
                             #plone_object.reindexObject()
-
                             transaction.commit()
                             break
                       
