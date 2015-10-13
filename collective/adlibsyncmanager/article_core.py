@@ -24,6 +24,10 @@ ARTICLE_CORE = {
     'corporate_author':'titleAuthorSource_titleAuthor_corpAuthors-corpAuthor',#grid
     'corporate_author-name':'',
 
+    'publisher':'',
+    'publisher-name':'',
+    'place_of_publication':'',
+    'year_of_publication':'',
 
     'source.title.article':'titleAuthorSource_source_source-sourceTitleArticle',
     'source.title':'titleAuthorSource_source_source-sourceTitle',
