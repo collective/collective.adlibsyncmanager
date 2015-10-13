@@ -764,9 +764,7 @@ class Updater:
     def create_dictionary(self, subfield, current_value, value, xml_element, subfield_type, plone_fieldroot):
         if subfield_type == "choice":
             if "taxonomy.rank" in self.xml_path:
-                print "create new"
-                print value
-                pass
+                value = value
             elif xml_element.get('language') != "0" and xml_element.get('language') != "" and xml_element.get('language') != None:
                 return current_value
 
