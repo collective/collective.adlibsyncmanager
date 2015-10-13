@@ -43,6 +43,7 @@ ARTICLE_CORE = {
     'source.title-material_type':'',
     'source.title-title':'',
     'source.material_type':'',
+    'edition':'',
 
     'sort_year':'titleAuthorSource_sortYear_sortYear',
     'illustrations':'titleAuthorSource_illustrations_illustrations-term',#grid
