@@ -1159,7 +1159,7 @@ class Updater:
         limit = 0
         create_new = False
 
-        for xml_record in list(self.collection)[200:300]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1188,7 +1188,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                             
-                        #plone_object.reindexObject()
+                        plone_object.reindexObject()
                   
                     else:
                         if create_new:
