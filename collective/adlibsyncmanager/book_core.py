@@ -101,6 +101,8 @@ BOOK_CORE = {
     'auction.notes':'exhibitionsAuctionsCollections_auction-notes',
     'collection.notes':'exhibitionsAuctionsCollections_collection-notes',
 
+    'source.month':'',
+
     # Ignore fields from relation
     'exhibition': '',
     'exhibition-exhibition.date.start': '',
