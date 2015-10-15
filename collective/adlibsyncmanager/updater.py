@@ -55,7 +55,9 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Audiovisual"
+
+from .contenttypes_path import CONTENT_TYPES_PATH
 
 if PORTAL_TYPE == "Object":
     from .core import CORE
@@ -120,6 +122,11 @@ elif PORTAL_TYPE == "Article":
     from .article_utils import article_subfields_types as subfields_types
     from .article_utils import article_relation_types as relation_types
     from .article_core import ARTICLE_CORE as CORE
+
+elif PORTAL_TYPE == "Audiovisual":
+    from  audiovisual_utils import audiovisual_subfields_types as subfields_types
+    from  audiovisual_utils import audiovisual_relation_types as relation_types
+    from  audiovisual_core import AUDIOVISUAL_CORE as CORE
 
 
 DEBUG = False
@@ -564,8 +571,7 @@ class Updater:
             final_log = "[%s]__%s" %(str(timestamp), str(text))
             list_log = final_log.split('__')
             print final_log.replace('__', ' ')
-            wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
-            wr.writerow(list_log)
+            self.status_wr.writerow(list_log)
         else:
             return True
 
@@ -1107,45 +1113,9 @@ class Updater:
 
         return True
 
-
-    def start(self):
-        self.dev = False
-        
-        single_resource = "/Users/AG/Projects/collectie-zm/single-resource-v01.xml"
-        object_entry_single = "/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
-        object_entry_single_prod = "/var/www/zm-collectie-v2/xml/single-object-entry.xml"
-        exhibition_single = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
-        treatment_single = "/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
-        outgoing_single = "/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
-        incomming_single = "/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
-        book_single = "/Users/AG/Projects/collectie-zm/single-book-v02.xml"
-        person_single = "/Users/AG/Projects/collectie-zm/single-persons-v3.xml"
-        person_single_prod = "/var/www/zm-collectie-v2/xml/person.xml"
-        collection_path = "/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
-        collection_path_prod = "/var/www/zm-collectie-v2/xml/single-book-v02.xml"
-        test = "/Users/AG/Projects/collectie-zm/objectsall2.xml"
-        collection_total = "/var/www/zm-collectie-v2/xml/objectsall.xml"
-        book_total = "/var/www/zm-collectie-v2/xml/booksall.xml"
-        persons_total = "/var/www/zm-collectie-v2/xml/persons.xml"
-        exhibitions_total = "/var/www/zm-collectie-v2/xml/Tentoonstellingen.xml"
-        incoming_total = "/var/www/zm-collectie-v2/xml/incomingloans.xml"
-        outgoing_total = "/var/www/zm-collectie-v2/xml/outgoingloans.xml"
-        treatment_total = "/var/www/zm-collectie-v2/xml/Treatments.xml"
-        objectentry_total = "/var/www/zm-collectie-v2/xml/objectentries.xml"
-        resources_total = "/var/www/zm-collectie-v2/xml/Digitalebronnen.xml"
-        single_object = "/Users/AG/Projects/collectie-zm/single-object-v33.xml"
-        single_taxonomy = "/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
-        taxonomies_total = "/var/www/zm-collectie-v2/xml/Taxonomies-v01.xml"
-        thirdparty = "/var/www/zm-collectie-v2/xml/thirdparty.xml"
-        single_serial = "/Users/AG/Projects/collectie-zm/single-serial-v01.xml"
-        serial_total = "/var/www/zm-collectie-v2/xml/Tijdschriften.xml"
-        single_article = "/Users/AG/Projects/collectie-zm/single-article-v01.xml"
-        article_total = "/var/www/zm-collectie-v2/xml/Artikelen.xml"
-
-        self.reindex_all_persons()
-        return True
-
+    def init_log_files(self):
         timestamp = datetime.datetime.today().isoformat()
+
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         
@@ -1154,8 +1124,7 @@ class Updater:
         
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
-        
-        collection_xml = collection_total
+
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
             self.warning_log_file = open(self.warning_path_dev, "w+")
@@ -1168,16 +1137,29 @@ class Updater:
         self.error_wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
         self.warning_wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
         self.status_wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
-        
 
+        
+    def start(self):
+        self.dev = False
+        self.init_log_files()
+    
+        #
+        # Choose collection XML
+        #
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
+
+        #
+        # Generate field types
+        #
         self.generate_field_types()
 
         total = len(list(self.collection))
         curr = 0
         limit = 0
+        create_new = False
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
@@ -1209,12 +1191,14 @@ class Updater:
                         #plone_object.reindexObject()
                   
                     else:
-                        #created_object = self.create_object(xml_record)
-                        #self.update(xml_record, created_object, object_number)
-                        self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-                        #self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                        #self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-
+                        if create_new:
+                            created_object = self.create_object(xml_record)
+                            self.update(xml_record, created_object, object_number)
+                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        else:
+                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                        
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
