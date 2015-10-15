@@ -13,6 +13,7 @@ BOOK_CORE = {
     'statement_of_responsibility':'titleAuthorImprintCollation_titleAuthor_statementOfRespsib', 
     'author.name':'titleAuthorImprintCollation_titleAuthor_author-authors',
     'author.name-name':'',
+    'author.role':'',
     'author.role-term': 'titleAuthorImprintCollation_titleAuthor_author-roles',
     'Illustrator':'',
     'Illustrator-illustrator.role':'',
@@ -114,7 +115,7 @@ BOOK_CORE = {
     'exhibition-exhibition-organiser':'',
     'exhibition-exhibition-venue':'',
     'exhibition-exhibition-venue.place':'',
-    
+    'exhibition-old.exhibition.date.end' :'',
 
     # Reproductions
     'reproduction':'',
@@ -124,8 +125,8 @@ BOOK_CORE = {
 
  	# Relations
  	'volume':'relations_volume', 
- 	'use':'relations_analyticalCataloguing_partOf',
-    'used_for':'relations_analyticalCataloguing_consistsOf',
+ 	'use':'relations_analyticalCataloguing_partOf-partOf',
+    'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
     'object.object_number':'relations_museumObjects-objectNo',
 
     # Ignore fields from relation with object
@@ -171,6 +172,75 @@ BOOK_CORE = {
     'copy.number-L1':'', 
     'copy.number-la':'', 
     'source.volume':'',
+
+    # Ignored fields that come from reproduction
+    "reproduction-reproduction.format":"",
+    "reproduction-reproduction.reference":"",
+    "reproduction-reproduction.reference-format":"",
+    "reproduction-reproduction.reference-production_date":"",
+    "reproduction-reproduction.reference-reproduction_type":"",
+    "reproduction-reproduction.reference-creator":"",
+    "reproduction-reproduction.date":"",
+    "reproduction-reproduction.type":"",
+    "reproduction-reproduction.creator":"",
+    "reproduction-reproduction.identifier_URL":"",
+
+    # Ignored fields that come from a auction
+    "auction.place":"",
+    "auction.number":"",
+    "auction.auctioneer":"",
+    "auction.startdate":"",
+    "auction.enddate":"",
+    "auction.name":"",
+    "auction.name-place":"",
+    "auction.name-auction_number":"",
+    "auction.name-auctioneer":"",
+    "auction.name-date_early":"",
+    "auction.name-date_late":"",
+    "auction.name-commissair-priseur":"",
+    "auction.name-location":"",
+    "auction.name-collector":"",
+    "auction.commissair-priseur":"",
+    "auction.location":"",
+    "subseries.title":"",
+    "auction.collector":"",
+
+    # Ignored field that come from relation
+    "child":"",
+    "child-exhibition"
+    "child-exhibition-exhibition.date.start":"",
+    "child-exhibition-exhibition.date.end":"",
+    "child-exhibition-exhibition.notes":"",
+    "child-exhibition-old.exhibition.date.end":"",
+    "child-exhibition-exhibition":"",
+    "child-exhibition-exhibition-date.start":"",
+    "child-exhibition-exhibition-date.end":"",
+    "child-exhibition-exhibition-title":"",
+    "child-exhibition-exhibition-organiser":"",
+    "child-exhibition-exhibition-venue":"",
+    "child-exhibition-exhibition-venue.place":"",
+    "child-exhibition-exhibition.organiser":"",
+    "child-exhibition-old.exhibition.date.start":"",
+    "child-exhibition-exhibition.venue":"",
+    "child-exhibition-exhibition.place":"",
+    "child-notes":"",
+    "child-author.name":"",
+    "child-author.name-name":"",
+    "child-Edit":"",
+    "child-Edit-edit.date":"",
+    "child-Edit-edit.notes":"",
+    "child-Edit-edit.name":"",
+    "child-Edit-edit.time":"",
+    "child-Edit-edit.source":"",
+    "child-year_of_publication":"",
+    "child-parent":"",
+    "child-material_type":"",
+    "child-material_type-term":"",
+    "child-comments":"",
+    "child-title":"",
+    "child-exhibition":"",
+    "child-exhibition-exhibition.date.start":"",
+
 
     # Conference
     'conference':'',
