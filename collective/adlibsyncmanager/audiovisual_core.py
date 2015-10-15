@@ -40,7 +40,8 @@ AUDIOVISUAL_CORE = {
     "quantity":"titleAuthorImprintCollation_collation_quantity",
     "pagination":"titleAuthorImprintCollation_collation_contents",
     "attributes":"titleAuthorImprintCollation_collation_physicalDetails-term",
-
+    "acquisition_date":"",
+    
     # Series, Notes ISBN
     'series.article':'seriesNotesISBN_series_series-seriesArticle',
     'series.title':'',
