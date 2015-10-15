@@ -1093,6 +1093,21 @@ class Updater:
         return True
 
 
+    def reindex_all_persons(self):
+        index = "nameInformation_name_nameType_type"
+
+        curr = 0
+        transaction.begin()
+        for person in self.api.all_persons:
+            curr += 1 
+            print curr
+            obj = person.getObject()
+            obj.reindexObject(idxs=[index])
+        transaction.commit()
+
+        return True
+
+
     def start(self):
         self.dev = False
         
@@ -1127,8 +1142,8 @@ class Updater:
         single_article = "/Users/AG/Projects/collectie-zm/single-article-v01.xml"
         article_total = "/var/www/zm-collectie-v2/xml/Artikelen.xml"
 
-        #self.reindex_all_taxonomies()
-        #return True
+        self.reindex_all_persons()
+        return True
 
         timestamp = datetime.datetime.today().isoformat()
         self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
