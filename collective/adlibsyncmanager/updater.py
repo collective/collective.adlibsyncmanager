@@ -1113,6 +1113,31 @@ class Updater:
 
         return True
 
+
+    def create_large_pages(self):
+        total = 100000
+        curr = 0
+        for i in range(100):
+            curr += 1
+            print "%s / %s" %(str(curr), str(total))
+            transaction.begin()
+            
+            container = self.api.get_folder('nl/test-large')
+            dirty_id = "page %s" %(str(i+1))
+            normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+
+            container.invokeFactory(
+                type_name='Document',
+                id=normalized_id,
+                title=dirty_id
+            )
+            traaction.commit()
+
+        return True
+
+
+
+
     def init_log_files(self):
         timestamp = datetime.datetime.today().isoformat()
 
@@ -1141,7 +1166,9 @@ class Updater:
         
     def start(self):
         self.dev = False
-        self.init_log_files()
+
+        self.create_large_pages()
+        #self.init_log_files()
     
         #
         # Choose collection XML
