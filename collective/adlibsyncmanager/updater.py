@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Book"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1205,7 +1205,7 @@ class Updater:
         limit = 0
         create_new = True
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[31700:]:
             try:
                 curr += 1
                 transaction.begin()
@@ -1241,8 +1241,10 @@ class Updater:
                         if create_new:
                             created_object = self.create_object(xml_record)
                             self.update(xml_record, created_object, object_number)
+                            self.fix_all_choices(plone_object)
+                            created_object.reindexObject()
                             self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
                         else:
                             self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
                         
