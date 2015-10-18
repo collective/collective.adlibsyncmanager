@@ -1052,11 +1052,28 @@ class Updater:
 
         return True
 
+    def get_required_field_by_type(self, xml_record):
+        title = ""
+        if self.portal_type == "Taxonomie":
+            if xml_record.find("scientific_name") != None:
+                title = xml_record.find("scientific_name").text
+
+        elif self.portal_type == "Object":
+            if xml_record.find("object_number") != None:
+                title = xml_record.find("object_number").text
+        else:
+            self.error("Content type not supported to be created.")
+        return title
+
     def get_title_by_type(self, xml_record):
         title = ""
         if self.portal_type == "Taxonomie":
             if xml_record.find("scientific_name") != None:
                 title = xml_record.find("scientific_name").text
+
+        elif self.portal_type == "Object":
+            if xml_record.find("title") != None:
+                title = xml_record.find("title").text
         else:
             self.error("Content type not supported to be created.")
         return title
@@ -1064,12 +1081,14 @@ class Updater:
     def create_object(self, xml_record):
 
         REQUIRED_FIELDS = {
-            "Taxonomie": "taxonomicTermDetails_term_scientificName"
+            "Taxonomie": "taxonomicTermDetails_term_scientificName",
+            "Object": "object_number"
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
         container = self.api.get_folder('nl/intern/taxonomy')
         title = self.get_title_by_type(xml_record)
+        required_field_value = self.get_required_field_by_type(xml_record)
 
         dirty_id = "%s %s"%(str(self.object_number), str(title.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
@@ -1082,7 +1101,7 @@ class Updater:
 
         created_object = container[str(normalized_id)]
         created_object.portal_workflow.doActionFor(created_object, "publish", comment="Item published")
-        setattr(created_object, required_field, title)
+        setattr(created_object, required_field, required_field_value)
 
         return created_object
 
@@ -1131,7 +1150,7 @@ class Updater:
                 id=normalized_id,
                 title=dirty_id
             )
-            traaction.commit()
+            transaction.commit()
 
         return True
 
@@ -1215,7 +1234,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                             
-                        plone_object.reindexObject()
+                        #plone_object.reindexObject()
                   
                     else:
                         if create_new:

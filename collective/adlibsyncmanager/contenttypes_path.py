@@ -63,7 +63,7 @@ CONTENT_TYPES_PATH = {
 	    },
 	    "prod": {
 	        "single":"",
-	        "total":"/var/www/zm-collectie-v2/xml/objectsall.xml"
+	        "total":"/var/www/zm-collectie-v2/xml/Objects-all-v02.xml"
 	    },
 	    "thirdparty":"/var/www/zm-collectie-v2/xml/thirdparty.xml"
 	},
