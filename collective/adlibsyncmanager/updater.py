@@ -1086,7 +1086,7 @@ class Updater:
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
-        container = self.api.get_folder('nl/intern/taxonomy')
+        container = self.api.get_folder('nl/collectie/collectie')
         title = self.get_title_by_type(xml_record)
         required_field_value = self.get_required_field_by_type(xml_record)
 
@@ -1186,8 +1186,8 @@ class Updater:
     def start(self):
         self.dev = False
 
-        self.create_large_pages()
-        #self.init_log_files()
+        #self.create_large_pages()
+        self.init_log_files()
     
         #
         # Choose collection XML
@@ -1203,7 +1203,7 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-        create_new = False
+        create_new = True
 
         for xml_record in list(self.collection):
             try:
@@ -1215,7 +1215,7 @@ class Updater:
                     self.object_number = object_number
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
-                        if self.portal_type == "Exhibition":
+                        """if self.portal_type == "Exhibition":
                             plone_object.start = ""
                             plone_object.end = ""
                             plone_object.whole_day = True
@@ -1234,7 +1234,8 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                             
-                        #plone_object.reindexObject()
+                        #plone_object.reindexObject()"""
+                        pass
                   
                     else:
                         if create_new:
