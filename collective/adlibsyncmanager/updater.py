@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Book"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1203,9 +1203,9 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-        create_new = True
+        create_new = False
 
-        for xml_record in list(self.collection)[31700:]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1215,7 +1215,7 @@ class Updater:
                     self.object_number = object_number
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     if plone_object:
-                        """if self.portal_type == "Exhibition":
+                        if self.portal_type == "Exhibition":
                             plone_object.start = ""
                             plone_object.end = ""
                             plone_object.whole_day = True
@@ -1234,14 +1234,14 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                             
-                        #plone_object.reindexObject()"""
-                        pass
+                        #plone_object.reindexObject()
+                        
                   
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
                             self.update(xml_record, created_object, object_number)
-                            self.fix_all_choices(plone_object)
+                            self.fix_all_choices(created_object)
                             created_object.reindexObject()
                             self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
                             self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
