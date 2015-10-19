@@ -9162,7 +9162,7 @@ class APIMigrator:
         api.content.move(source=source, target=target)
 
     def divide_collection_by_folder(self):
-        container = self.get_container()
+        container = self.get_folder('nl/collectie/collectie')
 
         geschiedenis = ['Archeologie', 'Beeld en geluid - overig', 'Bouwfragmenten', 'Boeken',
                         'Documenten', 'Etnografica - boeken', 'Etnografica - documenten',

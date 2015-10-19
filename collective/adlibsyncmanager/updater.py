@@ -124,9 +124,9 @@ elif PORTAL_TYPE == "Article":
     from .article_core import ARTICLE_CORE as CORE
 
 elif PORTAL_TYPE == "Audiovisual":
-    from  audiovisual_utils import audiovisual_subfields_types as subfields_types
-    from  audiovisual_utils import audiovisual_relation_types as relation_types
-    from  audiovisual_core import AUDIOVISUAL_CORE as CORE
+    from  .audiovisual_utils import audiovisual_subfields_types as subfields_types
+    from  .audiovisual_utils import audiovisual_relation_types as relation_types
+    from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
 
 
 DEBUG = False
@@ -1187,7 +1187,10 @@ class Updater:
         self.dev = False
 
         #self.create_large_pages()
-        self.init_log_files()
+        self.api.divide_collection_by_folder()
+        return True
+        
+        #self.init_log_files()
     
         #
         # Choose collection XML
