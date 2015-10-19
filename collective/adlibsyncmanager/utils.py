@@ -76,11 +76,15 @@ subfields_types = {
 	"owner_hist.acquired_from":"relation",
 	"owner_hist.owner":"relation",
 	"free_field.confidential":"bool",
-	"dimension.unit-term":"choice"
+	"dimension.unit-term":"choice",
+	"association.subject.tax":"relation",
+	"content.subject.tax":"relation"
 	#"owner_hist.auction": "relation"
 }
 
 relation_types = {
+	"content.subject.tax": "Taxonomie",
+	"association.subject.tax": "Taxonomie",
 	"Taxonomy-taxonomy.scientific_name":"Taxonomie",
 	"creator": "PersonOrInstitution",
 	"inscription.maker": "PersonOrInstitution",

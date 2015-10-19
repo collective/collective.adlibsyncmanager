@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Book"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1155,8 +1155,6 @@ class Updater:
         return True
 
 
-
-
     def init_log_files(self):
         timestamp = datetime.datetime.today().isoformat()
 
@@ -1187,10 +1185,10 @@ class Updater:
         self.dev = False
 
         #self.create_large_pages()
-        self.api.divide_collection_by_folder()
-        return True
-        
-        #self.init_log_files()
+        #self.api.divide_collection_by_folder()
+        #return True
+
+        self.init_log_files()
     
         #
         # Choose collection XML
@@ -1236,9 +1234,8 @@ class Updater:
                                 IEventBasic(plone_object).start = plone_object.start
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
-                            
-                        #plone_object.reindexObject()
                         
+                        #plone_object.reindexObject() 
                   
                     else:
                         if create_new:

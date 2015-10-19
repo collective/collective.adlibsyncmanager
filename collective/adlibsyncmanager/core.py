@@ -61,6 +61,7 @@ CORE = {
     "Determination-determination.name": "identification_taxonomy_determiners-name",
     "Determination-determination.name-name": "",#value is in the relation - parent
     "Determination-determination.date": "identification_taxonomy_determiners-date",
+    "object_status":"",
     "object_status-text": "identification_taxonomy_objectstatus",
     "determination.notes": "identification_taxonomy_notes-notes",
 
@@ -163,14 +164,13 @@ CORE = {
     "content.subject.name-term": "iconography_contentSubjects-properName",
     "content.subject.tax.rank": "",#parent
     "content.subject.tax.rank-text":"iconography_contentSubjects-taxonomicRank",
-    "content.subject.tax":"",#parent
-    "content.subject.tax-scientific_name": "iconography_contentSubjects-scientificName",
+    "content.subject.tax":"iconography_contentSubjects-scientificName",#parent
+    "content.subject.tax-scientific_name": "",
     "content.subject.note": "iconography_contentSubjects-notes",
 
     "content.subject":"",
     "content.subject-term":"iconography_contentSubjects-subject",
     "content.subject.identifier":"iconography_contentSubjects-identifier",
-
 
     "content.date.position": "iconography_contentPeriodDates-position",
     "content.date.period":"",# parent
@@ -428,7 +428,8 @@ CORE = {
     "disposal.document.description":"disposal_documentation-description",
     "disposal.document.reference":"disposal_documentation-reference",
     "disposal.notes":"disposal_notes",
-
+    "despatch.number":"",
+    "acquisition.auction":"",
     #
     # Associations
     #
@@ -441,9 +442,10 @@ CORE = {
     "association.person.date.start":"associations_associatedPersonInstitutions-startDate",# removed based on feedback
     "association.person.date.end":"associations_associatedPersonInstitutions-endDate",# removed based on feedback
     "association.person.note":"associations_associatedPersonInstitutions-notes",
-
+    "association.subject.tax.rank":"",
     "association.subject.tax.rank-text": "associations_associatedSubjects-taxonomicRank",
-    "association.subject.tax-scientific_name": "associations_associatedSubjects-scientificName",
+    "association.subject.tax":"associations_associatedSubjects-scientificName",
+    "association.subject.tax-scientific_name": "",
     "association.subject.name":"",
     "association.subject.name-term":"associations_associatedSubjects-properName",
     "association.subject":"",
