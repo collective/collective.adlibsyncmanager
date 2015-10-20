@@ -1004,6 +1004,10 @@ class Updater:
         if value != None:
             if field_type == "choice" and (value == "" or value == " "):
                 value = "No value"
+
+            if "object.object_number" in self.xml_path:
+                print "values"
+                print len(value)
             setattr(plone_object, plone_fieldname, value)
         else:
             self.error("Value to be set is None. field: %s" %(plone_fieldname))
