@@ -346,6 +346,7 @@ class Updater:
                         if relation.to_object.id == taxonomy.id:
                             self.warning("%s__%s__Taxonomie Relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -394,7 +395,10 @@ class Updater:
                     self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with priref %s" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
 
         elif objecttype_relatedto == "Object":
+            print "relation with obj"
             obj = self.api.find_object(self.api.all_objects, priref)
+            print "result:"
+            print obj
             if obj:
                 if not grid:
                     intids = component.getUtility(IIntIds)
@@ -405,6 +409,7 @@ class Updater:
                             self.warning("%s__%s__Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
+                    print current_value
                 else:
                     current_value = []
                     current_value.append(obj)
