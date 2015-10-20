@@ -1007,8 +1007,9 @@ class Updater:
 
             if "object.object_number" in self.xml_path:
                 print "Number of values: "+str(len(value))
-                value = value[:2]
-                #print len(value)
+                if len(value) > 100:
+                    value = value[:100]
+                #print len(value)1
             setattr(plone_object, plone_fieldname, value)
         else:
             self.error("Value to be set is None. field: %s" %(plone_fieldname))
