@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Book"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -318,7 +318,7 @@ class Updater:
         if grid:
             current_value = []
 
-        current_value = []
+        #current_value = []
 
         if objecttype_relatedto == "Taxonomie":
             if by_name:
@@ -402,7 +402,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.identification_identification_objectNumber == priref:
-                            self.warning("%s_%s_Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s__%s__Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
@@ -420,7 +420,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.id == obj.id:
-                            self.warning("%s_%s_Exhibition relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s__%s__Exhibition relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
                     current_value.append(relation_value)
                 else:
@@ -438,7 +438,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.id == obj.id:
-                            self.warning("%s_%s_Archive relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s__%s__Archive relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
 
                     current_value.append(relation_value)
@@ -457,7 +457,7 @@ class Updater:
                     relation_value = RelationValue(obj_id)
                     for relation in current_value:
                         if relation.to_object.id == obj.id:
-                            self.warning("%s_%s_Serial relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            self.warning("%s__%s__Serial relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
 
                     current_value.append(relation_value)
@@ -471,10 +471,15 @@ class Updater:
             obj = self.api.find_treatment_by_treatmentnumber(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__Treatment relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -486,10 +491,15 @@ class Updater:
             obj = self.api.find_outgoingloan_by_priref(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__Outgoing loan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -501,10 +511,14 @@ class Updater:
             obj = self.api.find_incomingloan_by_priref(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__IncomingLoan relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -516,10 +530,15 @@ class Updater:
             obj = self.api.find_article_by_priref(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__Article relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -531,10 +550,14 @@ class Updater:
             obj = self.api.find_bibliotheek_by_priref(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__Bibliotheek relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -546,10 +569,15 @@ class Updater:
             obj = self.api.find_objectentry_by_priref(priref)
             if obj:
                 if not grid:
-                    current_value = []
+                    #current_value = []
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    for relation in current_value:
+                        if relation.to_object.id == obj.id:
+                            self.warning("%s__%s__ObjectEntry relation already created with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
+                            return current_value
+
                     current_value.append(relation_value)
                 else:
                     current_value = []
@@ -557,7 +585,6 @@ class Updater:
             else:
                 self.error("%s__%s__Cannot create relation with content type ObjectEntry with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                 
-
         else:
             self.error("%s__%s__Relation type not available %s" %(str(self.object_number), str(self.xml_path), str(objecttype_relatedto)))
 
@@ -1214,39 +1241,45 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
                     self.object_number = object_number
-                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                    if plone_object:
-                        if self.portal_type == "Exhibition":
-                            plone_object.start = ""
-                            plone_object.end = ""
-                            plone_object.whole_day = True
 
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
+                    if self.object_number == "11210":
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                        if plone_object:
+                            if self.portal_type == "Exhibition":
+                                plone_object.start = ""
+                                plone_object.end = ""
+                                plone_object.whole_day = True
 
-                        if self.portal_type == "Exhibition":
-                            if plone_object.start:
-                                IEventBasic(plone_object).start = plone_object.start
-                            if plone_object.end:
-                                IEventBasic(plone_object).end = plone_object.end
-                        
-                        #plone_object.reindexObject() 
-                  
-                    else:
-                        if create_new:
-                            created_object = self.create_object(xml_record)
-                            self.update(xml_record, created_object, object_number)
-                            self.fix_all_choices(created_object)
-                            created_object.reindexObject()
-                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
+
+                            if self.portal_type == "Exhibition":
+                                if plone_object.start:
+                                    IEventBasic(plone_object).start = plone_object.start
+                                if plone_object.end:
+                                    IEventBasic(plone_object).end = plone_object.end
+                            
+                            #plone_object.reindexObject() 
+                      
                         else:
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                            if create_new:
+                                created_object = self.create_object(xml_record)
+                                self.update(xml_record, created_object, object_number)
+                                self.fix_all_choices(created_object)
+                                created_object.reindexObject()
+                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            else:
+                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+
+                        transaction.commit()
+                        break
+
                         
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))

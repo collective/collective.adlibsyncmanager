@@ -21,15 +21,21 @@ BOOK_CORE = {
     'Illustrator-illustrator.role-term':'titleAuthorImprintCollation_titleAuthor_illustrator-roles',
     'Illustrator-illustrator.name-name':'',
     'corporate_author-name':'', 
-    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor-corpAuthor',
+
+    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthors',
+
     'edition':'titleAuthorImprintCollation_edition_edition',
     'place_of_publication':'titleAuthorImprintCollation_imprint_place-term', 
-    'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',
+
+    'publisher':'titleAuthorImprintCollation_imprint_publishers',
+
     'publisher-name':'',
     'year_of_publication':'titleAuthorImprintCollation_imprint_year', 
     'print.place':'',
     'print.place-term':'titleAuthorImprintCollation_imprint_placesPrinted',
-    'print.name':'titleAuthorImprintCollation_imprint_printer-printer', 
+
+    'print.name':'titleAuthorImprintCollation_imprint_printers', 
+
     'print.name-name':'',
     'sort_year':'titleAuthorImprintCollation_sortYear_sortYear',
     'pagination':'titleAuthorImprintCollation_collation_pagination', 
@@ -127,9 +133,12 @@ BOOK_CORE = {
 
  	# Relations
  	'volume':'relations_volume', 
- 	'use':'relations_analyticalCataloguing_partOf-partOf',
-    'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
-    'object.object_number':'relations_museumObjects-objectNo',
+ 	
+    'use':'relations_analyticalCataloguing_partsOf',
+
+    'used_for':'relations_analyticalCataloguing_consistsof',
+    
+    'object.object_number':'relations_museumobjects',
 
     # Ignore fields from relation with object
     'object.object_number-object_number':'',
