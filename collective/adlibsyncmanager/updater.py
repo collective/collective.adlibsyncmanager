@@ -396,11 +396,11 @@ class Updater:
 
         elif objecttype_relatedto == "Object":
             print "relation with obj"
+            print current_value
             obj = self.api.find_object(self.api.all_objects, priref)
-            print "result:"
-            print obj
             if obj:
                 if not grid:
+                    print "not grid"
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
@@ -411,6 +411,7 @@ class Updater:
                     current_value.append(relation_value)
                     print current_value
                 else:
+                    print "grid"
                     current_value = []
                     current_value.append(obj)
             else:
@@ -938,6 +939,7 @@ class Updater:
         # Create relation type
         elif field_type == "relation":
             value = []
+
             by_name = False
             objecttype_relatedto, grid = self.get_objecttype_relation(plone_fieldname)
             if objecttype_relatedto == "Object":
