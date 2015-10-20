@@ -1007,6 +1007,7 @@ class Updater:
 
             if "object.object_number" in self.xml_path:
                 print "Number of values: "+str(len(value))
+                value = value[:2]
                 #print len(value)
             setattr(plone_object, plone_fieldname, value)
         else:
