@@ -395,23 +395,23 @@ class Updater:
                     self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with priref %s" %(str(self.object_number), str(self.xml_path), str(priref.encode('ascii', 'ignore'))))
 
         elif objecttype_relatedto == "Object":
-            print "relation with obj"
-            print current_value
             obj = self.api.find_object(self.api.all_objects, priref)
             if obj:
                 if not grid:
-                    print "not grid"
                     intids = component.getUtility(IIntIds)
                     obj_id = intids.getId(obj)
                     relation_value = RelationValue(obj_id)
+                    
+                    if len(current_value) == 0:
+                        current_value = []
+
                     for relation in current_value:
                         if relation.to_object.identification_identification_objectNumber == priref:
                             self.warning("%s__%s__Object relation already created with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                             return current_value
+
                     current_value.append(relation_value)
-                    print current_value
                 else:
-                    print "grid"
                     current_value = []
                     current_value.append(obj)
             else:
@@ -1271,8 +1271,9 @@ class Updater:
                                 if plone_object.end:
                                     IEventBasic(plone_object).end = plone_object.end
                             
-                            #plone_object.reindexObject() 
-                      
+                            plone_object.reindexObject() 
+                            transaction.commit()
+                            break
                         else:
                             if create_new:
                                 created_object = self.create_object(xml_record)
@@ -1284,8 +1285,7 @@ class Updater:
                             else:
                                 self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
 
-                        transaction.commit()
-                        break
+                        
 
                         
                 else:
