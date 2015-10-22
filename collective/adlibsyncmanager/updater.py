@@ -1268,8 +1268,6 @@ class Updater:
         #return True
 
         #self.create_page_relations()
-        self.reindex_books()
-        return True
         self.init_log_files()
     
         #
