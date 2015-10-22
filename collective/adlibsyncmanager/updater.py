@@ -1127,7 +1127,7 @@ class Updater:
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
-        container = self.api.get_folder('nl/collectie/collectie')
+        container = self.api.get_folder('objects')
         title = self.get_title_by_type(xml_record)
         required_field_value = self.get_required_field_by_type(xml_record)
 
@@ -1244,15 +1244,32 @@ class Updater:
             if curr >= limit:
                 transaction.commit()
                 return True
+
+    def reindex_books(self):
+
+        total = len(self.api.all_books)
+        curr = 0
+
+        for brain in self.api.all_books:
+            obj = brain.getObject()
+            obj.reindexObject()
+            curr += 1
+
+            print "Reindexing %s / %s" %(str(curr), str(total))
+
+        return True 
+
         
     def start(self):
-        self.dev = True
+        self.dev = False
 
         #self.create_large_pages()
         #self.api.divide_collection_by_folder()
         #return True
 
         #self.create_page_relations()
+        self.reindex_books()
+        return True
         self.init_log_files()
     
         #
@@ -1269,19 +1286,19 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-        create_new = True
+        create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
                 self.object_number = ""
-                #object_number = self.get_object_number(xml_record, self.portal_type)
-                object_number = ""
+                object_number = self.get_object_number(xml_record, self.portal_type)
                 if object_number:
                     self.object_number = object_number
 
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    
                     if plone_object:
                         if self.portal_type == "Exhibition":
                             plone_object.start = ""
@@ -1302,9 +1319,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        plone_object.reindexObject() 
-                        transaction.commit()
-                        break
+                        #plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
@@ -1314,11 +1329,7 @@ class Updater:
                             self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
                             self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
                         else:
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
-
-                        
-
-                        
+                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 

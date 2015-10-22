@@ -106,11 +106,11 @@ class APIMigrator:
         all_articles = catalog(portal_type='Article', Language="all")
         all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
         all_resources = catalog(portal_type='Resource', Language="all")
-
+        all_books = catalog(portal_type='Book', Language="all")
         all_taxonomies = catalog(portal_type='Taxonomie', Language="all")
         all_serials = catalog(portal_type='Serial', Language="all")
         all_audiovisuals = catalog(portal_type='Audiovisual', Language="all")
-
+        self.all_books = all_books
         self.all_objects = all_objects
         self.all_persons = all_persons
         self.all_archives = all_archives
@@ -8543,7 +8543,7 @@ class APIMigrator:
         if portal_type == "Object":
             result = self.find_object(self.all_objects, object_number, False)
         elif portal_type == "Book":
-            result = self.find_object(self.all_objects, object_number, True)
+            result = self.find_book_by_priref(object_number)
         elif portal_type == "PersonOrInstitution":
             result = self.find_person_by_priref(self.all_persons, object_number)
         elif portal_type == "Exhibition":
@@ -8744,6 +8744,15 @@ class APIMigrator:
                         relations.append(obj)
 
         return relations
+
+    def find_book_by_priref(self, priref):
+        if priref:
+            for brain in self.all_books:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+        return None
 
     def find_bibliotheek_by_priref(self, priref):
         if priref:
