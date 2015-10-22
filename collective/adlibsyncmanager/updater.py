@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Book"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -889,7 +889,14 @@ class Updater:
             if "taxonomy.rank" in self.xml_path:
                 value = xml_element.get("value")
                 if value:
-                    return value.lower()
+                    if len(xml_element.findall('text')) > 0:
+                        value = xml_element.find('text').text
+                        if value:
+                            return value
+                        else:
+                            return ""
+                    else:
+                        return ""
                 else:
                     return ""
 
@@ -1004,12 +1011,6 @@ class Updater:
         if value != None:
             if field_type == "choice" and (value == "" or value == " "):
                 value = "No value"
-
-            if "object.object_number" in self.xml_path:
-                print "Number of values: "+str(len(value))
-                if len(value) > 173:
-                    value = value[:173]
-                #print len(value)
             setattr(plone_object, plone_fieldname, value)
         else:
             self.error("Value to be set is None. field: %s" %(plone_fieldname))
@@ -1220,14 +1221,38 @@ class Updater:
         self.warning_wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
         self.status_wr = csv.writer(self.status_log_file, quoting=csv.QUOTE_ALL)
 
+
+    def create_page_relations(self):
+        page = self.api.get_folder('test-folder/test-page-with-200-related-items')
+
+        person_container = self.api.get_folder('personen-en-instellingen')
+
+        limit = 200
+        curr = 0
+
+        transaction.begin()
+        for brain in person_container:
+            person = person_container[brain]
+
+            intids = component.getUtility(IIntIds)
+            person_id = intids.getId(person)
+            relation_value = RelationValue(person_id)
+
+            page.relatedItems.append(relation_value)
+            
+            curr += 1
+            if curr >= limit:
+                transaction.commit()
+                return True
         
     def start(self):
-        self.dev = False
+        self.dev = True
 
         #self.create_large_pages()
         #self.api.divide_collection_by_folder()
         #return True
 
+        #self.create_page_relations()
         self.init_log_files()
     
         #
@@ -1244,52 +1269,52 @@ class Updater:
         total = len(list(self.collection))
         curr = 0
         limit = 0
-        create_new = False
+        create_new = True
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
                 self.object_number = ""
-                object_number = self.get_object_number(xml_record, self.portal_type)
+                #object_number = self.get_object_number(xml_record, self.portal_type)
+                object_number = ""
                 if object_number:
                     self.object_number = object_number
 
-                    if self.object_number == "11210":
-                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                        if plone_object:
-                            if self.portal_type == "Exhibition":
-                                plone_object.start = ""
-                                plone_object.end = ""
-                                plone_object.whole_day = True
+                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    if plone_object:
+                        if self.portal_type == "Exhibition":
+                            plone_object.start = ""
+                            plone_object.end = ""
+                            plone_object.whole_day = True
 
-                            self.object_number = str(object_number)
-                            self.generate_field_types()
-                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.update(xml_record, plone_object, object_number)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            self.fix_all_choices(plone_object)
+                        self.object_number = str(object_number)
+                        self.generate_field_types()
+                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.update(xml_record, plone_object, object_number)
+                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        self.fix_all_choices(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                if plone_object.start:
-                                    IEventBasic(plone_object).start = plone_object.start
-                                if plone_object.end:
-                                    IEventBasic(plone_object).end = plone_object.end
-                            
-                            plone_object.reindexObject() 
-                            transaction.commit()
-                            break
+                        if self.portal_type == "Exhibition":
+                            if plone_object.start:
+                                IEventBasic(plone_object).start = plone_object.start
+                            if plone_object.end:
+                                IEventBasic(plone_object).end = plone_object.end
+                        
+                        plone_object.reindexObject() 
+                        transaction.commit()
+                        break
+                    else:
+                        if create_new:
+                            created_object = self.create_object(xml_record)
+                            self.update(xml_record, created_object, object_number)
+                            self.fix_all_choices(created_object)
+                            created_object.reindexObject()
+                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
                         else:
-                            if create_new:
-                                created_object = self.create_object(xml_record)
-                                self.update(xml_record, created_object, object_number)
-                                self.fix_all_choices(created_object)
-                                created_object.reindexObject()
-                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
-                            else:
-                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
+                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))
 
                         
 

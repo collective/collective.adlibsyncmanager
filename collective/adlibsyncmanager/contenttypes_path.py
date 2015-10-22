@@ -59,7 +59,8 @@ CONTENT_TYPES_PATH = {
 
 	"Object": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-object-v33.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-object-v33.xml",
+	        "nhg22466":"/Users/AG/Projects/collectie-zm/nhg22466.xml"
 	    },
 	    "prod": {
 	        "single":"",
