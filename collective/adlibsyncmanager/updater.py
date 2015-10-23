@@ -21,6 +21,8 @@ from zope.schema.interfaces import IChoice, ITextLine, IList, IText, IBool, IDat
 from collective.z3cform.datagridfield.interfaces import IDataGridField
 from plone.app.textfield.interfaces import IRichText
 from collective.object.utils.interfaces import IListField
+from zc.relation.interfaces import ICatalog
+from zope.component import getUtility
 
 from plone.app.event.dx.behaviors import IEventBasic
 
@@ -57,7 +59,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "Taxonomie"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1355,14 +1357,41 @@ class Updater:
             self.fix_person_name(person)
 
         return True
+
+
+    def find_relations(self):
+        from zope.intid.interfaces import IIntIds
+        from Acquisition import aq_inner
+
+        total = 0
+
+        intids = getUtility(IIntIds)
+        cat = getUtility(ICatalog)
+        for brain in list(self.api.all_persons):
+            person = brain.getObject()
+            _id = intids.getId(aq_inner(person))
+            from_relations = cat.findRelations(dict(from_id=_id))
+            to_relations = cat.findRelations(dict(to_id=_id))
+
+            len_from = len(list(from_relations))
+            len_to = len(list(to_relations))
+
+            if len_from == 0 and len_to == 0:
+                total += 1
+
+        print "total of persons without relations:"
+        print total
+
+        return True
         
     def start(self):
         self.dev = False
 
-        self.init_log_files()
+        #self.init_log_files()
 
         #self.fix_persons_names()
-        #return True
+        self.find_relations()
+        return True
 
         #
         # Choose collection XML
@@ -1379,7 +1408,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[480:]:
             try:
                 curr += 1
                 transaction.begin()
