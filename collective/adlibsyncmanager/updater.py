@@ -1385,13 +1385,13 @@ class Updater:
         return True
         
     def start(self):
-        self.dev = False
+        self.dev = True
 
         #self.init_log_files()
 
         #self.fix_persons_names()
-        self.find_relations()
-        return True
+        #self.find_relations()
+        #return True
 
         #
         # Choose collection XML
@@ -1405,7 +1405,7 @@ class Updater:
         self.generate_field_types()
 
         total = len(list(self.collection))
-        curr, limit = 0, 0
+        curr, limit = 480, 0
         create_new = False
 
         for xml_record in list(self.collection)[480:]:
