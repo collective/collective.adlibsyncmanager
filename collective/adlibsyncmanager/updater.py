@@ -947,7 +947,7 @@ class Updater:
 
         # Create relation type
         elif field_type == "relation":
-            value = 
+            value = []
             by_name = False
             objecttype_relatedto, grid = self.get_objecttype_relation(plone_fieldname)
             if objecttype_relatedto == "Object":
