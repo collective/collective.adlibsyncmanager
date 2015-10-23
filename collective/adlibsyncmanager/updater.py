@@ -1041,12 +1041,12 @@ class Updater:
             else:
                 if xml_path == "":
                     xml_path = xml_element.tag
-                    if (xml_path == "record") or ("parts_reference" in xml_path):# or ("Child" in xml_path) or ("Synonym" in xml_path):
+                    if (xml_path == "record") or ("parts_reference" in xml_path) or ("Child" in xml_path) or ("Synonym" in xml_path):
                         self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
                     else:
                         self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
                 else:
-                    if ("parts_reference" in xml_path):# or ("Child" in xml_path) or ("Synonym" in xml_path):
+                    if ("parts_reference" in xml_path) or ("Child" in xml_path) or ("Synonym" in xml_path):
                         self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
                     else:
                         self.error("%s__%s__Tag not found in dictionary. %s" %(object_number, xml_path, xml_element.text))
