@@ -337,7 +337,6 @@ class Updater:
             else:
                 taxonomy = self.api.find_taxonomie_by_priref(priref)
             
-            print taxonomy
             if taxonomy:
                 if not grid:
                     current_value = []
@@ -970,17 +969,16 @@ class Updater:
                     else:
                         linkref = ""
             elif objecttype_relatedto == "Taxonomie":
-                print "Relation with taxnomie"
                 linkref = xml_element.get('linkref')
                 if not linkref:
-                    linkdata = xml_element.get('linkdata')
-                    if linkdata:
-                        linkref = linkdata
-                        by_name = True
-                    else:
-                        linkref = ""
-                print "link ref:"
-                print linkref
+                    linkref = xml_element.get('priref')
+                    if not linkref:
+                        linkdata = xml_element.get('linkdata')
+                        if linkdata:
+                            linkref = linkdata
+                            by_name = True
+                        else:
+                            linkref = ""
 
             elif objecttype_relatedto == "Serial":
                 linkref = xml_element.get('linkref')
