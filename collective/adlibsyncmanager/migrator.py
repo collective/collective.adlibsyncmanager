@@ -10713,8 +10713,8 @@ class APIMigrator:
         self.folder_path = base_folder.split('/')
         container = self.get_container()
 
+        
         alphabet = list(string.ascii_uppercase)
-        numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
             
         total = len(container)
         curr = 0

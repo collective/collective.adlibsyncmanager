@@ -6,6 +6,8 @@ This script migrates XML files into Plone Objects
 
 Supposed to be run as an external method trhough the boilerplate script migration.py 
 """
+
+import string
 from Acquisition import aq_parent, aq_inner
 from z3c.relationfield.interfaces import IRelationList
 from plone import api
@@ -55,7 +57,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Taxonomie"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1259,7 +1261,34 @@ class Updater:
 
             print "Reindexing %s / %s" %(str(curr), str(total))
 
-        return True 
+        return True
+
+    def move_person(self, obj):
+        
+        _id = obj.priref
+
+        base_folder = "nl/intern/personen-en-instellingen"
+        numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        alphabet = list(string.ascii_uppercase)
+        
+        if obj.title:
+            title = obj.title
+            first_letter = title[0]
+            if first_letter.upper() in alphabet:
+                source = obj
+                target = self.api.get_folder('%s/%s' %(base_folder, first_letter.upper()))
+                self.api.move_obj_folder(source, target)
+            elif first_letter.upper() in numbers:
+                source = obj
+                target = self.api.get_folder('%s/0-9' %(base_folder))
+                self.api.move_obj_folder(source, target)
+            else:
+                source = obj
+                target = self.api.get_folder('%s/meer' %(base_folder))
+                self.api.move_obj_folder(source, target)
+                self.error("Unknown type - id: %s - letter: %s" %(str(_id), first_letter))
+        else:
+            self.error("No title - %s"%(str(_id)))
 
     def fix_person_name(self, person):
         priref = getattr(person, 'priref', "")
@@ -1273,23 +1302,41 @@ class Updater:
             elif length > 2:
                 self.error("%s__%s__Number of commas is >= 2" %(str(priref), str(title.encode('ascii', 'ignore'))))
             elif length == 2:
-                first_name = title_separated[1]
-                last_name = title_separated[0]
-                new_title = [first_name, last_name]
-                new_title_string = " ".join(new_title)
-                new_title_string = new_title_string.strip()
+                brackets = re.findall('\(.*?\)', title)
+                
+                if len(brackets) <= 1:
+                    if len(brackets) == 1:
+                        last_part = brackets[0]
+                        title = title.replace(last_part, '')
+                        title = title.strip()
+                        title_separated = [x.strip() for x in title.split(",")]
+                    else:
+                        last_part = ""
 
-                # Set title
-                person.title = new_title_string
-                person.nameInformation_name_name = new_title_string
+                    first_name = title_separated[1]
+                    last_name = title_separated[0]
+                    new_title = [first_name, last_name]
+                    new_title_string = " ".join(new_title)
+                    new_title_string = new_title_string.strip()
 
-                self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
+                    if last_part:
+                        new_title_string = "%s %s" %(new_title_string, last_part)
 
-                # Change ID
-                dirty_id = "%s %s" %(str(priref), new_title_string)
-                normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                    # Set title
+                    person.title = new_title_string
+                    person.nameInformation_name_name = new_title_string
 
-                api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+                    self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
+
+                    # Change ID
+                    dirty_id = "%s %s" %(str(priref), new_title_string)
+                    normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+
+                    api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+                    self.move_person(person)
+
+                elif len(brackets) > 1:
+                    self.error("%s__%s__Number of text between parenthesis is >= 2" %(str(priref), str(title.encode('ascii', 'ignore'))))
 
             else:
                 self.error("%s__%s__Cannot get the number of commas." %(str(priref), str(title.encode('ascii', 'ignore'))))
@@ -1300,7 +1347,7 @@ class Updater:
         total = len(self.api.all_persons)
         curr = 0
 
-        for brain in list(self.api.all_persons)[:100]:
+        for brain in list(self.api.all_persons)[100:200]:
             curr += 1
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
 
@@ -1314,8 +1361,8 @@ class Updater:
 
         self.init_log_files()
 
-        #self.fix_persons_names()
-        #return True
+        self.fix_persons_names()
+        return True
 
         #
         # Choose collection XML
