@@ -18,7 +18,7 @@ TAXONOMY_CORE = {
 
     'parent_name':'taxonomicTermDetails_hierarchy_parentName',
     'Child':'',
-    'Child-child.name':'taxonomicTermDetails_hierarchy_childName-childName',
+    'Child-child_name':'taxonomicTermDetails_hierarchy_childName-childName',
 
     'taxon_author':'taxonomicTermDetails_sourceAndDefinition_taxonAuthor',
     'description':'taxonomicTermDetails_sourceAndDefinition_description',
