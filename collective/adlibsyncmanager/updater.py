@@ -55,7 +55,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1259,16 +1259,63 @@ class Updater:
 
         return True 
 
+    def fix_person_name(self, person):
+        priref = getattr(person, 'priref', "")
+        title = getattr(person, 'nameInformation_name_name', "")
+
+        if title:
+            title_separated = [x.strip() for x in title.split(",")]
+            length = len(title_separated)
+            if length == 0:
+                self.warning('%s__%s__Number of commas is 0. No modifications are done.' %(str(priref), str(title.encode('ascii', 'ignore'))))
+            elif length > 2:
+                self.error("%s__%s__Number of commas is >= 2" %(str(priref), str(title.encode('ascii', 'ignore'))))
+            elif length == 2:
+                first_name = title_separated[1]
+                last_name = title_separated[0]
+                new_title = [first_name, last_name]
+                new_title_string = " ".join(new_title)
+                new_title_string = new_title_string.strip()
+
+                # Set title
+                person.title = new_title_string
+                person.nameInformation_name_name = new_title_string
+
+                self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
+
+                # Change ID
+                dirty_id = "%s %s" %(str(priref), new_title_string)
+                normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+
+                api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+
+            else:
+                self.error("%s__%s__Cannot get the number of commas." %(str(priref), str(title.encode('ascii', 'ignore'))))
+        else:
+            self.error("%s__%s__Current title is empty." %(str(priref), str("")))
+
+    def fix_persons_names(self):
+        total = len(self.api.all_persons)
+        curr = 0
+
+        for brain in list(self.api.all_persons)[:100]:
+            curr += 1
+            self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
+
+            person = brain.getObject()
+            self.fix_person_name(person)
+
+        return True
         
     def start(self):
         self.dev = False
 
-        #self.create_large_pages()
-        #self.api.divide_collection_by_folder()
-        #return True
-
-        #self.create_page_relations()
         self.init_log_files()
+
+        self.fix_persons_names()
+        return True
+
+       
     
         #
         # Choose collection XML
@@ -1282,8 +1329,7 @@ class Updater:
         self.generate_field_types()
 
         total = len(list(self.collection))
-        curr = 0
-        limit = 0
+        curr, limit = 0, 0
         create_new = False
 
         for xml_record in list(self.collection):
