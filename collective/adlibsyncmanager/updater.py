@@ -1385,9 +1385,9 @@ class Updater:
         return True
         
     def start(self):
-        self.dev = True
+        self.dev = False
 
-        #self.init_log_files()
+        self.init_log_files()
 
         #self.fix_persons_names()
         #self.find_relations()
