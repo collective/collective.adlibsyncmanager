@@ -339,6 +339,7 @@ class Updater:
             
             if taxonomy:
                 if not grid:
+                    current_value = []
                     intids = component.getUtility(IIntIds)
                     person_id = intids.getId(taxonomy)
                     relation_value = RelationValue(person_id)
