@@ -1326,7 +1326,7 @@ class Updater:
 
                     # Set title
                     person.title = new_title_string
-                    person.nameInformation_name_name = new_title_string
+                    #person.nameInformation_name_name = new_title_string
 
                     self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
 

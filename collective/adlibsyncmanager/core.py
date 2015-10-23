@@ -249,9 +249,9 @@ CORE = {
 
     # Documentation (free text)
     "documentation.free_text": "documentationFreeArchive_documentationFreeText-title",
-    "archive.number": "documentationFreeArchive_archiveNumber-number",#relation
-    "archive.number-number":"documentationFreeArchive_archive-archiveNumber",
-    "archive.number-content": "documentationFreeArchive_archive-content",
+    "archive.number": "",#relation
+    "archive.number-number":"documentationFreeArchive_archiveNumber-archiveNumber",
+    "archive.number-content": "",
     
     # repeated
     "archive.content":"",
