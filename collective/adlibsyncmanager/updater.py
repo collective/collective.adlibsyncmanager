@@ -1361,8 +1361,8 @@ class Updater:
 
         self.init_log_files()
 
-        self.fix_persons_names()
-        return True
+        #self.fix_persons_names()
+        #return True
 
         #
         # Choose collection XML
