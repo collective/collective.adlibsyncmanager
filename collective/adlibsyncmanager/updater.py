@@ -189,6 +189,16 @@ class Updater:
                 return field
         return None
 
+    def empty_fields(self, obj):
+        for name, field in self.fields:
+            field_type = self.get_fieldtype_by_schema(field)
+            if field_type == "list":
+                setattr(obj, name, [])
+            elif field_type == "relation":
+                setattr(obj, name, [])
+
+        return True
+
     def fix_all_choices(self, obj):
         for name, field in self.fields:
             field_type = self.get_fieldtype_by_schema(field)
@@ -318,6 +328,7 @@ class Updater:
         self.field_types['description'] = 'text'
 
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False, by_name=False):
+        intids = component.getUtility(IIntIds)
 
         if grid:
             current_value = []
@@ -355,7 +366,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(taxonomy)
+                    obj_id = intids.getId(taxonomy)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 try:
                     self.error("%s__%s__Cannot create relation with content type Taxonomie with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
@@ -392,7 +405,10 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(person)
+                    intids = component.getUtility(IIntIds)
+                    person_id = intids.getId(person)
+                    relation_value = RelationValue(person_id)
+                    current_value.append(relation_value)
             else:
                 try:
                     self.error("%s__%s__Cannot create relation with content type PersonOrInstitution with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
@@ -418,7 +434,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Object with object number %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -436,7 +454,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Exhibition with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -455,7 +475,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Archive priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -474,7 +496,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Serial priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -494,7 +518,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Treatment with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -514,7 +540,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type OutgoingLoan with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -533,7 +561,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type IncomingLoan with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -553,7 +583,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type Article priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -572,7 +604,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with an item from the Bibliotheek with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
 
@@ -592,7 +626,9 @@ class Updater:
                     current_value.append(relation_value)
                 else:
                     current_value = []
-                    current_value.append(obj)
+                    obj_id = intids.getId(obj)
+                    relation_value = RelationValue(obj_id)
+                    current_value.append(relation_value)
             else:
                 self.error("%s__%s__Cannot create relation with content type ObjectEntry with priref %s" %(str(self.object_number), str(self.xml_path), str(priref)))
                 
@@ -1292,6 +1328,33 @@ class Updater:
         else:
             self.error("No title - %s"%(str(_id)))
 
+    def fix_institutions(self):
+        all_institutions = self.api.portal_catalog(nameInformation_name_nameType_type="institution")
+
+        total = len(all_institutions)
+        curr = 0
+
+        for institution in all_institutions:
+            transaction.begin()
+            person = institution.getObject()
+
+            curr += 1
+            print "Fixing %s / %s" %(str(curr), str(total))
+
+            priref = getattr(person, 'priref', "")
+            name = getattr(person, 'nameInformation_name_name', "")
+
+            dirty_id = "%s %s" %(str(priref), str(name.encode('ascii', 'ignore')))
+            normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+
+            person.title = name
+
+            api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+            self.move_person(person)
+            transaction.commit()
+
+        return True
+
     def fix_person_name(self, person):
         priref = getattr(person, 'priref', "")
         title = getattr(person, 'nameInformation_name_name', "")
@@ -1373,17 +1436,15 @@ class Updater:
         for brain in list(self.api.all_persons):
             person = brain.getObject()
             _id = intids.getId(aq_inner(person))
-            from_relations = cat.findRelations(dict(from_id=_id))
-            to_relations = cat.findRelations(dict(to_id=_id))
+            from_relations = list(cat.findRelations(dict(from_id=_id)))
+            to_relations = list(cat.findRelations(dict(to_id=_id)))
 
-            len_from = len(list(from_relations))
-            len_to = len(list(to_relations))
+            len_from = len(from_relations)
+            len_to = len(to_relations)
 
-            if len_from == 0 and len_to == 0:
-                total += 1
-
-        print "total of persons without relations:"
-        print total
+            if person.id == "test-title":
+                for relation in to_relations:
+                    print relation.from_attribute
 
         return True
         
@@ -1392,14 +1453,14 @@ class Updater:
 
         self.init_log_files()
 
-        self.fix_persons_names()
-        #self.find_relations()
+        #self.fix_persons_names()
+        self.fix_institutions()
         return True
 
         #
         # Choose collection XML
         #
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['single']
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
         #
@@ -1408,10 +1469,10 @@ class Updater:
         self.generate_field_types()
 
         total = len(list(self.collection))
-        curr, limit = 480, 0
+        curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[480:]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1432,6 +1493,7 @@ class Updater:
                         self.object_number = str(object_number)
                         self.generate_field_types()
                         self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.empty_fields(plone_object)
                         self.update(xml_record, plone_object, object_number)
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
