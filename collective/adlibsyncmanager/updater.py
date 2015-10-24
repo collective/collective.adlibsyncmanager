@@ -59,7 +59,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Taxonomie"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1349,7 +1349,7 @@ class Updater:
         total = len(self.api.all_persons)
         curr = 0
 
-        for brain in list(self.api.all_persons)[100:200]:
+        for brain in list(self.api.all_persons):
             curr += 1
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
 
@@ -1389,9 +1389,9 @@ class Updater:
 
         self.init_log_files()
 
-        #self.fix_persons_names()
+        self.fix_persons_names()
         #self.find_relations()
-        #return True
+        return True
 
         #
         # Choose collection XML
