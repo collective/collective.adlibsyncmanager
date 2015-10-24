@@ -1315,27 +1315,30 @@ class Updater:
                     else:
                         last_part = ""
 
-                    first_name = title_separated[1]
-                    last_name = title_separated[0]
-                    new_title = [first_name, last_name]
-                    new_title_string = " ".join(new_title)
-                    new_title_string = new_title_string.strip()
+                    if len(title_separated) == 2:
+                        first_name = title_separated[1]
+                        last_name = title_separated[0]
+                        new_title = [first_name, last_name]
+                        new_title_string = " ".join(new_title)
+                        new_title_string = new_title_string.strip()
 
-                    if last_part:
-                        new_title_string = "%s %s" %(new_title_string, last_part)
+                        if last_part:
+                            new_title_string = "%s %s" %(new_title_string, last_part)
 
-                    # Set title
-                    person.title = new_title_string
-                    #person.nameInformation_name_name = new_title_string
+                        # Set title
+                        person.title = new_title_string
+                        #person.nameInformation_name_name = new_title_string
 
-                    self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
+                        self.log_status("! STATUS !__%s__Name updated from '%s' to '%s'." %(str(priref), str(title.encode('ascii', 'ignore')), str(new_title_string.encode('ascii', 'ignore'))))
 
-                    # Change ID
-                    dirty_id = "%s %s" %(str(priref), new_title_string)
-                    normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                        # Change ID
+                        dirty_id = "%s %s" %(str(priref), new_title_string)
+                        normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
-                    api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
-                    self.move_person(person)
+                        api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+                        self.move_person(person)
+                    else:
+                        self.warning('%s__%s__Number of commas is 0. No modifications are done.' %(str(priref), str(title.encode('ascii', 'ignore'))))
 
                 elif len(brackets) > 1:
                     self.error("%s__%s__Number of text between parenthesis is >= 2" %(str(priref), str(title.encode('ascii', 'ignore'))))
@@ -1349,7 +1352,7 @@ class Updater:
         total = len(self.api.all_persons)
         curr = 0
 
-        for brain in list(self.api.all_persons):
+        for brain in list(self.api.all_persons)[197:]:
             curr += 1
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
 
