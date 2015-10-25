@@ -59,7 +59,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "Audiovisual"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1454,13 +1454,13 @@ class Updater:
         self.init_log_files()
 
         #self.fix_persons_names()
-        self.fix_institutions()
-        return True
+        #self.fix_institutions()
+        #return True
 
         #
         # Choose collection XML
         #
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['single']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
         #
@@ -1505,7 +1505,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        #plone_object.reindexObject() 
+                        plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
