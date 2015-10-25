@@ -120,7 +120,7 @@ ARTICLE_CORE = {
  	'volume':'relations_volume', 
  	'use':'relations_analyticalCataloguing_partOf-partOf',
     'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
-    'object.object_number':'relations_museumObjects-objectNo',
+    'object.object_number':'relations_museumobjects',
 
     # Ignore fields from relation with object
     'object.object_number-object_number':'',
