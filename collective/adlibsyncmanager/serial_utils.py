@@ -26,7 +26,7 @@ serial_subfields_types = {
 	"site":"gridlist",
 	"loan_category-term":"gridlist",
 	"site-term": "gridlist",
-	"used_for":"relation".
+	"used_for":"relation",
 	"use":"relation"
 }
 

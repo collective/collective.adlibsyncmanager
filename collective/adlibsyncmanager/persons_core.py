@@ -5,8 +5,10 @@ PERSON_CORE = {
 	# Name information tab
     'record':'',
     'priref':'priref',
-	'name':'nameInformation_name_name', 
-	'institution_code':'nameInformation_name_institutionNumber',
+	#'name':'nameInformation_name_name', 
+	'name':'title',
+    
+    'institution_code':'nameInformation_name_institutionNumber',
     'name.type':'',
     'name.type-text':'nameInformation_name_nameType-type', 
     'name.note':'nameInformation_name_nameNotes',
