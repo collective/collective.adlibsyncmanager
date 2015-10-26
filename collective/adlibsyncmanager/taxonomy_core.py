@@ -4,7 +4,7 @@
 TAXONOMY_CORE = {
 	'priref':'priref',
 	'record':'',
-	'scientific_name':'taxonomicTermDetails_term_scientificName', 
+	'scientific_name':'title', 
 	'rank':"",
 	'rank-text':'taxonomicTermDetails_term_rank',
 	'status':"",

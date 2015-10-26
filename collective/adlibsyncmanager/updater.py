@@ -12,6 +12,7 @@ from Acquisition import aq_parent, aq_inner
 from z3c.relationfield.interfaces import IRelationList
 from plone import api
 import csv
+import pytz
 
 from z3c.relationfield.schema import RelationList
 from zope.component import getUtility
@@ -392,7 +393,7 @@ class Updater:
                         return current_value
             else:
                 person = self.api.find_person_by_priref(self.api.all_persons, priref)
-            
+
             if person:
                 if not grid:
                     intids = component.getUtility(IIntIds)
@@ -908,18 +909,18 @@ class Updater:
                 try:
                     try: 
                         datetime_value = datetime.datetime.strptime(field_val, "%Y-%m-%d")
-                        value = datetime_value
+                        value = pytz.utc.localize(datetime_value)
                     except:
                         value_split = field_val.split('-')
                         if len(value_split) == 2:
                             new_date = "%s-%s" %(field_val, "01")
                             datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
-                            value = datetime_value
+                            value = pytz.utc.localize(datetime_value)
                         else:
                             year = field_val
                             new_date = "%s-%s-%s" %(year, "01", "01")
                             datetime_value = datetime.datetime.strptime(new_date, "%Y-%m-%d")
-                            value = datetime_value
+                            value = pytz.utc.localize(datetime_value)
                 except:
                     self.error("%s__%s__Unable to create datetime value. %s"%(str(self.object_number), str(xml_path), str(field_val)))
                     return ""
@@ -1144,6 +1145,31 @@ class Updater:
         elif self.portal_type == "Object":
             if xml_record.find("object_number") != None:
                 title = xml_record.find("object_number").text
+
+        elif self.portal_type == "treatment":
+            if xml_record.find("treatment_number") != None:
+                title = xml_record.find("treatment_number").text
+
+        elif self.portal_type == "IncomingLoan":
+            if xml_record.find("loan_number") != None:
+                title = xml_record.find("loan_number").text
+
+        elif self.portal_type == "ObjectEntry":
+            if xml_record.find("transport_number") != None:
+                title = xml_record.find("transport_number").text
+
+        elif self.portal_type == "OutgoingLoan":
+            if xml_record.find("loan_number") != None:
+                title = xml_record.find("loan_number").text
+
+        elif self.portal_type == "Exhibition":
+            if xml_record.find("title") != None:
+                title = xml_record.find("title").text
+
+        elif self.portal_type == "Book":
+            if xml_record.find("title") != None:
+                title = xml_record.find("title").text
+
         else:
             self.error("Content type not supported to be created.")
         return title
@@ -1157,6 +1183,30 @@ class Updater:
         elif self.portal_type == "Object":
             if xml_record.find("title") != None:
                 title = xml_record.find("title").text
+        elif self.portal_type == "treatment":
+            if xml_record.find("treatment_number") != None:
+                title = xml_record.find("treatment_number").text
+        
+        elif self.portal_type == "IncomingLoan":
+            if xml_record.find("loan_number") != None:
+                title = xml_record.find("loan_number").text
+
+        elif self.portal_type == "OutgoingLoan":
+            if xml_record.find("loan_number") != None:
+                title = xml_record.find("loan_number").text
+
+        elif self.portal_type == "ObjectEntry":
+            if xml_record.find("transport_number") != None:
+                title = xml_record.find("transport_number").text
+
+        elif self.portal_type == "Exhibition":
+            if xml_record.find("title") != None:
+                title = xml_record.find("title").text
+
+        elif self.portal_type == "Book":
+            if xml_record.find("title") != None:
+                title = xml_record.find("title").text
+
         else:
             self.error("Content type not supported to be created.")
         return title
@@ -1164,12 +1214,18 @@ class Updater:
     def create_object(self, xml_record):
 
         REQUIRED_FIELDS = {
-            "Taxonomie": "taxonomicTermDetails_term_scientificName",
-            "Object": "object_number"
+            "Taxonomie": "title",
+            "Object": "object_number",
+            "treatment":"title",
+            "IncomingLoan":"title",
+            "ObjectEntry": "title",
+            "OutgoingLoan": "title",
+            "Exhibition": "title",
+            "Book":"title",
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
-        container = self.api.get_folder('objects')
+        container = self.api.get_folder('nl/bibliotheek/boeken')
         title = self.get_title_by_type(xml_record)
         required_field_value = self.get_required_field_by_type(xml_record)
 
@@ -1184,6 +1240,7 @@ class Updater:
 
         created_object = container[str(normalized_id)]
         created_object.portal_workflow.doActionFor(created_object, "publish", comment="Item published")
+
         setattr(created_object, required_field, required_field_value)
 
         return created_object
@@ -1407,7 +1464,7 @@ class Updater:
                     self.error("%s__%s__Number of text between parenthesis is >= 2" %(str(priref), str(title.encode('ascii', 'ignore'))))
 
             else:
-                self.error("%s__%s__Cannot get the number of commas." %(str(priref), str(title.encode('ascii', 'ignore'))))
+                self.error("%s__%s__Number of commas is 0. No modifications are done." %(str(priref), str(title.encode('ascii', 'ignore'))))
         else:
             self.error("%s__%s__Current title is empty." %(str(priref), str("")))
 
@@ -1417,10 +1474,11 @@ class Updater:
 
         for brain in list(self.api.all_persons):
             curr += 1
+            transaction.begin()
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
-
             person = brain.getObject()
             self.fix_person_name(person)
+            transaction.commit()
 
         return True
 
@@ -1460,7 +1518,7 @@ class Updater:
         #
         # Choose collection XML
         #
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['total']
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
         #
@@ -1472,7 +1530,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
@@ -1482,6 +1540,7 @@ class Updater:
                 if object_number:
                     self.object_number = object_number
 
+                    #plone_object = ""
                     plone_object = self.api.find_item_by_type(object_number, self.portal_type)
                     
                     if plone_object:

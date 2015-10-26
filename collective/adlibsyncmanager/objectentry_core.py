@@ -6,7 +6,7 @@ OBJECTENTRY_CORE = {
 	# General
 	'priref':'priref',
 	'record':'',
-	'transport_number':'general_entry_transportNumber',
+	'transport_number':'title',
     'entry_date.expected':'general_entry_dateExpected', 
     'entry_date':'general_entry_entryDate',
     'return_date':'general_entry_returnDate',

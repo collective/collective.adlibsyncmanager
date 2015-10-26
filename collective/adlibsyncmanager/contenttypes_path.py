@@ -31,7 +31,8 @@ CONTENT_TYPES_PATH = {
 	},
 	"Taxonomie": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-taxonomy-v01.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Taxonomies-v01.xml"
 	    },
 	    "prod": {
 	        "single":"",
@@ -49,7 +50,8 @@ CONTENT_TYPES_PATH = {
 	},
 	"ObjectEntry": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-object-entry-v01.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Binnenkomst objecten.xml"
 	    },
 	    "prod": {
 	        "single":"/var/www/zm-collectie-v2/xml/single-object-entry.xml",
@@ -71,7 +73,8 @@ CONTENT_TYPES_PATH = {
 
 	"Book": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-book-v02.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-book-v02.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Boeken.xml",
 	    },
 	    "prod": {
 	        "single":"/var/www/zm-collectie-v2/xml/single-book-v02.xml",
@@ -81,7 +84,8 @@ CONTENT_TYPES_PATH = {
 
 	"treatment": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/Treatment-details-v01.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Treatments-v02.xml"
 	    },
 	    "prod": {
 	        "single":"",
@@ -91,7 +95,8 @@ CONTENT_TYPES_PATH = {
 
 	"Exhibition": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-exhibition-v01.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Tentoonstellingen.xml"
 	    },
 	    "prod": {
 	        "single":"",
@@ -101,7 +106,8 @@ CONTENT_TYPES_PATH = {
 
 	"IncomingLoan": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/single-incomingloan-v01.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/IncomingLoans.xml"
 	    },
 	    "prod": {
 	        "single":"",
@@ -111,7 +117,8 @@ CONTENT_TYPES_PATH = {
 
 	"OutgoingLoan": {
 	    "dev":{
-	        "single":"/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml"
+	        "single":"/Users/AG/Projects/collectie-zm/Outgoing-loan-v03.xml",
+	        "total":"/Users/AG/Projects/collectie-zm/Outgoingloans.xml",
 	    },
 	    "prod": {
 	        "single":"",

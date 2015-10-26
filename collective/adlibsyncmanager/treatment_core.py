@@ -6,7 +6,7 @@ TREATMENT_CORE = {
 	# Treatment details
 	'priref': "priref",
 
-	'treatment_number':'treatmentDetails_identification_treatmentNumber',
+	'treatment_number':'title',
     'treatment_type':'',
     'treatment_type-text':'treatmentDetails_identification_treatmentType',
     'reversible':'treatmentDetails_identification_reversible',

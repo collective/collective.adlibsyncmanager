@@ -8739,8 +8739,8 @@ class APIMigrator:
         if name:
             for brain in self.all_persons:
                 obj = brain.getObject()
-                if hasattr(obj, 'nameInformation_name_name'):
-                    if obj.nameInformation_name_name == name:
+                if hasattr(obj, 'title'):
+                    if obj.title == name:
                         relations.append(obj)
 
         return relations
@@ -8813,8 +8813,8 @@ class APIMigrator:
         if nummer:
             for brain in self.all_incoming:
                 obj = brain.getObject()
-                if hasattr(obj, 'loanRequest_general_loanNumber'):
-                    if obj.loanRequest_general_loanNumber == nummer:
+                if hasattr(obj, 'title'):
+                    if obj.title == nummer:
                         return obj
 
         return None
@@ -8885,8 +8885,8 @@ class APIMigrator:
         if name:
             for brain in self.all_taxonomies:
                 obj = brain.getObject()
-                if hasattr(obj, 'taxonomicTermDetails_term_scientificName'):
-                    if obj.taxonomicTermDetails_term_scientificName == name:
+                if hasattr(obj, 'title'):
+                    if obj.title == name:
                         relations.append(obj)
 
         return relations

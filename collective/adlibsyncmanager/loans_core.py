@@ -5,7 +5,7 @@ INCOMMING_CORE = {
 	# Loan request
 	'priref':'priref',
 	'record':'',
-	'loan_number':'loanRequest_general_loanNumber',
+	'loan_number':'title',
 	'lender':'loanRequest_general_lender',
 	'lender-name':'',
     'lender.contact':'loanRequest_general_contact',
@@ -120,7 +120,6 @@ INCOMMING_CORE = {
     'Relatedloan':'',
 
     'Entry':'',
-    'Entry-entry.number':'',
     'Entry-entry.number-transport_number':'',
     'Entry-entry.number-transport_method':'',
     'Entry-entry.number-number_of_objects.stated':'',
@@ -165,7 +164,7 @@ OUTGOING_CORE = {
 	# Loan request
 	'priref':'priref',
 	'record':'',
-	'loan_number':'loanRequest_general_loanNumber',
+	'loan_number':'title',
 	
 	'requester':'loanRequest_general_requester',
 	'requester-name':'',
@@ -317,7 +316,6 @@ OUTGOING_CORE = {
     'Relatedloan':'',
 
     'Entry':'',
-    'Entry-entry.number':'',
     'Entry-entry.number-transport_number':'',
     'Entry-entry.number-transport_method':'',
     'Entry-entry.number-number_of_objects.stated':'',
