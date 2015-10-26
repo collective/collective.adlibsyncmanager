@@ -1357,7 +1357,7 @@ class Updater:
 
     def fix_person_name(self, person):
         priref = getattr(person, 'priref', "")
-        title = getattr(person, 'nameInformation_name_name', "")
+        title = getattr(person, 'title', "")
 
         if title:
             title_separated = [x.strip() for x in title.split(",")]
@@ -1415,7 +1415,7 @@ class Updater:
         total = len(self.api.all_persons)
         curr = 0
 
-        for brain in list(self.api.all_persons)[197:]:
+        for brain in list(self.api.all_persons):
             curr += 1
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
 
@@ -1453,9 +1453,9 @@ class Updater:
 
         self.init_log_files()
 
-        #self.fix_persons_names()
+        self.fix_persons_names()
         #self.fix_institutions()
-        #return True
+        return True
 
         #
         # Choose collection XML
