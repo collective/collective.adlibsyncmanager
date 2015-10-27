@@ -60,7 +60,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "ObjectEntry"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1511,14 +1511,14 @@ class Updater:
 
         self.init_log_files()
 
-        self.fix_persons_names()
+        #self.fix_persons_names()
         #self.fix_institutions()
-        return True
+        #return True
 
         #
         # Choose collection XML
         #
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
         self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
         #
@@ -1530,7 +1530,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
