@@ -1225,7 +1225,7 @@ class Updater:
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
-        container = self.api.get_folder('nl/intern/uitgaande-bruiklenen')
+        container = self.api.get_folder('nl/intern/bruiklenen/uitgaande-bruiklenen')
         title = self.get_title_by_type(xml_record)
         required_field_value = self.get_required_field_by_type(xml_record)
 
