@@ -8,7 +8,7 @@ RESOURCE_CORE = {
 	'record':'',
 
 	'title':'resourceDublinCore_title-title', 
-	'author.name':'resourceDublinCore_creator-creator',
+	'author.name':'resourceDublinCore_creators',
 	'author.name-name':'',
     'keyword.contents-term':'resourceDublinCore_subject', 
     'abstract':'resourceDublinCore_description-term',

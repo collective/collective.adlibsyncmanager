@@ -13,7 +13,7 @@ EXHIBITION_CORE = {
 
     'notes':'exhibitionsDetails_exhibitions_notes-note', 
     'organiser':'',
-    'organiser-organiser':'exhibitionsDetails_organizingInstitutions-name', # relation
+    'organiser-organiser':'exhibitionsDetails_organizingInstitution', # relation
     'organiser-organiser-name': '',
     
     'venue-venue.date.start':'exhibitionsDetails_itinerary-startDate',
@@ -30,7 +30,7 @@ EXHIBITION_CORE = {
     'documentation-documentation.notes':'documentation_documentation-notes',
 
 
-    'object.object_number':'linkedObjects_linkedObjects-objectNumber', # relation
+    'object.object_number':'linkedObjects_linkedobjects', # relation
 
     # Ignored tags
 

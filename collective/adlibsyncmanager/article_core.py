@@ -21,7 +21,7 @@ ARTICLE_CORE = {
     'Illustrator-illustrator.name-name':'',
     'Illustrator-illustrator.role-term':'titleAuthorSource_titleAuthor_illustrator-roles',#grid
     'Illustrator-illustrator.role':'',
-    'corporate_author':'titleAuthorSource_titleAuthor_corpAuthors-corpAuthor',#grid
+    'corporate_author':'titleAuthorSource_titleAuthor_corpAuthor',#grid
     'corporate_author-name':'',
 
     'publisher':'',
@@ -118,8 +118,8 @@ ARTICLE_CORE = {
 
  	# Relations
  	'volume':'relations_volume', 
- 	'use':'relations_analyticalCataloguing_partOf-partOf',
-    'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
+ 	'use':'relations_analyticalCataloguing_partsOf',
+    'used_for':'relations_analyticalCataloguing_consistsof',
     'object.object_number':'relations_museumobjects',
 
     # Ignore fields from relation with object

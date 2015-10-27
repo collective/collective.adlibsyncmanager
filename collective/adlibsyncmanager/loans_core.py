@@ -72,7 +72,7 @@ INCOMMING_CORE = {
 
     # Transport
     'Despatch-despatch.number-transport_number':'transport_despatchDetails-despatchNumber', # grid
-    'Entry-entry.number':'transport_entryDetails-entryNumber', # grid
+    'Entry-entry.number':'transport_entrydetails', # relation
 
     # Correspondence
     'Correspondence':'',
@@ -264,7 +264,7 @@ OUTGOING_CORE = {
 
     # Transport
     'Despatch-despatch.number-transport_number':'transport_despatchDetails-despatchNumber', # grid
-    'Entry-entry.number':'transport_entryDetails-entryNumber', # grid
+    'Entry-entry.number':'transport_entrydetails', # grid
 
     # Correspondence
     'Correspondence':'',

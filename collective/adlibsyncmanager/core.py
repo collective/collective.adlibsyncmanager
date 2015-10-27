@@ -331,8 +331,6 @@ CORE = {
     "reproduction.type":"",
     "reproduction.date":"",
 
-    
-
     # 
     # Waarde
     #
@@ -366,7 +364,7 @@ CORE = {
     "acquisition.method":"",
     "acquisition.method-term":"acquisition_methods",
     "acquisition.conditions":"acquisition_conditions",
-    "acquisition.source":"acquisition_acquisition_acquisitionFrom-aquisitionFrom",
+    "acquisition.source":"acquisition_acquisition_acquisitionfrom",
     "acquisition.source-name":"",# name is in the relation
     "acquisition.place":"",
     "acquisition.place-term":"acquisition_places",

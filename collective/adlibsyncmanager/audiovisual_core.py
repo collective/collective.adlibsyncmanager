@@ -21,15 +21,15 @@ AUDIOVISUAL_CORE = {
     'Illustrator-illustrator.role-term':'titleAuthorImprintCollation_titleAuthor_illustrator-roles',
     'Illustrator-illustrator.name-name':'',
     'corporate_author-name':'', 
-    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor-corpAuthor',
+    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthors',
     'edition':'titleAuthorImprintCollation_edition_edition',
     'place_of_publication':'titleAuthorImprintCollation_imprint_place-term', 
-    'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',
+    'publisher':'titleAuthorImprintCollation_imprint_publishers',
     'publisher-name':'',
     'year_of_publication':'titleAuthorImprintCollation_imprint_year', 
     'print.place':'',
     'print.place-term':'titleAuthorImprintCollation_imprint_placesPrinted',
-    'print.name':'titleAuthorImprintCollation_imprint_printer-printer', 
+    'print.name':'titleAuthorImprintCollation_imprint_printers', 
     'print.name-name':'',
     'sort_year':'titleAuthorImprintCollation_sortYear_sortYear',
     'pagination':'titleAuthorImprintCollation_collation_pagination', 
@@ -57,9 +57,9 @@ AUDIOVISUAL_CORE = {
     'ISSN':'seriesNotesISBN_ISBN_ISSN-ISSN',
     'production':'seriesNotesISBN_notes_production-term',
     'broadcast':'seriesNotesISBN_notes_broadcast-term',
-    'broadcasting_company':'seriesNotesISBN_notes_broadcastingCompany-broadcastingCompany',
+    'broadcasting_company':'seriesNotesISBN_notes_broadcastingcompany',
     'broadcasting_company-name':'',
-    'production_company':'seriesNotesISBN_notes_productionCompany-productionCompany',
+    'production_company':'seriesNotesISBN_notes_productioncompany',
     'production_company-name':'',
 
     # Abstract
@@ -130,8 +130,8 @@ AUDIOVISUAL_CORE = {
 
  	# Relations
  	'volume':'relations_volume', 
- 	'use':'relations_analyticalCataloguing_partOf-partOf',
-    'used_for':'relations_analyticalCataloguing_consistsOf-consistsOf',
+ 	'use':'relations_analyticalCataloguing_partsOf',
+    'used_for':'relations_analyticalCataloguing_consistsof',
     'object.object_number':'relations_museumobjects',
 
     # Ignore fields from relation with object

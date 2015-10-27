@@ -13,9 +13,9 @@ PERSON_CORE = {
     'name.type-text':'nameInformation_name_nameType-type', 
     'name.note':'nameInformation_name_nameNotes',
 
-    'use':'nameInformation_relationWithOtherNames_use-use', 
-    'used_for':'nameInformation_relationWithOtherNames_usedFor-usedFor',
-    'equivalent_name':'nameInformation_relationWithOtherNames_equivalent-name', 
+    'use':'nameInformation_relationWithOtherNames_uses', 
+    'used_for':'nameInformation_relationWithOtherNames_usedfor',
+    'equivalent_name':'nameInformation_relationWithOtherNames_equivalents', 
 
     'address.place':'',
     'address.place-term':'nameInformation_addressDetails-place',

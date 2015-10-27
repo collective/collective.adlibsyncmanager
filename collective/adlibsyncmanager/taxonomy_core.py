@@ -14,11 +14,11 @@ TAXONOMY_CORE = {
 
     'common_name':'taxonomicTermDetails_commonName-commonName',
     'Synonym':'',
-    'Synonym-synonym':'taxonomicTermDetails_synonyms-synonym',
+    'Synonym-synonym':'taxonomicTermDetails_synonym',
 
     'parent_name':'taxonomicTermDetails_hierarchy_parentName',
     'Child':'',
-    'Child-child_name':'taxonomicTermDetails_hierarchy_childName-childName',
+    'Child-child_name':'taxonomicTermDetails_hierarchy_childNames',
 
     'taxon_author':'taxonomicTermDetails_sourceAndDefinition_taxonAuthor',
     'description':'taxonomicTermDetails_sourceAndDefinition_description',
