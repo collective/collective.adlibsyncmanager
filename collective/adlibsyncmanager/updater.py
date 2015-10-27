@@ -60,7 +60,7 @@ from collective.object.utils.interfaces import INotes
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "OutgoingLoan"
+PORTAL_TYPE = "treatment"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1528,7 +1528,7 @@ class Updater:
 
         total = len(list(self.collection))
         curr, limit = 0, 0
-        create_new = True
+        create_new = False
 
         for xml_record in list(self.collection):
             try:

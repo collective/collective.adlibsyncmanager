@@ -89,7 +89,7 @@ CONTENT_TYPES_PATH = {
 	    },
 	    "prod": {
 	        "single":"",
-	        "total":"/var/www/zm-collectie-v2/xml/Treatments.xml"
+	        "total":"/var/www/zm-collectie-v2/xml/Treatments-v02.xml"
 	    }
 	},
 
