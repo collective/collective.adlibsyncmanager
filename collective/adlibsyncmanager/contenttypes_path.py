@@ -122,7 +122,7 @@ CONTENT_TYPES_PATH = {
 	    },
 	    "prod": {
 	        "single":"",
-	        "total":"/var/www/zm-collectie-v2/xml/outgoingloans.xml"
+	        "total":"/var/www/zm-collectie-v2/xml/Outgoing-loans-v02.xml"
 	    }
 	},
 
