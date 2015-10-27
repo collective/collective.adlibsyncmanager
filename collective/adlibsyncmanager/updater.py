@@ -1225,7 +1225,7 @@ class Updater:
         }
         required_field = REQUIRED_FIELDS[self.portal_type]
 
-        container = self.api.get_folder('nl/bibliotheek/boeken')
+        container = self.api.get_folder('nl/intern/uitgaande-bruiklenen')
         title = self.get_title_by_type(xml_record)
         required_field_value = self.get_required_field_by_type(xml_record)
 
@@ -1528,7 +1528,7 @@ class Updater:
 
         total = len(list(self.collection))
         curr, limit = 0, 0
-        create_new = False
+        create_new = True
 
         for xml_record in list(self.collection):
             try:
