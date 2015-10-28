@@ -8807,8 +8807,9 @@ class APIMigrator:
         image_id = idnormalizer.normalize(img, max_length=len(img))
 
         for image in self.all_images:
-            if image.id == image_id:
-                return image.getObject()
+            img_obj = image.getObject()
+            if img_obj.id == image_id:
+                return img_obj
 
         return None
 
