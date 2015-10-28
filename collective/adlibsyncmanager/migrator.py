@@ -9359,18 +9359,6 @@ class APIMigrator:
         return True
 
 
-    def find_image_by_ref(self, ref, all_images):
-        image_path_split = ref.lower().split("\\")
-        img = image_path_split[-1]
-        
-        image_id = idnormalizer.normalize(img, max_length=len(img))
-
-        for image in all_images:
-            if image.id == image_id:
-                return True
-
-        return None
-
     def get_image_data(self, record):
         object_data = {
             'priref': '',
