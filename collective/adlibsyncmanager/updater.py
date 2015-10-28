@@ -1580,7 +1580,6 @@ class Updater:
                                 IEventBasic(plone_object).end = plone_object.end
                         
                         plone_object.reindexObject() 
-                        return True
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
