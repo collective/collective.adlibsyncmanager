@@ -61,7 +61,7 @@ from collective.imageReference.imageReference import IImageReference
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Image"
+PORTAL_TYPE = "Reindexing"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1489,9 +1489,9 @@ class Updater:
         for brain in list(self.api.all_persons):
             curr += 1
             transaction.begin()
-            self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
+            self.log_status("! STATUS !__ __Reindexing %s / %s" %(str(curr), str(total)))
             person = brain.getObject()
-            person.reindexObject(idxs=['Title'])
+            person.reindexObject()
             #self.fix_person_name(person)
             transaction.commit()
 
@@ -1511,9 +1511,8 @@ class Updater:
             title_separated = [x.strip() for x in title.split(",")]
             length = len(title_separated)
 
-            count += 1
             if length == 2:
-                print title
+                print title.encode('ascii', 'ignore')
 
         print "Total of Persons / Institutions with 1 comma: %s" %(str(count))
         return True
@@ -1547,7 +1546,8 @@ class Updater:
 
         self.init_log_files()
 
-        self.check_number_of_commas()
+        self.fix_persons_names()
+        #self.check_number_of_commas()
         #self.fix_institutions()
         return True
 
