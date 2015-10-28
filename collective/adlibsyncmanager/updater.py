@@ -1552,7 +1552,7 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
-                    if object_number == "m:\images\G2705k1.jpg":
+                    if object_number == "m:\images\M87-103-1c.jpg":
                         self.object_number = object_number
                         #plone_object = ""
                         plone_object = self.api.find_item_by_type(object_number, self.portal_type)
