@@ -1497,6 +1497,25 @@ class Updater:
 
         return True
 
+    def check_number_of_commas(self):
+        count = 0
+        for brain in list(self.api.all_persons):
+            curr += 1
+            
+            self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
+            person = brain.getObject()
+            title = getattr(person, 'title', "")
+
+            title_separated = [x.strip() for x in title.split(",")]
+            length = len(title_separated)
+
+            count += 1
+            if length == 2:
+                print title
+
+        print "Total of Persons / Institutions with 1 comma: %s" %(str(count))
+        return True
+
 
     def find_relations(self):
         from zope.intid.interfaces import IIntIds
@@ -1526,7 +1545,7 @@ class Updater:
 
         self.init_log_files()
 
-        self.fix_persons_names()
+        self.check_number_of_commas()
         #self.fix_institutions()
         return True
 
