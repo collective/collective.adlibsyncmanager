@@ -1468,8 +1468,8 @@ class Updater:
                         dirty_id = "%s %s" %(str(priref), new_title_string)
                         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
-                        api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
-                        self.move_person(person)
+                        #api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
+                        #self.move_person(person)
                     else:
                         self.warning('%s__%s__Number of commas is 0. No modifications are done.' %(str(priref), str(title.encode('ascii', 'ignore'))))
 
@@ -1552,48 +1552,45 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
-                    if object_number == "m:\images\M87-103-1c.jpg":
-                        self.object_number = object_number
-                        #plone_object = ""
-                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    self.object_number = object_number
+                    #plone_object = ""
+                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
-                        if plone_object:
-                            if self.portal_type == "Image":
-                                plone_object = IImageReference(plone_object)
+                    if plone_object:
+                        if self.portal_type == "Image":
+                            plone_object = IImageReference(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                plone_object.start = ""
-                                plone_object.end = ""
-                                plone_object.whole_day = True
+                        if self.portal_type == "Exhibition":
+                            plone_object.start = ""
+                            plone_object.end = ""
+                            plone_object.whole_day = True
 
-                            self.object_number = str(object_number)
-                            self.generate_field_types()
-                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.empty_fields(plone_object)
-                            self.update(xml_record, plone_object, object_number)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            self.fix_all_choices(plone_object)
+                        self.object_number = str(object_number)
+                        self.generate_field_types()
+                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.empty_fields(plone_object)
+                        self.update(xml_record, plone_object, object_number)
+                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        self.fix_all_choices(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                if plone_object.start:
-                                    IEventBasic(plone_object).start = plone_object.start
-                                if plone_object.end:
-                                    IEventBasic(plone_object).end = plone_object.end
-                            
-                            plone_object.reindexObject() 
-                            transaction.commit()
-                            return True
+                        if self.portal_type == "Exhibition":
+                            if plone_object.start:
+                                IEventBasic(plone_object).start = plone_object.start
+                            if plone_object.end:
+                                IEventBasic(plone_object).end = plone_object.end
+                        
+                        plone_object.reindexObject() 
+                    else:
+                        if create_new:
+                            created_object = self.create_object(xml_record)
+                            self.update(xml_record, created_object, object_number)
+                            self.fix_all_choices(created_object)
+                            created_object.reindexObject()
+                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
                         else:
-                            if create_new:
-                                created_object = self.create_object(xml_record)
-                                self.update(xml_record, created_object, object_number)
-                                self.fix_all_choices(created_object)
-                                created_object.reindexObject()
-                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
-                            else:
-                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
+                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
