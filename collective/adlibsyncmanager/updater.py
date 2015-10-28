@@ -1499,6 +1499,7 @@ class Updater:
 
     def check_number_of_commas(self):
         count = 0
+        curr = 0
         total = len(list(self.api.all_persons))
         for brain in list(self.api.all_persons):
             curr += 1
