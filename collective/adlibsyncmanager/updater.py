@@ -1524,9 +1524,9 @@ class Updater:
 
         self.init_log_files()
 
-        #self.fix_persons_names()
+        self.fix_persons_names()
         #self.fix_institutions()
-        #return True
+        return True
 
         #
         # Choose collection XML
