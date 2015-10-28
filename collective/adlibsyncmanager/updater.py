@@ -700,7 +700,8 @@ class Updater:
                 return xml_record.find('loan_number').text
 
             if portal_type == "Image":
-                return xml_record.find('image_reference').text
+                if xml_record.find('image_reference') != None:
+                    return xml_record.find('image_reference').text
 
             else:
                 if xml_record.find('priref') != None:
@@ -1542,7 +1543,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1551,45 +1552,48 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
-                    self.object_number = object_number
-                    #plone_object = ""
-                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    if object_number == "m:\images\G2705k1.jpg":
+                        self.object_number = object_number
+                        #plone_object = ""
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
-                    if plone_object:
-                        if self.portal_type == "Image":
-                            plone_object = IImageReference(plone_object)
+                        if plone_object:
+                            if self.portal_type == "Image":
+                                plone_object = IImageReference(plone_object)
 
-                        if self.portal_type == "Exhibition":
-                            plone_object.start = ""
-                            plone_object.end = ""
-                            plone_object.whole_day = True
+                            if self.portal_type == "Exhibition":
+                                plone_object.start = ""
+                                plone_object.end = ""
+                                plone_object.whole_day = True
 
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.empty_fields(plone_object)
-                        self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.empty_fields(plone_object)
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
 
-                        if self.portal_type == "Exhibition":
-                            if plone_object.start:
-                                IEventBasic(plone_object).start = plone_object.start
-                            if plone_object.end:
-                                IEventBasic(plone_object).end = plone_object.end
-                        
-                        plone_object.reindexObject() 
-                    else:
-                        if create_new:
-                            created_object = self.create_object(xml_record)
-                            self.update(xml_record, created_object, object_number)
-                            self.fix_all_choices(created_object)
-                            created_object.reindexObject()
-                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            if self.portal_type == "Exhibition":
+                                if plone_object.start:
+                                    IEventBasic(plone_object).start = plone_object.start
+                                if plone_object.end:
+                                    IEventBasic(plone_object).end = plone_object.end
+                            
+                            plone_object.reindexObject() 
+                            transaction.commit()
+                            return True
                         else:
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
+                            if create_new:
+                                created_object = self.create_object(xml_record)
+                                self.update(xml_record, created_object, object_number)
+                                self.fix_all_choices(created_object)
+                                created_object.reindexObject()
+                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            else:
+                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
