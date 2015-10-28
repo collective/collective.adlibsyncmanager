@@ -8,7 +8,7 @@ CONTENT_TYPES_PATH = {
 	    },
 	    "prod": {
 	        "single":"",
-	        "total":""
+	        "total":"/var/www/zm-collectie-v2/xml/Beelddocumentatie.xml"
 	    }
 	},
 

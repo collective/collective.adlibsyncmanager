@@ -8569,9 +8569,8 @@ class APIMigrator:
             result = self.find_article_by_priref(object_number)
         elif portal_type == "Audiovisual":
             result = self.find_audiovisual_by_priref(object_number)
-
         elif portal_type == "Image":
-            result = self.find_image_by_priref(object_number)
+            result = self.find_image_by_ref(object_number)
 
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
@@ -8801,6 +8800,17 @@ class APIMigrator:
                         return obj
         return None
 
+    def find_image_by_ref(self, priref):
+        image_path_split = priref.lower().split("\\")
+        img = image_path_split[-1]
+        
+        image_id = idnormalizer.normalize(img, max_length=len(img))
+
+        for image in self.all_images:
+            if image.id == image_id:
+                return image.getObject()
+
+        return None
 
     def find_objectentry_by_priref(self, priref):
         if priref:
