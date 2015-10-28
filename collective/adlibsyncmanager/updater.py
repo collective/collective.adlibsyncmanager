@@ -61,7 +61,7 @@ from collective.imageReference.imageReference import IImageReference
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1550,10 +1550,10 @@ class Updater:
 
         self.init_log_files()
 
-        self.fix_persons_names()
+        #self.fix_persons_names()
         #self.check_number_of_commas()
         #self.fix_institutions()
-        return True
+        #return True
 
         #
         # Choose collection XML
@@ -1607,7 +1607,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        plone_object.reindexObject() 
+                        #plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
