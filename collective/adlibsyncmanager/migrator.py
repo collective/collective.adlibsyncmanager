@@ -110,6 +110,8 @@ class APIMigrator:
         all_taxonomies = catalog(portal_type='Taxonomie', Language="all")
         all_serials = catalog(portal_type='Serial', Language="all")
         all_audiovisuals = catalog(portal_type='Audiovisual', Language="all")
+        all_images = catalog(portal_type='Image', Language="all")
+
         self.all_books = all_books
         self.all_objects = all_objects
         self.all_persons = all_persons
@@ -124,6 +126,7 @@ class APIMigrator:
         self.all_taxonomies = all_taxonomies
         self.all_serials = all_serials
         self.all_audiovisuals = all_audiovisuals
+        self.all_images = all_images
 
     def build_api_request_all(self):
         url = ""
@@ -8566,6 +8569,10 @@ class APIMigrator:
             result = self.find_article_by_priref(object_number)
         elif portal_type == "Audiovisual":
             result = self.find_audiovisual_by_priref(object_number)
+
+        elif portal_type == "Image":
+            result = self.find_image_by_priref(object_number)
+
         else:
             print "[ ERROR ] Portal type '%s' not supported." %(portal_type)
 
@@ -8784,6 +8791,16 @@ class APIMigrator:
                         return obj
 
         return None
+
+    def find_image_by_priref(self, priref):
+        if priref:
+            for brain in self.all_images:
+                obj = brain.getObject()
+                if hasattr(obj, 'priref'):
+                    if obj.priref == priref:
+                        return obj
+        return None
+
 
     def find_objectentry_by_priref(self, priref):
         if priref:

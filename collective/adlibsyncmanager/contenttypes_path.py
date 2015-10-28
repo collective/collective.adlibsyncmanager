@@ -2,6 +2,16 @@
 # -*- coding: utf-8 -*-
 
 CONTENT_TYPES_PATH = {
+	"Image": {
+	    "dev":{
+	        "single":"/Users/AG/Projects/collectie-zm/single-beelddocumentatie-v01.xml"
+	    },
+	    "prod": {
+	        "single":"",
+	        "total":""
+	    }
+	},
+
 	"Audiovisual": {
 	    "dev":{
 	        "single":"/Users/AG/Projects/collectie-zm/single-audio-visual-v01.xml"

@@ -56,11 +56,12 @@ from collective.leadmedia.utils import imageObjectCreated
 from plone.app.textfield.value import RichTextValue
 from plone.event.interfaces import IEventAccessor
 from collective.object.utils.interfaces import INotes
+from collective.imageReference.imageReference import IImageReference
 
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Serial"
+PORTAL_TYPE = "Taxonomie"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -133,6 +134,10 @@ elif PORTAL_TYPE == "Audiovisual":
     from  .audiovisual_utils import audiovisual_relation_types as relation_types
     from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
 
+elif PORTAL_TYPE == "Image":
+    from  .image_utils import image_subfields_types as subfields_types
+    from  .image_utils import image_relation_types as relation_types
+    from  .image_core import IMAGE_CORE as CORE
 
 DEBUG = False
 RUNNING = True
@@ -150,6 +155,10 @@ class Updater:
         if self.portal_type == "Exhibition":
             self.exhibition_fields = getFieldsInOrder(IEventBasic)
             self.fields.extend(self.exhibition_fields)
+
+        elif self.portal_type == "Image":
+            self.image_reference_fields = getFieldsInOrder(IImageReference)
+            self.fields.extend(self.image_reference_fields)
 
         self.field_types = {}
         self.datagrids = {}
@@ -355,7 +364,6 @@ class Updater:
             
             if taxonomy:
                 if not grid:
-                    current_value = []
                     intids = component.getUtility(IIntIds)
                     person_id = intids.getId(taxonomy)
                     relation_value = RelationValue(person_id)
@@ -1534,47 +1542,54 @@ class Updater:
             try:
                 curr += 1
                 transaction.begin()
+                
                 self.object_number = ""
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
                     self.object_number = object_number
 
-                    #plone_object = ""
-                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-                    
-                    if plone_object:
-                        if self.portal_type == "Exhibition":
-                            plone_object.start = ""
-                            plone_object.end = ""
-                            plone_object.whole_day = True
+                    if object_number == "4126":
+                        #plone_object = ""
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.empty_fields(plone_object)
-                        self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
+                        if plone_object:
+                            if self.portal_type == "Image":
+                                plone_object = IImageReference(plone_object)
 
-                        if self.portal_type == "Exhibition":
-                            if plone_object.start:
-                                IEventBasic(plone_object).start = plone_object.start
-                            if plone_object.end:
-                                IEventBasic(plone_object).end = plone_object.end
-                        
-                        plone_object.reindexObject() 
-                    else:
-                        if create_new:
-                            created_object = self.create_object(xml_record)
-                            self.update(xml_record, created_object, object_number)
-                            self.fix_all_choices(created_object)
-                            created_object.reindexObject()
-                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            if self.portal_type == "Exhibition":
+                                plone_object.start = ""
+                                plone_object.end = ""
+                                plone_object.whole_day = True
+
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.empty_fields(plone_object)
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
+
+                            if self.portal_type == "Exhibition":
+                                if plone_object.start:
+                                    IEventBasic(plone_object).start = plone_object.start
+                                if plone_object.end:
+                                    IEventBasic(plone_object).end = plone_object.end
+                            
+                            plone_object.reindexObject() 
+                            transaction.commit()
+                            return True
                         else:
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
+                            if create_new:
+                                created_object = self.create_object(xml_record)
+                                self.update(xml_record, created_object, object_number)
+                                self.fix_all_choices(created_object)
+                                created_object.reindexObject()
+                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            else:
+                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
