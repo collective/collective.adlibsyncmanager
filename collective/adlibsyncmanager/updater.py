@@ -1467,6 +1467,7 @@ class Updater:
                         # Change ID
                         dirty_id = "%s %s" %(str(priref), new_title_string)
                         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                        person.reindexObject(idxs=['Title'])
 
                         #api.content.rename(obj=person, new_id=normalized_id, safe_id=True)
                         #self.move_person(person)
@@ -1490,7 +1491,8 @@ class Updater:
             transaction.begin()
             self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
             person = brain.getObject()
-            self.fix_person_name(person)
+            person.reindexObject(idxs=['Title'])
+            #self.fix_person_name(person)
             transaction.commit()
 
         return True
