@@ -1499,10 +1499,11 @@ class Updater:
 
     def check_number_of_commas(self):
         count = 0
+        total = len(list(self.api.all_persons))
         for brain in list(self.api.all_persons):
             curr += 1
             
-            self.log_status("! STATUS !__ __Renaming %s / %s" %(str(curr), str(total)))
+            self.log_status("! STATUS !__ Checking %s / %s" %(str(curr), str(total)))
             person = brain.getObject()
             title = getattr(person, 'title', "")
 
