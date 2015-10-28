@@ -61,7 +61,7 @@ from collective.imageReference.imageReference import IImageReference
 from z3c.relationfield import RelationValue
 from zope import component
 
-PORTAL_TYPE = "Reindexing"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1487,13 +1487,17 @@ class Updater:
         curr = 0
 
         for brain in list(self.api.all_persons):
-            curr += 1
-            transaction.begin()
-            self.log_status("! STATUS !__ __Reindexing %s / %s" %(str(curr), str(total)))
-            person = brain.getObject()
-            person.reindexObject()
-            #self.fix_person_name(person)
-            transaction.commit()
+            try:
+                curr += 1
+                transaction.begin()
+                self.log_status("! STATUS !__ __Reindexing %s / %s" %(str(curr), str(total)))
+                person = brain.getObject()
+                person.reindexObject()
+                #self.fix_person_name(person)
+                transaction.commit()
+            except:
+                transaction.abort()
+                pass
 
         return True
 
