@@ -60,6 +60,7 @@ from collective.imageReference.imageReference import IImageReference
 
 from z3c.relationfield import RelationValue
 from zope import component
+from colective.object.object import IObject
 
 PORTAL_TYPE = "Object"
 
@@ -1547,6 +1548,326 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
+
+        no_longer_searchable(IObject,'identification_objectName_objectname')
+
+        no_longer_searchable(IObject,'productionDating_productionDating')
+
+        no_longer_searchable(IObject,'productionDating_production_schoolStyle')
+
+        no_longer_searchable(IObject,'iconography_contentSubjects')
+
+        no_longer_searchable(IObject,'iconography_contentPeriodDates')
+
+        no_longer_searchable(IObject,'inscriptionsMarkings_inscriptionsAndMarkings')
+
+        no_longer_searchable(IObject,'associations_associatedSubjects')
+
+        no_longer_searchable(IObject,'associations_associatedPeriods')
+
+        no_longer_searchable(IObject,'associations_associatedPersonInstitutions')
+
+        no_longer_searchable(IObject,'valueInsurance_valuations')
+
+        no_longer_searchable(IObject,'conditionConservation_conditions')
+
+        no_longer_searchable(IObject,'conditionConservation_preservationForm')
+
+        no_longer_searchable(IObject,'acquisition_fundings')
+
+        no_longer_searchable(IObject,'ownershipHistory_historyOwner')
+
+        no_longer_searchable(IObject,'location_currentLocation')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_collectors')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_placeCodes')
+
+        no_longer_searchable(IObject,'fieldCollection_habitatStratigraphy_stratigrafie')
+
+        no_longer_searchable(IObject,'numbersRelationships_relationshipsWithOtherObjects_relatedObjects')
+
+        no_longer_searchable(IObject,'identification_identification_institutionPlace')
+
+        no_longer_searchable(IObject,'identification_identification_administrativeName')
+
+        no_longer_searchable(IObject,'identification_identification_part')
+
+        no_longer_searchable(IObject,'identification_identification_totNumber')
+
+        no_longer_searchable(IObject,'identification_identification_copyNumber')
+
+        no_longer_searchable(IObject,'identification_identification_edition')
+
+        no_longer_searchable(IObject,'identification_identification_distinguishFeatures')
+
+        no_longer_searchable(IObject,'identification_titleDescription_title')
+
+        no_longer_searchable(IObject,'identification_titleDescription_description')
+
+        no_longer_searchable(IObject,'identification_titleDescription_translatedTitle')
+
+        no_longer_searchable(IObject,'identification_titleDescription_language')
+
+        no_longer_searchable(IObject,'identification_titleDescription_describer')
+
+        no_longer_searchable(IObject,'identification_titleDescription_titleDate')
+
+        no_longer_searchable(IObject,'identification_taxonomy')
+
+        no_longer_searchable(IObject,'identification_taxonomy_determiners')
+
+        no_longer_searchable(IObject,'identification_objectName_otherName')
+
+        no_longer_searchable(IObject,'identification_taxonomy_objectstatus')
+
+        no_longer_searchable(IObject,'productionDating_production_productionReason')
+
+        no_longer_searchable(IObject,'productionDating_dating_period')
+
+        no_longer_searchable(IObject,'productionDating_dating_notes')
+
+        no_longer_searchable(IObject,'physicalCharacteristics_physicalDescription_description')
+
+        no_longer_searchable(IObject,'iconography_generalSearchCriteria_generalTheme')
+
+        no_longer_searchable(IObject,'iconography_generalSearchCriteria_specificTheme')
+
+        no_longer_searchable(IObject,'iconography_generalSearchCriteria_classificationTheme')
+
+        no_longer_searchable(IObject,'iconography_contentDescription')
+
+        no_longer_searchable(IObject,'iconography_contentPersonInstitution')
+
+        no_longer_searchable(IObject,'iconography_iconographySource_sourceGeneral')
+
+        no_longer_searchable(IObject,'iconography_iconographySource_sourceSpecific')
+
+        no_longer_searchable(IObject,'iconography_iconographySource_sourceObjectNumber')
+
+        no_longer_searchable(IObject,'inscriptionsMarkings_inscriptionsMarkings')
+
+        no_longer_searchable(IObject,'associations_associatedPersonInstitution')
+
+        no_longer_searchable(IObject,'numbersRelationships_numbers')
+
+        no_longer_searchable(IObject,'numbersRelationships_relationshipsWithOtherObjects_notes')
+
+        no_longer_searchable(IObject,'numbersRelationships_relationshipsWithOtherObjects_parts')
+
+        no_longer_searchable(IObject,'numbersRelationships_relationshipsWithOtherObjects_relatedObject')
+
+        no_longer_searchable(IObject,'numbersRelationships_digitalReferences')
+
+        no_longer_searchable(IObject,'documentation_documentation')
+
+        no_longer_searchable(IObject,'documentationFreeArchive_documentationFreeText')
+
+        no_longer_searchable(IObject,'documentationFreeArchive_archive')
+
+        no_longer_searchable(IObject,'documentationFreeArchive_archiveNumber')
+
+        no_longer_searchable(IObject,'reproductions_reproduction')
+
+        no_longer_searchable(IObject,'conditionConservation_priority')
+
+        no_longer_searchable(IObject,'conditionConservation_next_condition_check')
+
+        no_longer_searchable(IObject,'conditionConservation_date')
+
+        no_longer_searchable(IObject,'conditionConservation_condition')
+
+        no_longer_searchable(IObject,'conditionConservation_completeness')
+
+        no_longer_searchable(IObject,'conditionConservation_enviromental_condition')
+
+        no_longer_searchable(IObject,'conditionConservation_conservation_request')
+
+        no_longer_searchable(IObject,'conditionConservation_conservationTreatment')
+
+        no_longer_searchable(IObject,'conditionConservation_conservationTreatments')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_display')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_environment')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_handling')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_packing')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_security')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_storage')
+
+        no_longer_searchable(IObject,'conditionConservation_recommendations_specialRequirements')
+
+        no_longer_searchable(IObject,'recommendationsRequirements_creditLine_creditLine')
+
+        no_longer_searchable(IObject,'recommendationsRequirements_legalLicenceRequirements_requirements')
+
+        no_longer_searchable(IObject,'recommendationsRequirements_legalLicenceRequirements_requirementsHeld')
+
+        no_longer_searchable(IObject,'valueInsurance_insurance')
+
+        no_longer_searchable(IObject,'acquisition_accession_date')
+
+        no_longer_searchable(IObject,'acquisition_number')
+
+        no_longer_searchable(IObject,'acquisition_date')
+
+        no_longer_searchable(IObject,'acquisition_precision')
+
+        no_longer_searchable(IObject,'acquisition_method')
+
+        no_longer_searchable(IObject,'acquisition_rec_no')
+
+        no_longer_searchable(IObject,'acquisition_lot_no')
+
+        no_longer_searchable(IObject,'acquisition_from')
+
+        no_longer_searchable(IObject,'acquisition_auction')
+
+        no_longer_searchable(IObject,'acquisition_place')
+
+        no_longer_searchable(IObject,'acquisition_reason')
+
+        no_longer_searchable(IObject,'acquisition_conditions')
+
+        no_longer_searchable(IObject,'acquisition_authorization_authorizer')
+
+        no_longer_searchable(IObject,'acquisition_authorization_date')
+
+        no_longer_searchable(IObject,'acquisition_costs_offer_price')
+
+        no_longer_searchable(IObject,'acquisition_costs_offer_price_curr')
+
+        no_longer_searchable(IObject,'acquisition_costs_purchase_price')
+
+        no_longer_searchable(IObject,'acquisition_costs_purchase_price_curr')
+
+        no_longer_searchable(IObject,'acquisition_costs_notes')
+
+        no_longer_searchable(IObject,'acquisition_funding')
+
+        no_longer_searchable(IObject,'acquisition_documentation')
+
+        no_longer_searchable(IObject,'acquisition_copyright')
+
+        no_longer_searchable(IObject,'acquisition_notes')
+
+        no_longer_searchable(IObject,'disposal_deaccession')
+
+        no_longer_searchable(IObject,'disposal_new_object_number')
+
+        no_longer_searchable(IObject,'disposal_number')
+
+        no_longer_searchable(IObject,'disposal_date')
+
+        no_longer_searchable(IObject,'disposal_method')
+
+        no_longer_searchable(IObject,'disposal_proposed_recipient')
+
+        no_longer_searchable(IObject,'disposal_recipient')
+
+        no_longer_searchable(IObject,'disposal_reason')
+
+        no_longer_searchable(IObject,'disposal_provisos')
+
+        no_longer_searchable(IObject,'disposal_finance_disposal_price')
+
+        no_longer_searchable(IObject,'disposal_documentation')
+
+        no_longer_searchable(IObject,'disposal_notes')
+
+        no_longer_searchable(IObject,'ownershipHistory_current_owner')
+
+        no_longer_searchable(IObject,'ownershipHistory_owner')
+
+        no_longer_searchable(IObject,'ownershipHistory_from')
+
+        no_longer_searchable(IObject,'ownershipHistory_until')
+
+        no_longer_searchable(IObject,'ownershipHistory_exchange_method')
+
+        no_longer_searchable(IObject,'ownershipHistory_acquired_from')
+
+        no_longer_searchable(IObject,'ownershipHistory_auction')
+
+        no_longer_searchable(IObject,'ownershipHistory_auctions')
+
+        no_longer_searchable(IObject,'ownershipHistory_rec_no')
+
+        no_longer_searchable(IObject,'ownershipHistory_lot_no')
+
+        no_longer_searchable(IObject,'ownershipHistory_place')
+
+        no_longer_searchable(IObject,'ownershipHistory_price')
+
+        no_longer_searchable(IObject,'ownershipHistory_category')
+
+        no_longer_searchable(IObject,'ownershipHistory_access')
+
+        no_longer_searchable(IObject,'ownershipHistory_notes')
+
+        no_longer_searchable(IObject,'location_normal_location')
+
+        no_longer_searchable(IObject,'location_current_location')
+
+        no_longer_searchable(IObject,'location_checks')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_fieldCollNumber')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_collector')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_event')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_dateEarly')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_dateEarlyPrecision')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_dateLate')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_dateLatePrecision')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_method')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_place')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_placeCode')
+
+        no_longer_searchable(IObject,'fieldCollection_fieldCollection_placeFeature')
+
+        no_longer_searchable(IObject,'fieldCollection_coordinatesFieldCollectionPlace')
+
+        no_longer_searchable(IObject,'fieldCollection_habitatStratigraphy_habitat')
+
+        no_longer_searchable(IObject,'fieldCollection_habitatStratigraphy_stratigraphy')
+
+        no_longer_searchable(IObject,'fieldCollection_notes')
+
+        no_longer_searchable(IObject,'exhibitions_exhibition')
+
+        no_longer_searchable(IObject,'loans_incomingLoans')
+
+        no_longer_searchable(IObject,'loans_outgoingLoans')
+
+        no_longer_searchable(IObject,'transport_despatch')
+
+        no_longer_searchable(IObject,'transport_despatchNumber')
+
+        no_longer_searchable(IObject,'transport_entry_number')
+
+        no_longer_searchable(IObject,'labels')
+
+        no_longer_searchable(IObject,'notes')
+
+        no_longer_searchable(IObject,'notes_free_fields')
+
+        no_longer_searchable(IObject,'managementDetails_edit')
+
+        no_longer_searchable(IObject,'managementDetails_input')
+
+        return True
 
         total = len(list(self.api.all_bojects))
         curr = 0
