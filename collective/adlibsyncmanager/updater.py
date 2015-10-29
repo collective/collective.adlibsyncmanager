@@ -980,13 +980,14 @@ class Updater:
                     if new_value not in current_value:
                         if new_value:
                             current_value.append(self.api.trim_white_spaces(xml_element.text))
+                    else:
+                        try:
+                            self.warning("%s__%s__Value already in vocabulary %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
+                        except:
+                            pass
                 except:
                     self.error("%s__%s__Not possible to add value to the vocabulary %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
-                else:
-                    try:
-                        self.warning("%s__%s__Value already in vocabulary %s"%(str(self.object_number), str(self.xml_path), str(new_value.encode('ascii','ignore'))))
-                    except:
-                        pass
+                
                 value = current_value
             else:
                 value = [self.api.trim_white_spaces(xml_element.text)]
@@ -1544,16 +1545,30 @@ class Updater:
                     print relation.from_attribute
 
         return True
-        
+
+    def reindex_all_objects(self):
+
+        total = len(list(self.api.all_bojects))
+        curr = 0
+
+        for brain in self.api.all_objects:
+            curr += 1
+            print "Reindexing %s / %s" %(str(curr), str(total))
+
+            obj = brain.getObject()
+            obj.reindexObject()
+
+        return True
+
     def start(self):
         self.dev = False
 
         self.init_log_files()
 
-        #self.fix_persons_names()
+        self.reindex_all_objects()
         #self.check_number_of_commas()
         #self.fix_institutions()
-        #return True
+        return True
 
         #
         # Choose collection XML
