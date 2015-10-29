@@ -61,6 +61,7 @@ from collective.imageReference.imageReference import IImageReference
 from z3c.relationfield import RelationValue
 from zope import component
 from colective.object.object import IObject
+from collective.dexteritytextindexer.utils import no_longer_searchable
 
 PORTAL_TYPE = "Object"
 
