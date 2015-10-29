@@ -60,7 +60,7 @@ from collective.imageReference.imageReference import IImageReference
 
 from z3c.relationfield import RelationValue
 from zope import component
-from colective.object.object import IObject
+from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import no_longer_searchable
 
 PORTAL_TYPE = "Object"
@@ -1549,8 +1549,13 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
+        for name, field in self.fields:
+            try:
+                no_longer_searchable(IObject, name)
+            except:
+                pass
 
-        no_longer_searchable(IObject,'identification_objectName_objectname')
+        return True
 
         no_longer_searchable(IObject,'productionDating_productionDating')
 
