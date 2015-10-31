@@ -1549,7 +1549,8 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
-        searchable(IObject, 'identification_identification_objectNumber')
+        for name, field in self.fields:
+            searchable(IObject, name)
 
         total = len(list(self.api.all_bojects))
         curr = 0
@@ -1557,7 +1558,6 @@ class Updater:
         for brain in self.api.all_objects:
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
-
             obj = brain.getObject()
             obj.reindexObject()
 
