@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Image"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -159,6 +159,13 @@ class Updater:
             self.fields.extend(self.exhibition_fields)
 
         elif self.portal_type == "Image":
+            self.images_dict = {}
+            for img in self.all_images:
+                img_obj = img.getObject()
+                _id = img_obj.id
+                images_dict[_id] = img_obj
+
+
             self.image_reference_fields = getFieldsInOrder(IImageReference)
             self.fields.extend(self.image_reference_fields)
 
@@ -1552,7 +1559,7 @@ class Updater:
         for name, field in self.fields:
             searchable(IObject, name)
 
-        total = len(list(self.api.all_bojects))
+        total = len(list(self.api.all_objects))
         curr = 0
 
         for brain in self.api.all_objects:
@@ -1563,15 +1570,23 @@ class Updater:
 
         return True
 
+    def find_image_by_id(self, _id):
+        if _id:
+            if _id in self.images_dict:
+                return self.images_dict[_id]
+            else:
+                return None
+        return None
+
     def start(self):
         self.dev = False
 
         self.init_log_files()
 
-        self.reindex_all_objects()
+        #self.reindex_all_objects()
         #self.check_number_of_commas()
         #self.fix_institutions()
-        return True
+        #return True
 
         #
         # Choose collection XML
@@ -1588,18 +1603,22 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
                 
                 self.object_number = ""
+
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
                     self.object_number = object_number
                     #plone_object = ""
-                    plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+                    if self.portal_type == "Image":
+                        plone_object = self.find_image_by_id(object_number)
+                    else:
+                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
                     if plone_object:
                         if self.portal_type == "Image":
