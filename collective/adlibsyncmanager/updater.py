@@ -160,10 +160,10 @@ class Updater:
 
         elif self.portal_type == "Image":
             self.images_dict = {}
-            for img in self.all_images:
-                img_obj = img.getObject()
-                _id = img_obj.id
-                images_dict[_id] = img_obj
+            for img in self.api.all_images:
+                #img_obj = img.getObject()
+                _id = img.id
+                images_dict[_id] = img
 
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
@@ -1573,7 +1573,9 @@ class Updater:
     def find_image_by_id(self, _id):
         if _id:
             if _id in self.images_dict:
-                return self.images_dict[_id]
+                img_brain = self.images_dict[_id]
+                img_obj = img_brain.getObject()
+                return img_obj
             else:
                 return None
         return None
