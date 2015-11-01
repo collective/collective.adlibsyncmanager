@@ -1572,8 +1572,13 @@ class Updater:
 
     def find_image_by_id(self, _id):
         if _id:
-            if _id in self.images_dict:
-                img_brain = self.images_dict[_id]
+            image_path_split = _id.lower().split("\\")
+            img = image_path_split[-1]
+        
+            image_id = idnormalizer.normalize(img, max_length=len(img))
+            
+            if image_id in self.images_dict:
+                img_brain = self.images_dict[image_id]
                 img_obj = img_brain.getObject()
                 return img_obj
             else:
