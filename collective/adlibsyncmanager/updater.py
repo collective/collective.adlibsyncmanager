@@ -163,7 +163,7 @@ class Updater:
             for img in self.api.all_images:
                 #img_obj = img.getObject()
                 _id = img.id
-                images_dict[_id] = img
+                self.images_dict[_id] = img
 
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
