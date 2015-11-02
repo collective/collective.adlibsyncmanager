@@ -163,7 +163,7 @@ class Updater:
             self.images_ref_dict = {}
             for img in self.api.all_images:
                 #img_obj = img.getObject()
-                #ref = getattr(img_obj, 'reproductionData_identification_identifierURL', '')
+                ref = img.reproductionData_identification_identifierURL
                 _id = img.id
                 self.images_dict[_id] = img
                 if ref:
@@ -1615,10 +1615,10 @@ class Updater:
         self.init_log_files()
 
         #self.reindex_all_objects()
-        self.reindex_all_images()
+        #self.reindex_all_images()
         #self.check_number_of_commas()
         #self.fix_institutions()
-        return True
+        #return True
 
         #
         # Choose collection XML
@@ -1648,7 +1648,7 @@ class Updater:
                     self.object_number = object_number
                     #plone_object = ""
                     if self.portal_type == "Image":
-                        plone_object = self.find_image_by_id(object_number, xml_record)
+                        plone_object = self.find_image_by_id(object_number)
                     else:
                         plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
