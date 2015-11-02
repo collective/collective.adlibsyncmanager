@@ -160,10 +160,14 @@ class Updater:
 
         elif self.portal_type == "Image":
             self.images_dict = {}
+            self.images_ref_dict = {}
             for img in self.api.all_images:
-                #img_obj = img.getObject()
+                img_obj = img.getObject()
+                ref = getattr(img_obj, 'reproductionData_identification_identifierURL', '')
                 _id = img.id
                 self.images_dict[_id] = img
+                if ref:
+                    self.images_ref_dict[ref] = img
 
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
@@ -1581,8 +1585,15 @@ class Updater:
                 img_brain = self.images_dict[image_id]
                 img_obj = img_brain.getObject()
                 return img_obj
+        
+            elif _id in self.images_ref_dict:
+                img_brain = self.images_dict[image_id]
+                img_obj = img_brain.getObject()
+                return img_obj
+                
             else:
                 return None
+
         return None
 
     def start(self):
@@ -1610,7 +1621,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1623,7 +1634,7 @@ class Updater:
                     self.object_number = object_number
                     #plone_object = ""
                     if self.portal_type == "Image":
-                        plone_object = self.find_image_by_id(object_number)
+                        plone_object = self.find_image_by_id(object_number, xml_record)
                     else:
                         plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
