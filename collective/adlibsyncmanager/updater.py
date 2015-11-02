@@ -162,8 +162,8 @@ class Updater:
             self.images_dict = {}
             self.images_ref_dict = {}
             for img in self.api.all_images:
-                img_obj = img.getObject()
-                ref = getattr(img_obj, 'reproductionData_identification_identifierURL', '')
+                #img_obj = img.getObject()
+                #ref = getattr(img_obj, 'reproductionData_identification_identifierURL', '')
                 _id = img.id
                 self.images_dict[_id] = img
                 if ref:
@@ -1574,6 +1574,19 @@ class Updater:
 
         return True
 
+    def reindex_all_images(self):
+        total = len(list(self.api.all_images))
+        curr = 0
+
+        for brain in self.api.all_images:
+            curr += 1
+            print "Reindexing %s / %s" %(str(curr), str(total))
+
+            obj = brain.getObject()
+            obj.reindexObject(idxs=['reproductionData_identification_identifierURL'])
+
+        return True
+
     def find_image_by_id(self, _id):
         if _id:
             image_path_split = _id.lower().split("\\")
@@ -1590,7 +1603,7 @@ class Updater:
                 img_brain = self.images_dict[image_id]
                 img_obj = img_brain.getObject()
                 return img_obj
-                
+
             else:
                 return None
 
@@ -1602,9 +1615,10 @@ class Updater:
         self.init_log_files()
 
         #self.reindex_all_objects()
+        self.reindex_all_images()
         #self.check_number_of_commas()
         #self.fix_institutions()
-        #return True
+        return True
 
         #
         # Choose collection XML
