@@ -1600,7 +1600,7 @@ class Updater:
                 return img_obj
         
             elif _id in self.images_ref_dict:
-                img_brain = self.images_dict[_id]
+                img_brain = self.images_ref_dict[_id]
                 img_obj = img_brain.getObject()
                 return img_obj
 
