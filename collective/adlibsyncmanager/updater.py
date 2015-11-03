@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Image"
+PORTAL_TYPE = "Book"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1624,10 +1624,10 @@ class Updater:
     def start(self):
         self.dev = False
 
-        self.init_log_files()
+        #self.init_log_files()
 
-        self.reindex_all_exhibitions()
-        return True
+        #self.reindex_all_exhibitions()
+        #return True
         #self.reindex_all_objects()
         #self.reindex_all_images()
         #self.check_number_of_commas()
@@ -1659,48 +1659,54 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
-                    self.object_number = object_number
-                    #plone_object = ""
-                    if self.portal_type == "Image":
-                        plone_object = self.find_image_by_id(object_number)
-                    else:
-                        plone_object = self.api.find_item_by_type(object_number, self.portal_type)
-
-                    if plone_object:
+                    if object_number == "11304":
+                        self.object_number = object_number
+                        #plone_object = ""
                         if self.portal_type == "Image":
-                            plone_object = IImageReference(plone_object)
-
-                        if self.portal_type == "Exhibition":
-                            plone_object.start = ""
-                            plone_object.end = ""
-                            plone_object.whole_day = True
-
-                        self.object_number = str(object_number)
-                        self.generate_field_types()
-                        self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.empty_fields(plone_object)
-                        self.update(xml_record, plone_object, object_number)
-                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                        self.fix_all_choices(plone_object)
-
-                        if self.portal_type == "Exhibition":
-                            if plone_object.start:
-                                IEventBasic(plone_object).start = plone_object.start
-                            if plone_object.end:
-                                IEventBasic(plone_object).end = plone_object.end
-                        
-                        #plone_object.reindexObject() 
-                    else:
-                        if create_new:
-                            created_object = self.create_object(xml_record)
-                            self.update(xml_record, created_object, object_number)
-                            self.fix_all_choices(created_object)
-                            created_object.reindexObject()
-                            self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                            self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            plone_object = self.find_image_by_id(object_number)
                         else:
-                            self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))     
+                            plone_object = self.api.find_item_by_type(object_number, self.portal_type)
+
+                        if plone_object:
+                            if self.portal_type == "Image":
+                                plone_object = IImageReference(plone_object)
+
+                            if self.portal_type == "Exhibition":
+                                plone_object.start = ""
+                                plone_object.end = ""
+                                plone_object.whole_day = True
+
+                            self.object_number = str(object_number)
+                            self.generate_field_types()
+                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.empty_fields(plone_object)
+                            self.update(xml_record, plone_object, object_number)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            self.fix_all_choices(plone_object)
+
+                            if self.portal_type == "Exhibition":
+                                if plone_object.start:
+                                    IEventBasic(plone_object).start = plone_object.start
+                                if plone_object.end:
+                                    IEventBasic(plone_object).end = plone_object.end
+                            
+                            plone_object.reindexObject() 
+                            transaction.commit()
+                            return True
+                        else:
+                            if create_new:
+                                created_object = self.create_object(xml_record)
+                                self.update(xml_record, created_object, object_number)
+                                self.fix_all_choices(created_object)
+                                created_object.reindexObject()
+                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                            else:
+                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))   
+
+                        
+
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
 
