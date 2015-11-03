@@ -1574,6 +1574,18 @@ class Updater:
 
         return True
 
+    def reindex_all_exhibitions(self):
+        total = len(list(self.api.all_exhibitions))
+        curr = 0
+
+        for brain in self.api.all_exhibitions:
+            curr += 1
+            print "Reindexing %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            obj.reindexObject()
+            
+        return True
+
     def reindex_all_images(self):
         total = len(list(self.api.all_images))
         curr = 0
@@ -1614,6 +1626,8 @@ class Updater:
 
         self.init_log_files()
 
+        self.reindex_all_exhibitions()
+        return True
         #self.reindex_all_objects()
         #self.reindex_all_images()
         #self.check_number_of_commas()
