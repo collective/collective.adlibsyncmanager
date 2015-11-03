@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Book"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1649,7 +1649,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
@@ -1701,8 +1701,6 @@ class Updater:
                             self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
                         else:
                             self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number)))   
-
-                        
 
                 else:
                     self.error("%s__ __Cannot find object number/priref in XML record"%(str(curr)))
