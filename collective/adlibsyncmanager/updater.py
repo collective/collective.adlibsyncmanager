@@ -159,15 +159,15 @@ class Updater:
             self.fields.extend(self.exhibition_fields)
 
         elif self.portal_type == "Image":
-            self.images_dict = {}
-            self.images_ref_dict = {}
-            for img in self.api.all_images:
+            #self.images_dict = {}
+            #self.images_ref_dict = {}
+            #for img in self.api.all_images:
                 #img_obj = img.getObject()
-                ref = img.reproductionData_identification_identifierURL
-                _id = img.id
-                self.images_dict[_id] = img
-                if ref:
-                    self.images_ref_dict[ref] = img
+            #    ref = img.reproductionData_identification_identifierURL
+            #    _id = img.id
+            #    self.images_dict[_id] = img
+            #    if ref:
+            #        self.images_ref_dict[ref] = img
 
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
@@ -1583,7 +1583,7 @@ class Updater:
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             obj.reindexObject()
-            
+
         return True
 
     def reindex_all_images(self):
