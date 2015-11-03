@@ -1624,7 +1624,7 @@ class Updater:
     def start(self):
         self.dev = False
 
-        #self.init_log_files()
+        self.init_log_files()
 
         #self.reindex_all_exhibitions()
         #return True
