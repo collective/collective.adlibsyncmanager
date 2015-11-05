@@ -78,7 +78,9 @@ subfields_types = {
 	"free_field.confidential":"bool",
 	"dimension.unit-term":"choice",
 	"association.subject.tax":"relation",
-	"content.subject.tax":"relation"
+	"content.subject.tax":"relation",
+	"Fieldcollplacecode-field_coll.place.code.type-term":"gridlist",
+	"Fieldcollplacecode-field_coll.place.code-term":"gridlist"
 	#"owner_hist.auction": "relation"
 }
 

@@ -67,79 +67,7 @@ PORTAL_TYPE = "Book"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
-if PORTAL_TYPE == "Object":
-    from .core import CORE
-    from .utils import *
 
-elif PORTAL_TYPE == "Book":
-    # Books
-    from .book_utils import book_subfields_types as subfields_types
-    from .book_utils import book_relation_types as relation_types
-    from .book_core import BOOK_CORE as CORE
-
-elif PORTAL_TYPE == "PersonOrInstitution":
-    # Persons
-    from .persons_utils import persons_subfields_types as subfields_types
-    from .persons_utils import persons_relation_types as relation_types
-    from .persons_core import PERSON_CORE as CORE
-
-elif PORTAL_TYPE == "Exhibition":
-    # Exhibitions
-    from .exhibition_utils import exhibition_subfields_types as subfields_types
-    from .exhibition_utils import exhibition_relation_types as relation_types
-    from .exhibition_core import EXHIBITION_CORE as CORE
-
-elif PORTAL_TYPE == "IncomingLoan":
-    # Incoming loan
-    from .loans_utils import loans_subfields_types as subfields_types
-    from .loans_utils import loans_relation_types as relation_types
-    from .loans_core import INCOMMING_CORE as CORE
-
-elif PORTAL_TYPE == "OutgoingLoan":
-    # Outgoing loan
-    from .loans_utils import loans_subfields_types as subfields_types
-    from .loans_utils import loans_relation_types as relation_types
-    from .loans_core import OUTGOING_CORE as CORE
-
-elif PORTAL_TYPE == "treatment":
-    from .treatment_utils import treatment_subfields_types as subfields_types
-    from .treatment_utils import treatment_relation_types as relation_types
-    from .treatment_core import TREATMENT_CORE as CORE
-
-elif PORTAL_TYPE == "ObjectEntry":
-    from .objectentry_utils import objectentry_subfields_types as subfields_types
-    from .objectentry_utils import objectentry_relation_types as relation_types
-    from .objectentry_core import OBJECTENTRY_CORE as CORE
-
-elif PORTAL_TYPE == "Resource":
-    from .resource_utils import resource_subfields_types as subfields_types
-    from .resource_utils import resource_relation_types as relation_types
-    from .resource_core import RESOURCE_CORE as CORE
-
-elif PORTAL_TYPE == "Taxonomie":
-    from .taxonomy_utils import taxonomy_subfields_types as subfields_types
-    from .taxonomy_utils import taxonomy_relation_types as relation_types
-    from .taxonomy_core import TAXONOMY_CORE as CORE
-
-elif PORTAL_TYPE == "Serial":
-    from .serial_utils import serial_subfields_types as subfields_types
-    from .serial_utils import serial_relation_types as relation_types
-    from .serial_core import SERIAL_CORE as CORE
-
-elif PORTAL_TYPE == "Article":
-    from .article_utils import article_subfields_types as subfields_types
-    from .article_utils import article_relation_types as relation_types
-    from .article_core import ARTICLE_CORE as CORE
-
-elif PORTAL_TYPE == "Audiovisual":
-    from  .audiovisual_utils import audiovisual_subfields_types as subfields_types
-    from  .audiovisual_utils import audiovisual_relation_types as relation_types
-    from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
-
-elif PORTAL_TYPE == "Image":
-    from  .image_utils import image_subfields_types as subfields_types
-    from  .image_utils import image_relation_types as relation_types
-    from  .image_core import IMAGE_CORE as CORE
 
 DEBUG = False
 RUNNING = True
@@ -148,35 +76,6 @@ class Updater:
     
     def __init__(self, APIMigrator):
         self.api = APIMigrator
-        self.collection = []
-        self.xml_root = []
-        self.portal_type = PORTAL_TYPE
-
-        self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
-        self.fields = getFieldsInOrder(self.schema)
-        if self.portal_type == "Exhibition":
-            self.exhibition_fields = getFieldsInOrder(IEventBasic)
-            self.fields.extend(self.exhibition_fields)
-
-        elif self.portal_type == "Image":
-            #self.images_dict = {}
-            #self.images_ref_dict = {}
-            #for img in self.api.all_images:
-                #img_obj = img.getObject()
-            #    ref = img.reproductionData_identification_identifierURL
-            #    _id = img.id
-            #    self.images_dict[_id] = img
-            #    if ref:
-            #        self.images_ref_dict[ref] = img
-
-
-            self.image_reference_fields = getFieldsInOrder(IImageReference)
-            self.fields.extend(self.image_reference_fields)
-
-        self.field_types = {}
-        self.datagrids = {}
-        self.object_number = ""
-        self.xml_path = ""
         self.dev = False
 
     def log(self, text=""):
@@ -1560,8 +1459,8 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
-        for name, field in self.fields:
-            searchable(IObject, name)
+        #for name, field in self.fields:
+        #    searchable(IObject, name)
 
         total = len(list(self.api.all_objects))
         curr = 0
@@ -1570,7 +1469,7 @@ class Updater:
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            obj.reindexObject()
+            obj.reindexObject(idxs=["SearchableText"])
 
         return True
 
@@ -1621,30 +1520,148 @@ class Updater:
 
         return None
 
+    def close_files(self):
+        self.error_log_file.close()
+        self.warning_log_file.close()
+        self.status_log_file.close()
+
+    def import_portaltypes_utils(self, PORTAL_TYPE):
+        print "import utils"
+        print PORTAL_TYPE
+        if PORTAL_TYPE == "Object":
+            from .core import CORE
+            from .utils import subfields_types, relation_types
+
+        elif PORTAL_TYPE == "Book":
+            # Books
+            from .book_utils import book_subfields_types as subfields_types
+            from .book_utils import book_relation_types as relation_types
+            from .book_core import BOOK_CORE as CORE
+            print "book core"
+            print CORE
+
+        elif PORTAL_TYPE == "PersonOrInstitution":
+            # Persons
+            from .persons_utils import persons_subfields_types as subfields_types
+            from .persons_utils import persons_relation_types as relation_types
+            from .persons_core import PERSON_CORE as CORE
+
+        elif PORTAL_TYPE == "Exhibition":
+            # Exhibitions
+            from .exhibition_utils import exhibition_subfields_types as subfields_types
+            from .exhibition_utils import exhibition_relation_types as relation_types
+            from .exhibition_core import EXHIBITION_CORE as CORE
+
+        elif PORTAL_TYPE == "IncomingLoan":
+            # Incoming loan
+            from .loans_utils import loans_subfields_types as subfields_types
+            from .loans_utils import loans_relation_types as relation_types
+            from .loans_core import INCOMMING_CORE as CORE
+
+        elif PORTAL_TYPE == "OutgoingLoan":
+            # Outgoing loan
+            from .loans_utils import loans_subfields_types as subfields_types
+            from .loans_utils import loans_relation_types as relation_types
+            from .loans_core import OUTGOING_CORE as CORE
+
+        elif PORTAL_TYPE == "treatment":
+            from .treatment_utils import treatment_subfields_types as subfields_types
+            from .treatment_utils import treatment_relation_types as relation_types
+            from .treatment_core import TREATMENT_CORE as CORE
+
+        elif PORTAL_TYPE == "ObjectEntry":
+            from .objectentry_utils import objectentry_subfields_types as subfields_types
+            from .objectentry_utils import objectentry_relation_types as relation_types
+            from .objectentry_core import OBJECTENTRY_CORE as CORE
+
+        elif PORTAL_TYPE == "Resource":
+            from .resource_utils import resource_subfields_types as subfields_types
+            from .resource_utils import resource_relation_types as relation_types
+            from .resource_core import RESOURCE_CORE as CORE
+
+        elif PORTAL_TYPE == "Taxonomie":
+            from .taxonomy_utils import taxonomy_subfields_types as subfields_types
+            from .taxonomy_utils import taxonomy_relation_types as relation_types
+            from .taxonomy_core import TAXONOMY_CORE as CORE
+
+        elif PORTAL_TYPE == "Serial":
+            from .serial_utils import serial_subfields_types as subfields_types
+            from .serial_utils import serial_relation_types as relation_types
+            from .serial_core import SERIAL_CORE as CORE
+
+        elif PORTAL_TYPE == "Article":
+            from .article_utils import article_subfields_types as subfields_types
+            from .article_utils import article_relation_types as relation_types
+            from .article_core import ARTICLE_CORE as CORE
+
+        elif PORTAL_TYPE == "Audiovisual":
+            from  .audiovisual_utils import audiovisual_subfields_types as subfields_types
+            from  .audiovisual_utils import audiovisual_relation_types as relation_types
+            from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
+
+        elif PORTAL_TYPE == "Image":
+            from  .image_utils import image_subfields_types as subfields_types
+            from  .image_utils import image_relation_types as relation_types
+            from  .image_core import IMAGE_CORE as CORE
+
+    def init_fields(self):
+        
+        self.collection = []
+        self.xml_root = []
+        self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
+        self.fields = getFieldsInOrder(self.schema)
+
+        if self.portal_type == "Exhibition":
+            self.exhibition_fields = getFieldsInOrder(IEventBasic)
+            self.fields.extend(self.exhibition_fields)
+
+        elif self.portal_type == "Image":
+            #self.images_dict = {}
+            #self.images_ref_dict = {}
+            #for img in self.api.all_images:
+                #img_obj = img.getObject()
+            #    ref = img.reproductionData_identification_identifierURL
+            #    _id = img.id
+            #    self.images_dict[_id] = img
+            #    if ref:
+            #        self.images_ref_dict[ref] = img
+            self.image_reference_fields = getFieldsInOrder(IImageReference)
+            self.fields.extend(self.image_reference_fields)
+
+        self.field_types = {}
+        self.datagrids = {}
+        self.object_number = ""
+        self.xml_path = ""
+
+
+    def import_entire_collection(self, content_types):
+        self.dev = True
+
+        for content_type in content_types:
+            self.portal_type = content_type
+            self.import_portaltypes_utils(self.portal_type)
+            self.init_fields()
+            self.init_log_files()
+
+            collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['single']
+            self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
+
+            self.generate_field_types()
+            self.import_contenttype(content_type)
+            self.close_files()
+
     def start(self):
-        self.dev = False
+        library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
+        collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
 
-        self.init_log_files()
+        #self.import_entire_collection(library_content_types)
 
-        #self.reindex_all_exhibitions()
-        #return True
-        #self.reindex_all_objects()
-        #self.reindex_all_images()
-        #self.check_number_of_commas()
-        #self.fix_institutions()
-        #return True
+        self.reindex_all_objects()
+        self.api.success = True
+        return True
 
-        #
-        # Choose collection XML
-        #
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
-        self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
-        #
-        # Generate field types
-        #
-        self.generate_field_types()
-
+    def import_contenttype(self, contenttype):
         total = len(list(self.collection))
         curr, limit = 0, 0
         create_new = False
@@ -1690,7 +1707,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        plone_object.reindexObject() 
+                        #plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
@@ -1710,7 +1727,6 @@ class Updater:
                 self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
                 raise
 
-        self.api.success = True
-        return True
+    
 
 
