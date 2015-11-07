@@ -1470,7 +1470,8 @@ class Updater:
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             obj.reindexObject(idxs=["SearchableText"])
-
+            obj.reindexObject(idxs=["productionDating_productionDating_maker"])
+            
         return True
 
     def reindex_all_exhibitions(self):
