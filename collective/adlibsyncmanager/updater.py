@@ -1471,7 +1471,75 @@ class Updater:
             obj = brain.getObject()
             obj.reindexObject(idxs=["SearchableText"])
             obj.reindexObject(idxs=["productionDating_productionDating_maker"])
-            
+
+        return True
+
+    def reindex_all_books(self):
+        total = len(list(self.api.all_books))
+        curr = 0
+
+        for brain in self.api.all_books:
+            curr += 1
+            print "Reindexing book %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            try:
+                obj.reindexObject()
+            except:
+                pass
+
+        print "== AUDIOVISUALS =="
+        total = len(list(self.api.all_audiovisuals))
+        curr = 0
+
+        for brain in self.api.all_audiovisuals:
+            curr += 1
+            print "Reindexing audiovisual %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            try:
+                obj.reindexObject()
+            except:
+                pass
+
+
+        print "== ARTICLES =="
+        total = len(list(self.api.all_articles))
+        curr = 0
+
+        for brain in self.api.all_articles:
+            curr += 1
+            print "Reindexing article %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            try:
+                obj.reindexObject()
+            except:
+                pass
+
+        print "== SERIALS =="
+        total = len(list(self.api.all_serials))
+        curr = 0
+
+        for brain in self.api.all_serials:
+            curr += 1
+            print "Reindexing serial %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            try:
+                obj.reindexObject()
+            except:
+                pass
+
+        print "== RESOURCES =="
+        total = len(list(self.api.all_resources))
+        curr = 0
+
+        for brain in self.api.all_resources:
+            curr += 1
+            print "Reindexing resource %s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            try:
+                obj.reindexObject()
+            except:
+                pass
+
         return True
 
     def reindex_all_exhibitions(self):
@@ -1657,7 +1725,7 @@ class Updater:
 
         #self.import_entire_collection(library_content_types)
 
-        self.reindex_all_objects()
+        self.reindex_all_books()
         self.api.success = True
         return True
 
