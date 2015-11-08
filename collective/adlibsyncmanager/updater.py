@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Audiovisual"
+PORTAL_TYPE = "Serial"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1735,7 +1735,7 @@ class Updater:
         return True
 
     def start(self):
-        library_content_types = ['Audiovisual']
+        library_content_types = ['Serial']
 
         #'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']

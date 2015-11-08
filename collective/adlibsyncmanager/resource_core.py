@@ -12,7 +12,7 @@ RESOURCE_CORE = {
 	'author.name-name':'',
     'keyword.contents-term':'resourceDublinCore_subject', 
     'abstract':'resourceDublinCore_description-term',
-    'publisher':'resourceDublinCore_publisher-publisher', 
+    'publisher':'resourceDublinCore_publishers', 
     'publisher-name':'',
     'contributor':'resourceDublinCore_contributor-contributor',
     'contributor-name':'',

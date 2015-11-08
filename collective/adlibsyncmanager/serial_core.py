@@ -20,7 +20,7 @@ SERIAL_CORE = {
     'author.role-term':'titleAuthorImprintCollation_titleAuthor_author-roles',#grid
 
 
-    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthor-corpAuthor',#grid
+    'corporate_author':'titleAuthorImprintCollation_titleAuthor_corpAuthors',#grid
     'corporate_author-name':'',
 
     'edition':'titleAuthorImprintCollation_edition_edition',
@@ -29,7 +29,7 @@ SERIAL_CORE = {
     
     'place_of_publication':'titleAuthorImprintCollation_imprint_place-term',#grid
 
-    'publisher':'titleAuthorImprintCollation_imprint_publisher-publisher',#grid
+    'publisher':'titleAuthorImprintCollation_imprint_publishers',#grid
     'publisher-name':'',
 
     'year_of_publication':'titleAuthorImprintCollation_imprint_year', 
@@ -37,7 +37,7 @@ SERIAL_CORE = {
     'print.place':'',
     'print.place-term':'titleAuthorImprintCollation_imprint_placesPrinted',
 
-    'print.name':'titleAuthorImprintCollation_imprint_printer-printer',#grid
+    'print.name':'titleAuthorImprintCollation_imprint_printers',#grid
     'print.name-name':'',
 
     'sort_year':'titleAuthorImprintCollation_sortYear_sortYear',
