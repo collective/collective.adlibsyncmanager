@@ -14,7 +14,7 @@ RESOURCE_CORE = {
     'abstract':'resourceDublinCore_description-term',
     'publisher':'resourceDublinCore_publishers', 
     'publisher-name':'',
-    'contributor':'resourceDublinCore_contributor-contributor',
+    'contributor':'resourceDublinCore_contributors',
     'contributor-name':'',
     'year_of_publication':'resourceDublinCore_date', 
     'material_type':'',
