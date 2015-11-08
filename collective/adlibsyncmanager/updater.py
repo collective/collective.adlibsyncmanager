@@ -63,14 +63,19 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Serial"
+PORTAL_TYPE = "Resource"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
-if PORTAL_TYPE == "Resource":
+if PORTAL_TYPE == "Object":
+    from .core import CORE
+    from .utils import subfields_types, relation_types
+
+elif PORTAL_TYPE == "Resource":
     from .resource_utils import resource_subfields_types as subfields_types
     from .resource_utils import resource_relation_types as relation_types
     from .resource_core import RESOURCE_CORE as CORE
+
 elif PORTAL_TYPE == "Serial":
     from .serial_utils import serial_subfields_types as subfields_types
     from .serial_utils import serial_relation_types as relation_types
@@ -1735,7 +1740,7 @@ class Updater:
         return True
 
     def start(self):
-        library_content_types = ['Serial']
+        library_content_types = ['Resource']
 
         #'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
@@ -1793,7 +1798,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        plone_object.reindexObject() 
+                        #plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
