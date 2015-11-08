@@ -67,7 +67,9 @@ PORTAL_TYPE = "Book"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
-
+from .book_utils import book_subfields_types as subfields_types
+from .book_utils import book_relation_types as relation_types
+from .book_core import BOOK_CORE as CORE
 
 DEBUG = False
 RUNNING = True
@@ -1595,9 +1597,7 @@ class Updater:
         self.status_log_file.close()
 
     def import_portaltypes_utils(self, PORTAL_TYPE):
-        print "import utils"
-        print PORTAL_TYPE
-        if PORTAL_TYPE == "Object":
+        """if PORTAL_TYPE == "Object":
             from .core import CORE
             from .utils import subfields_types, relation_types
 
@@ -1606,8 +1606,6 @@ class Updater:
             from .book_utils import book_subfields_types as subfields_types
             from .book_utils import book_relation_types as relation_types
             from .book_core import BOOK_CORE as CORE
-            print "book core"
-            print CORE
 
         elif PORTAL_TYPE == "PersonOrInstitution":
             # Persons
@@ -1671,7 +1669,8 @@ class Updater:
         elif PORTAL_TYPE == "Image":
             from  .image_utils import image_subfields_types as subfields_types
             from  .image_utils import image_relation_types as relation_types
-            from  .image_core import IMAGE_CORE as CORE
+            from  .image_core import IMAGE_CORE as CORE"""
+        pass
 
     def init_fields(self):
         
@@ -1704,7 +1703,7 @@ class Updater:
 
 
     def import_entire_collection(self, content_types):
-        self.dev = True
+        self.dev = False
 
         for content_type in content_types:
             self.portal_type = content_type
@@ -1712,20 +1711,23 @@ class Updater:
             self.init_fields()
             self.init_log_files()
 
-            collection_xml = CONTENT_TYPES_PATH[self.portal_type]['dev']['single']
+            collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
             self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
             self.generate_field_types()
             self.import_contenttype(content_type)
             self.close_files()
+        return True
 
     def start(self):
-        library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
+        library_content_types = ['Book']
+
+        #'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
 
-        #self.import_entire_collection(library_content_types)
+        self.import_entire_collection(library_content_types)
 
-        self.reindex_all_books()
+        #self.reindex_all_books()
         self.api.success = True
         return True
 
@@ -1776,7 +1778,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        #plone_object.reindexObject() 
+                        plone_object.reindexObject() 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
