@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Resource"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -90,6 +90,12 @@ elif PORTAL_TYPE == "Audiovisual":
     from  .audiovisual_utils import audiovisual_subfields_types as subfields_types
     from  .audiovisual_utils import audiovisual_relation_types as relation_types
     from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
+
+elif PORTAL_TYPE == "PersonOrInstitution":
+    # Persons
+    from .persons_utils import persons_subfields_types as subfields_types
+    from .persons_utils import persons_relation_types as relation_types
+    from .persons_core import PERSON_CORE as CORE
 
 DEBUG = False
 RUNNING = True
@@ -1740,7 +1746,7 @@ class Updater:
         return True
 
     def start(self):
-        library_content_types = ['Resource']
+        library_content_types = ['PersonOrInstitution']
 
         #'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']

@@ -8731,12 +8731,15 @@ class APIMigrator:
                         return obj
 
         """
-        if priref:
-            results = self.portal_catalog(person_priref=priref, portal_type="PersonOrInstitution")
-            if results:
-                item = results[0]
-                obj = item.getObject()
-                return obj
+        try:
+            if priref:
+                results = self.portal_catalog(person_priref=priref, portal_type="PersonOrInstitution")
+                if results:
+                    item = results[0]
+                    obj = item.getObject()
+                    return obj
+        except:
+            pass
 
         return None
 
@@ -8744,10 +8747,12 @@ class APIMigrator:
         relations = []
         if name:
             for brain in self.all_persons:
-                obj = brain.getObject()
-                if hasattr(obj, 'title'):
-                    if obj.title == name:
-                        relations.append(obj)
+                try:
+                    obj_title = getattr(brain, 'Title', "")
+                    if obj_title == name:
+                        relations.append(brain.getObject())
+                except:
+                    pass
 
         return relations
 
