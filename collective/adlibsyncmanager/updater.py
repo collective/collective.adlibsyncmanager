@@ -1823,8 +1823,9 @@ class Updater:
         if coords:
             for coord in coords:
                 gridType = coord['gridType']
-                if gridType.strip() != "":
-                    print obj.absolute_url()
+                if gridType:
+                    if gridType.strip() != "":
+                        print obj.absolute_url()
 
         return True
 
