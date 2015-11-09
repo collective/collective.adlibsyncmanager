@@ -63,7 +63,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -223,7 +223,7 @@ class Updater:
             type_field = "relation"
         elif IDatetime.providedBy(field):
             type_field = "date"
-        elif "ListField" in str(field):
+        elif "ListField" in str(field) or "ListRelatedField" in str(field):
             type_field = "datagridfield"
             self.datagrids[field.__name__] = False
         elif IChoice.providedBy(field):
@@ -247,7 +247,7 @@ class Updater:
         type_field = " "
         if IRelationList.providedBy(field):
             type_field = ['no value']
-        elif "ListField" in str(field):
+        elif "ListField" in str(field) or "ListRelatedField" in str(field):
             type_field = ['no value']
             self.datagrids[field.__name__] = False
         elif IChoice.providedBy(field):
@@ -276,6 +276,7 @@ class Updater:
 
         self.field_types['title'] = "text"
         self.field_types['description'] = 'text'
+
 
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False, by_name=False):
         intids = component.getUtility(IIntIds)
@@ -1017,17 +1018,18 @@ class Updater:
         plone_fieldname = self.check_dictionary(xml_path)
         
         if plone_fieldname:
-            plone_fieldroot = plone_fieldname.split('-')[0]
-            has_field = hasattr(plone_object, plone_fieldroot)
-            
+            if 'productionDating_productionDating' in plone_fieldname:
+                plone_fieldroot = plone_fieldname.split('-')[0]
+                has_field = hasattr(plone_object, plone_fieldroot)
+                
 
-            if has_field:
-                current_value = getattr(plone_object, plone_fieldroot)
-                field_type = self.get_type_of_field(plone_fieldroot)
-                value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
-                self.setattribute(plone_object, plone_fieldroot, field_type, value)
-            else:
-                self.error("Field not available in Plone object: %s" %(plone_fieldroot))
+                if has_field:
+                    current_value = getattr(plone_object, plone_fieldroot)
+                    field_type = self.get_type_of_field(plone_fieldroot)
+                    value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
+                    self.setattribute(plone_object, plone_fieldroot, field_type, value)
+                else:
+                    self.error("Field not available in Plone object: %s" %(plone_fieldroot))
 
         elif plone_fieldname == "":
             self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
@@ -1623,79 +1625,6 @@ class Updater:
         self.status_log_file.close()
 
     def import_portaltypes_utils(self, PORTAL_TYPE):
-        """if PORTAL_TYPE == "Object":
-            from .core import CORE
-            from .utils import subfields_types, relation_types
-
-        elif PORTAL_TYPE == "Book":
-            # Books
-            from .book_utils import book_subfields_types as subfields_types
-            from .book_utils import book_relation_types as relation_types
-            from .book_core import BOOK_CORE as CORE
-
-        elif PORTAL_TYPE == "PersonOrInstitution":
-            # Persons
-            from .persons_utils import persons_subfields_types as subfields_types
-            from .persons_utils import persons_relation_types as relation_types
-            from .persons_core import PERSON_CORE as CORE
-
-        elif PORTAL_TYPE == "Exhibition":
-            # Exhibitions
-            from .exhibition_utils import exhibition_subfields_types as subfields_types
-            from .exhibition_utils import exhibition_relation_types as relation_types
-            from .exhibition_core import EXHIBITION_CORE as CORE
-
-        elif PORTAL_TYPE == "IncomingLoan":
-            # Incoming loan
-            from .loans_utils import loans_subfields_types as subfields_types
-            from .loans_utils import loans_relation_types as relation_types
-            from .loans_core import INCOMMING_CORE as CORE
-
-        elif PORTAL_TYPE == "OutgoingLoan":
-            # Outgoing loan
-            from .loans_utils import loans_subfields_types as subfields_types
-            from .loans_utils import loans_relation_types as relation_types
-            from .loans_core import OUTGOING_CORE as CORE
-
-        elif PORTAL_TYPE == "treatment":
-            from .treatment_utils import treatment_subfields_types as subfields_types
-            from .treatment_utils import treatment_relation_types as relation_types
-            from .treatment_core import TREATMENT_CORE as CORE
-
-        elif PORTAL_TYPE == "ObjectEntry":
-            from .objectentry_utils import objectentry_subfields_types as subfields_types
-            from .objectentry_utils import objectentry_relation_types as relation_types
-            from .objectentry_core import OBJECTENTRY_CORE as CORE
-
-        elif PORTAL_TYPE == "Resource":
-            from .resource_utils import resource_subfields_types as subfields_types
-            from .resource_utils import resource_relation_types as relation_types
-            from .resource_core import RESOURCE_CORE as CORE
-
-        elif PORTAL_TYPE == "Taxonomie":
-            from .taxonomy_utils import taxonomy_subfields_types as subfields_types
-            from .taxonomy_utils import taxonomy_relation_types as relation_types
-            from .taxonomy_core import TAXONOMY_CORE as CORE
-
-        elif PORTAL_TYPE == "Serial":
-            from .serial_utils import serial_subfields_types as subfields_types
-            from .serial_utils import serial_relation_types as relation_types
-            from .serial_core import SERIAL_CORE as CORE
-
-        elif PORTAL_TYPE == "Article":
-            from .article_utils import article_subfields_types as subfields_types
-            from .article_utils import article_relation_types as relation_types
-            from .article_core import ARTICLE_CORE as CORE
-
-        elif PORTAL_TYPE == "Audiovisual":
-            from  .audiovisual_utils import audiovisual_subfields_types as subfields_types
-            from  .audiovisual_utils import audiovisual_relation_types as relation_types
-            from  .audiovisual_core import AUDIOVISUAL_CORE as CORE
-
-        elif PORTAL_TYPE == "Image":
-            from  .image_utils import image_subfields_types as subfields_types
-            from  .image_utils import image_relation_types as relation_types
-            from  .image_core import IMAGE_CORE as CORE"""
         pass
 
     def init_fields(self):
@@ -1745,15 +1674,29 @@ class Updater:
             self.close_files()
         return True
 
+
+    def update_object_standardfields(self, obj):
+        
+        # Title
+        curr_title = getattr(obj, 'title', '')
+
+        production = getattr(obj, 'productionDating_productionDating')
+
+
+        # Description
+        setattr(obj, 'description', '')
+
+        # Body
+        pass
+
+
     def start(self):
-        library_content_types = ['PersonOrInstitution']
+        library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
+        collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
-        #'Audiovisual', 'Article', 'Serial', 'Resource']
-        #collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
+        self.import_entire_collection(['Object'])
 
-        #self.import_entire_collection(library_content_types)
-
-        self.reindex_all_books()
+        #self.reindex_all_books()
         self.api.success = True
         return True
 
@@ -1763,7 +1706,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
                 transaction.begin()
