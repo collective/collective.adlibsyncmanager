@@ -1503,7 +1503,7 @@ class Updater:
         return True
 
     def reindex_all_books(self):
-        total = len(list(self.api.all_books))
+        """total = len(list(self.api.all_books))
         curr = 0
 
         for brain in self.api.all_books:
@@ -1526,7 +1526,7 @@ class Updater:
             try:
                 obj.reindexObject()
             except:
-                pass
+                pass"""
 
 
         print "== ARTICLES =="
@@ -1542,7 +1542,7 @@ class Updater:
             except:
                 pass
 
-        print "== SERIALS =="
+        """print "== SERIALS =="
         total = len(list(self.api.all_serials))
         curr = 0
 
@@ -1566,7 +1566,7 @@ class Updater:
             try:
                 obj.reindexObject()
             except:
-                pass
+                pass"""
 
         return True
 
@@ -1749,11 +1749,11 @@ class Updater:
         library_content_types = ['PersonOrInstitution']
 
         #'Audiovisual', 'Article', 'Serial', 'Resource']
-        collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
+        #collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie']
 
-        self.import_entire_collection(library_content_types)
+        #self.import_entire_collection(library_content_types)
 
-        #self.reindex_all_books()
+        self.reindex_all_books()
         self.api.success = True
         return True
 
