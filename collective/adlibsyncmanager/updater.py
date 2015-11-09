@@ -1800,17 +1800,20 @@ class Updater:
 
         references = getattr(obj,'numbersRelationships_digitalReferences', None)
         if references:
-            for line in references:
-                reference = line['reference']
-                if reference != "" and reference != " " and reference != None:
-                    reference_path_split = reference.lower().split("\\")
-                    ref = reference_path_split[-1]
-                    ref_id = idnormalizer.normalize(ref, max_length=len(ref))
+            if len(references) > 0:
+                for line in references:
+                    reference = line['reference']
+                    if reference != "" and reference != " " and reference != None:
+                        reference_path_split = reference.lower().split("\\")
+                        ref = reference_path_split[-1]
+                        ref_id = idnormalizer.normalize(ref, max_length=len(ref))
 
-                    found = self.find_ref_in_brains(ref_id, objs)
-                    if not found:
-                        log_text = "%s__%s" %(object_number, reference)
-                        self.log_status(log_text, False)
+                        found = self.find_ref_in_brains(ref_id, objs)
+                        if not found:
+                            log_text = "%s__%s" %(object_number, reference)
+                            self.log_status(log_text, False)
+            else:
+                self.warning("%s__%s" %(object_number, "Object doesn't contain digital references"))
 
         return True
 
