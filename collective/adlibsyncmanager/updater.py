@@ -589,11 +589,15 @@ class Updater:
 
         return current_value
 
-    def log_status(self, text):
+    def log_status(self, text, use_timestamp=True):
         if text:
             timestamp = datetime.datetime.today().isoformat()
             text = text.encode('ascii', 'ignore')
-            final_log = "[%s]__%s" %(str(timestamp), str(text))
+            if not use_timestamp:
+                final_log = "%s" %(str(text))
+            else:
+                final_log = "[%s]__%s" %(str(timestamp), str(text))
+            
             list_log = final_log.split('__')
             print final_log.replace('__', ' ')
             self.status_wr.writerow(list_log)
@@ -1711,7 +1715,6 @@ class Updater:
 
 
     def update_object_standardfields(self, obj):
-        transaction.begin()
         final_title = []
 
         # Title
@@ -1771,21 +1774,60 @@ class Updater:
         print obj.absolute_url()
         print "----"
 
-        transaction.commit()
-
         return True
 
+    def find_ref_in_brains(self, ref_id, brains):
+        found = False
+
+        for brain in brains:
+            if brain.id == ref_id:
+                return True
+
+        return found
+
+
+    def find_digitalreferences(self, obj):
+        object_number = getattr(obj, 'identification_identification_objectNumber', None)
+        slideshow = None
+        prive = None
+
+        if 'slideshow' in obj:
+            slideshow = obj['slideshow']
+        if 'prive' in obj:
+            prive = obj['prive']
+
+        objs = self.api.portal_catalog(path={"query":"/".join(obj.getPhysicalPath()), "depth": 2})
+
+        references = getattr(obj,'numbersRelationships_digitalReferences', None)
+        if references:
+            for line in references:
+                reference = line['reference']
+                reference_path_split = reference.lower().split("\\")
+                ref = reference_path_split[-1]
+                ref_id = idnormalizer.normalize(ref, max_length=len(ref))
+
+                found = self.find_ref_in_brains(ref_id, objs)
+                if not found:
+                    log_text = "%s__%s" %(object_number, reference)
+                    self.log_status(log_text, False)
+
+        return True
 
     def start(self):
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
         #self.import_entire_collection(['Object'])
+        self.dev = False
+        self.portal_type = "Object"
+        self.init_log_files()
 
         for obj in list(self.api.all_objects)[:100]:
-        #plone_object = self.api.find_item_by_type('rui-test', 'Object')
-            plone_object = obj.getObject()
-            self.update_object_standardfields(plone_object)
+            #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
+            transaction.begin()
+            #self.update_object_standardfields(plone_object)
+            self.find_digitalreferences(obj.getObject())
+            transaction.commit()
 
         #self.reindex_all_books()
         self.api.success = True
