@@ -1817,6 +1817,18 @@ class Updater:
 
         return True
 
+    def check_special_fields(self, obj):
+
+        coords = getattr(obj, 'fieldCollection_coordinatesFieldCollectionPlace', None)
+        if coords:
+            for coord in coords:
+                gridType = coord['gridType']
+                if gridType.strip() != "":
+                    print obj.absolute_url()
+
+        return True
+
+
     def start(self):
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
@@ -1833,10 +1845,12 @@ class Updater:
             curr += 1
             print "%s / %s"  %(str(curr), str(total))
             #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
-            transaction.begin()
+            #transaction.begin()
             #self.update_object_standardfields(plone_object)
-            self.find_digitalreferences(obj.getObject())
-            transaction.commit()
+            #self.find_digitalreferences(obj.getObject())
+            #transaction.commit()
+            print "=== Coordinates ==="
+            self.check_special_fields(obj.getObject())
 
         #self.reindex_all_books()
         self.api.success = True
