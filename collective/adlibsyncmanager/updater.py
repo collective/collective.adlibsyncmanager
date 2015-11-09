@@ -1826,7 +1826,7 @@ class Updater:
         curr = 0
         total = len(list(self.api.all_objects))
 
-        for obj in list(self.api.all_objects)[:1000]:
+        for obj in list(self.api.all_objects):
             curr += 1
             print "%s / %s"  %(str(curr), str(total))
             #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
