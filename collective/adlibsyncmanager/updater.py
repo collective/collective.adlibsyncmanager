@@ -64,7 +64,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "PersonOrInstitution"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1852,7 +1852,7 @@ class Updater:
         #print "=== Coordinates ==="
         #self.check_special_fields(obj.getObject())
 
-        self.import_entire_collection(['PersonOrInstitution'])
+        self.import_entire_collection(['Object'])
 
         #self.reindex_all_objects()
         self.api.success = True
@@ -1905,7 +1905,7 @@ class Updater:
                             if plone_object.end:
                                 IEventBasic(plone_object).end = plone_object.end
                         
-                        #plone_object.reindexObject() 
+                        plone_object.reindexObject(idxs=["identification_taxonomy_commonName"]) 
                     else:
                         if create_new:
                             created_object = self.create_object(xml_record)
