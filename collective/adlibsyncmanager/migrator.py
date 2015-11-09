@@ -8748,9 +8748,10 @@ class APIMigrator:
         if name:
             for brain in self.all_persons:
                 try:
-                    obj_title = getattr(brain, 'Title', "")
+                    obj = brain.getObject()
+                    obj_title = getattr(obj, 'person_name', "")
                     if obj_title == name:
-                        relations.append(brain.getObject())
+                        relations.append(obj)
                 except:
                     pass
 

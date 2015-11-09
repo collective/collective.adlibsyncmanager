@@ -64,7 +64,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "PersonOrInstitution"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1023,7 +1023,7 @@ class Updater:
         plone_fieldname = self.check_dictionary(xml_path)
         
         if plone_fieldname:
-            if 'productionDating_productionDating' in plone_fieldname:
+            if 'person_name' in plone_fieldname:
                 plone_fieldroot = plone_fieldname.split('-')[0]
                 has_field = hasattr(plone_object, plone_fieldroot)
                 
@@ -1834,7 +1834,7 @@ class Updater:
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
-        #self.import_entire_collection(['Object'])
+
         #self.dev = False
         #self.portal_type = "Object"
         #self.init_log_files()
@@ -1853,7 +1853,9 @@ class Updater:
         #print "=== Coordinates ==="
         #self.check_special_fields(obj.getObject())
 
-        self.reindex_all_objects()
+        self.import_entire_collection(['PersonOrInstitution'])
+
+        #self.reindex_all_objects()
         self.api.success = True
         return True
 
