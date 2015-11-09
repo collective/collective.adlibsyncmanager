@@ -1823,7 +1823,12 @@ class Updater:
         self.portal_type = "Object"
         self.init_log_files()
 
-        for obj in list(self.api.all_objects)[:100]:
+        curr = 0
+        total = len(list(self.api.all_objects))
+
+        for obj in list(self.api.all_objects)[:1000]:
+            curr += 1
+            print "%s / %s"  %(str(curr), str(total))
             #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
             transaction.begin()
             #self.update_object_standardfields(plone_object)
