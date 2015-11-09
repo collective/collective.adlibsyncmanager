@@ -1023,18 +1023,17 @@ class Updater:
         plone_fieldname = self.check_dictionary(xml_path)
         
         if plone_fieldname:
-            if 'person_name' in plone_fieldname:
-                plone_fieldroot = plone_fieldname.split('-')[0]
-                has_field = hasattr(plone_object, plone_fieldroot)
-                
+            plone_fieldroot = plone_fieldname.split('-')[0]
+            has_field = hasattr(plone_object, plone_fieldroot)
+            
 
-                if has_field:
-                    current_value = getattr(plone_object, plone_fieldroot)
-                    field_type = self.get_type_of_field(plone_fieldroot)
-                    value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
-                    self.setattribute(plone_object, plone_fieldroot, field_type, value)
-                else:
-                    self.error("Field not available in Plone object: %s" %(plone_fieldroot))
+            if has_field:
+                current_value = getattr(plone_object, plone_fieldroot)
+                field_type = self.get_type_of_field(plone_fieldroot)
+                value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
+                self.setattribute(plone_object, plone_fieldroot, field_type, value)
+            else:
+                self.error("Field not available in Plone object: %s" %(plone_fieldroot))
 
         elif plone_fieldname == "":
             self.warning("%s__%s__Tag was ignored. %s" %(object_number, xml_path, xml_element.text))
@@ -1894,7 +1893,7 @@ class Updater:
                         self.object_number = str(object_number)
                         self.generate_field_types()
                         self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        #self.empty_fields(plone_object)
+                        self.empty_fields(plone_object)
                         self.update(xml_record, plone_object, object_number)
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
