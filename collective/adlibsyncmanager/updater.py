@@ -1500,12 +1500,12 @@ class Updater:
         total = len(list(self.api.all_objects))
         curr = 0
 
-        for brain in self.api.all_objects:
+        for brain in list(self.api.all_objects)[:100]:
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            obj.reindexObject(idxs=["SearchableText"])
-            obj.reindexObject(idxs=["productionDating_productionDating_maker"])
+            #obj.reindexObject(idxs=["SearchableText"])
+            obj.reindexObject(idxs=["identification_taxonomy_commonName"])
 
         return True
 
@@ -1835,25 +1835,25 @@ class Updater:
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
         #self.import_entire_collection(['Object'])
-        self.dev = False
-        self.portal_type = "Object"
-        self.init_log_files()
+        #self.dev = False
+        #self.portal_type = "Object"
+        #self.init_log_files()
 
-        curr = 0
-        total = len(list(self.api.all_objects))
+        #curr = 0
+        #total = len(list(self.api.all_objects))
 
-        for obj in list(self.api.all_objects):
-            curr += 1
-            #print "%s / %s"  %(str(curr), str(total))
-            #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
-            #transaction.begin()
-            #self.update_object_standardfields(plone_object)
-            #self.find_digitalreferences(obj.getObject())
-            #transaction.commit()
-            #print "=== Coordinates ==="
-            self.check_special_fields(obj.getObject())
+        #for obj in list(self.api.all_objects):
+        #    curr += 1
+        #print "%s / %s"  %(str(curr), str(total))
+        #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
+        #transaction.begin()
+        #self.update_object_standardfields(plone_object)
+        #self.find_digitalreferences(obj.getObject())
+        #transaction.commit()
+        #print "=== Coordinates ==="
+        #self.check_special_fields(obj.getObject())
 
-        #self.reindex_all_books()
+        self.reindex_all_objects()
         self.api.success = True
         return True
 
