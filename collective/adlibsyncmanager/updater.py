@@ -1819,12 +1819,12 @@ class Updater:
 
     def check_special_fields(self, obj):
 
-        coords = getattr(obj, 'fieldCollection_coordinatesFieldCollectionPlace', None)
-        if coords:
-            for coord in coords:
-                gridType = coord['gridType']
-                if gridType:
-                    if gridType.strip() != "":
+        fields = getattr(obj, 'fieldCollection_habitatStratigraphy_habitat', None)
+        if fields:
+            for line in fields:
+                field = line['term']
+                if field:
+                    if field.strip() != "":
                         print obj.absolute_url()
 
         return True
@@ -1844,13 +1844,13 @@ class Updater:
 
         for obj in list(self.api.all_objects):
             curr += 1
-            print "%s / %s"  %(str(curr), str(total))
+            #print "%s / %s"  %(str(curr), str(total))
             #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
             #transaction.begin()
             #self.update_object_standardfields(plone_object)
             #self.find_digitalreferences(obj.getObject())
             #transaction.commit()
-            print "=== Coordinates ==="
+            #print "=== Coordinates ==="
             self.check_special_fields(obj.getObject())
 
         #self.reindex_all_books()
