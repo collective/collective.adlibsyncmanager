@@ -9,10 +9,11 @@ Supposed to be run as an external method trhough the boilerplate script migratio
 
 import string
 from Acquisition import aq_parent, aq_inner
-from z3c.relationfield.interfaces import IRelationList
+from z3c.relationfield.interfaces import IRelationList, IRelationValue
 from plone import api
 import csv
 import pytz
+from zope.intid.interfaces import IIntIds
 
 from z3c.relationfield.schema import RelationList
 from zope.component import getUtility
@@ -1674,27 +1675,117 @@ class Updater:
             self.close_files()
         return True
 
+    def create_dating_field(self, field):
+        start_date = field['date_early']
+        start_date_precision = field['date_early_precision']
+        end_date = field['date_late']
+        end_date_precision = field['date_late_precision']
+
+        result = ""
+
+        if start_date != "" and start_date != " ":
+            if result:
+                if start_date_precision != "" and start_date_precision != " ":
+                    result = "%s, %s %s" %(result, start_date_precision, start_date)
+                else:
+                    result = "%s, %s" %(result, start_date)
+            else:
+                if start_date_precision != "" and start_date_precision != " ":
+                    result = "%s %s" %(start_date_precision, start_date)
+                else:
+                    result = "%s" %(start_date)
+    
+
+        if end_date != "" and end_date != " ":
+            if result:
+                if end_date_precision != "" and end_date_precision != " ":
+                    result = "%s - %s %s" %(result, end_date_precision, start_date)
+                else:
+                    result = "%s - %s" %(result, end_date)
+            else:
+                if end_date_precision != "" and end_date_precision != " ":
+                    result = "%s %s" %(end_date_precision, start_date)
+                else:
+                    result = "%s" %(end_date)
+        return result
+
 
     def update_object_standardfields(self, obj):
-        
+        transaction.begin()
+        final_title = []
+
         # Title
         curr_title = getattr(obj, 'title', '')
+        final_title.append(curr_title)
 
-        production = getattr(obj, 'productionDating_productionDating')
+        production = getattr(obj, 'productionDating_productionDating', None)
+        makers = []
+        
+        if production:
+            for maker in production:
+                if 'makers' in maker:
+                    makers_field = maker['makers']
+                    if makers_field:
+                        for relation in makers_field:
+                            if IRelationValue.providedBy(relation):
+                                rel_obj = relation.to_object
+                                title = getattr(rel_obj, 'title', None)
+                                if title:
+                                    final_title.append(title)
+                            elif getattr(relation, 'portal_type', "") == "PersonOrInstitution":
+                                title = getattr(relation, 'title', None)
+                                if title:
+                                    final_title.append(title)
+                    else:
+                        continue
+                else:
+                    continue
 
 
-        # Description
+        
+        # Get Year
+        dating = getattr(obj, 'productionDating_dating_period', None)
+        if dating:
+            line = dating[0]
+            dates = self.create_dating_field(line)
+            if dates:
+                final_title.append(dates)
+
+        final_title_string = ", ".join(final_title)
+
+        setattr(obj, 'title', final_title_string)
+        
+        # Description - clear value
         setattr(obj, 'description', '')
 
         # Body
-        pass
+        labels = getattr(obj, 'labels', "")
+        if labels:
+            label = labels[0]
+            text = label['text']
+            if text:
+                final_text = RichTextValue(text, 'text/html', 'text/html')
+                setattr(obj, 'text', final_text)
+
+        print final_title_string
+        print obj.absolute_url()
+        print "----"
+
+        transaction.commit()
+
+        return True
 
 
     def start(self):
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
-        self.import_entire_collection(['Object'])
+        #self.import_entire_collection(['Object'])
+
+        for obj in list(self.api.all_objects)[:100]
+        #plone_object = self.api.find_item_by_type('rui-test', 'Object')
+            plone_object = obj.getObject()
+            self.update_object_standardfields(plone_object)
 
         #self.reindex_all_books()
         self.api.success = True
@@ -1706,7 +1797,7 @@ class Updater:
         curr, limit = 0, 0
         create_new = False
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
