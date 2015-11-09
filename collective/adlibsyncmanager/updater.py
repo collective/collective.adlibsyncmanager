@@ -1735,7 +1735,7 @@ class Updater:
                         self.object_number = str(object_number)
                         self.generate_field_types()
                         self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                        self.empty_fields(plone_object)
+                        #self.empty_fields(plone_object)
                         self.update(xml_record, plone_object, object_number)
                         self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
