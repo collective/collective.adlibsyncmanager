@@ -1782,7 +1782,7 @@ class Updater:
 
         #self.import_entire_collection(['Object'])
 
-        for obj in list(self.api.all_objects)[:100]
+        for obj in list(self.api.all_objects)[:100]:
         #plone_object = self.api.find_item_by_type('rui-test', 'Object')
             plone_object = obj.getObject()
             self.update_object_standardfields(plone_object)
