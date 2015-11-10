@@ -1798,7 +1798,7 @@ class Updater:
         slideshow = None
         prive = None
 
-        field_to_search = "valueInsurance_insurance"
+        field_to_search = "disposal_documentation"
 
         if 'slideshow' in obj:
             slideshow = obj['slideshow']
@@ -1852,6 +1852,8 @@ class Updater:
         total = len(list(self.api.all_objects))
 
         for brain in list(self.api.all_objects):
+            curr += 1
+            print "%s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             self.find_digitalreferences(obj)
         
