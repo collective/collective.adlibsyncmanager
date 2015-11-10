@@ -1798,6 +1798,8 @@ class Updater:
         slideshow = None
         prive = None
 
+        field_to_search = "valueInsurance_insurance"
+
         if 'slideshow' in obj:
             slideshow = obj['slideshow']
         if 'prive' in obj:
@@ -1805,7 +1807,7 @@ class Updater:
 
         objs = self.api.portal_catalog(path={"query":"/".join(obj.getPhysicalPath()), "depth": 2})
 
-        references = getattr(obj,'numbersRelationships_digitalReferences', None)
+        references = getattr(obj, field_to_search, None)
         if references:
             if len(references) > 0:
                 for line in references:
@@ -1842,39 +1844,19 @@ class Updater:
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
 
-        #self.dev = False
-        #self.portal_type = "Object"
-        #self.init_log_files()
+        self.dev = False
+        self.portal_type = "Object"
+        self.init_log_files()
 
-        #curr = 0
-        #total = len(list(self.api.all_objects))
+        curr = 0
+        total = len(list(self.api.all_objects))
 
-        #for obj in list(self.api.all_exhibitions):
-        #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
-        #    transaction.begin()
-        #    try:
-        #        ex = obj.getObject()
-        #        ex.reindexObject(idxs=['exhibition_organiser'])
-        #    except:
-        #        pass
-        #self.find_digitalreferences(obj.getObject())
-        #    transaction.commit()
-        #print "=== Coordinates ==="
-        #self.check_special_fields(obj.getObject())
+        for brain in list(self.api.all_objects):
+            obj = brain.getObject()
+            self.find_digitalreferences(obj)
+        
 
-        self.import_entire_collection(['Exhibition'])
-
-        for obj in list(self.api.all_exhibitions):
-        #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
-            transaction.begin()
-            try:
-                ex = obj.getObject()
-                ex.reindexObject(idxs=['exhibition_organiser'])
-            except:
-                pass
-        #self.find_digitalreferences(obj.getObject())
-            transaction.commit()
-
+        #self.import_entire_collection(['Exhibition']
         #self.reindex_all_objects()
         self.api.success = True
         return True
