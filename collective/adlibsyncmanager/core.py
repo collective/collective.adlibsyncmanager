@@ -574,7 +574,7 @@ CORE = {
     "Stratigraphy-stratigraphy.type":"",#parent
     "Stratigraphy-stratigraphy.type-term":"fieldCollection_habitatStratigraphy_stratigrafie-type",
     "habitat":"",#parent
-    "habitat-term":"fieldCollection_habitatStratigraphy_habitat-term",
+    "habitat-term":"fieldCollection_habitatStratigraphy_habitats",
 
     "field_coll.notes":"fieldCollection_notes-notes",
 

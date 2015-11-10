@@ -1849,15 +1849,19 @@ class Updater:
         self.init_log_files()
 
         curr = 0
-        total = len(list(self.api.all_objects))
+        total = len(list(self.api.all_images))
 
-        for brain in list(self.api.all_objects):
+        for brain in list(self.api.all_images):
+            transaction.begin()
             curr += 1
             print "%s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            self.find_digitalreferences(obj)
-        
-
+            try:
+                obj.reindexObject()
+            except:
+                pass
+            transaction.commit()
+    
         #self.import_entire_collection(['Exhibition']
         #self.reindex_all_objects()
         self.api.success = True
