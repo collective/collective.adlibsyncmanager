@@ -64,7 +64,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Object"
+PORTAL_TYPE = "Exhibition"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -97,6 +97,13 @@ elif PORTAL_TYPE == "PersonOrInstitution":
     from .persons_utils import persons_subfields_types as subfields_types
     from .persons_utils import persons_relation_types as relation_types
     from .persons_core import PERSON_CORE as CORE
+
+elif PORTAL_TYPE == "Exhibition":
+    # Persons
+    from .exhibition_utils import exhibition_subfields_types as subfields_types
+    from .exhibition_utils import exhibition_relation_types as relation_types
+    from .exhibition_core import EXHIBITION_CORE as CORE
+
 
 DEBUG = False
 RUNNING = True
@@ -1842,6 +1849,21 @@ class Updater:
         #curr = 0
         #total = len(list(self.api.all_objects))
 
+        #for obj in list(self.api.all_exhibitions):
+        #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
+        #    transaction.begin()
+        #    try:
+        #        ex = obj.getObject()
+        #        ex.reindexObject(idxs=['exhibition_organiser'])
+        #    except:
+        #        pass
+        #self.find_digitalreferences(obj.getObject())
+        #    transaction.commit()
+        #print "=== Coordinates ==="
+        #self.check_special_fields(obj.getObject())
+
+        self.import_entire_collection(['Exhibition'])
+
         for obj in list(self.api.all_exhibitions):
         #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
             transaction.begin()
@@ -1852,10 +1874,6 @@ class Updater:
                 pass
         #self.find_digitalreferences(obj.getObject())
             transaction.commit()
-        #print "=== Coordinates ==="
-        #self.check_special_fields(obj.getObject())
-
-        #self.import_entire_collection(['Object'])
 
         #self.reindex_all_objects()
         self.api.success = True
