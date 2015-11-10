@@ -1773,6 +1773,7 @@ class Updater:
         print obj.absolute_url()
         print "----"
 
+        obj.reindexObject(idxs=["Title"])
         return True
 
     def find_ref_in_brains(self, ref_id, brains):
@@ -1841,18 +1842,21 @@ class Updater:
         #curr = 0
         #total = len(list(self.api.all_objects))
 
-        #for obj in list(self.api.all_objects):
-        #    curr += 1
-        #print "%s / %s"  %(str(curr), str(total))
+        for obj in list(self.api.all_objects)[100:]:
+            curr += 1
+            print "%s / %s"  %(str(curr), str(total))
         #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
-        #transaction.begin()
-        #self.update_object_standardfields(plone_object)
+            transaction.begin()
+            try:
+                self.update_object_standardfields(obj.getObject())
+            except:
+                pass
         #self.find_digitalreferences(obj.getObject())
-        #transaction.commit()
+            transaction.commit()
         #print "=== Coordinates ==="
         #self.check_special_fields(obj.getObject())
 
-        self.import_entire_collection(['Object'])
+        #self.import_entire_collection(['Object'])
 
         #self.reindex_all_objects()
         self.api.success = True
