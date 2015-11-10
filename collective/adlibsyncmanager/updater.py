@@ -1842,13 +1842,12 @@ class Updater:
         #curr = 0
         #total = len(list(self.api.all_objects))
 
-        for obj in list(self.api.all_objects)[100:]:
-            curr += 1
-            print "%s / %s"  %(str(curr), str(total))
+        for obj in list(self.api.all_exhibitions):
         #plone_object = self.api.find_item_by_type('rui-test-test', 'Object')
             transaction.begin()
             try:
-                self.update_object_standardfields(obj.getObject())
+                ex = obj.getObject()
+                ex.reindexObject(idxs=['exhibition_organiser'])
             except:
                 pass
         #self.find_digitalreferences(obj.getObject())
