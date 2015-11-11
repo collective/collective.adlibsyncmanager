@@ -1509,6 +1509,7 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
+        self.portal_type = "Object"
         self.init_fields()
         
         for name, field in self.fields:
