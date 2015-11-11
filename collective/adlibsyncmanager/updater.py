@@ -1838,29 +1838,27 @@ class Updater:
 
         return True
 
+    def find_images_without_ref(self):
+        curr = 0
+        total = len(list(self.api.all_images))
+
+        for brain in list(self.api.all_images):
+            obj = brain.getObject()
+            reference = getattr(obj, 'reproductionData_identification_identifierURL', '')
+            if reference in [None, '', ' ']:
+                self.log_status("%s__%s" %(obj.id, obj.absolute_url()), False)
+
+        return True
 
     def start(self):
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
-
         self.dev = False
         self.portal_type = "Object"
         self.init_log_files()
 
-        curr = 0
-        total = len(list(self.api.all_images))
-
-        for brain in list(self.api.all_images):
-            transaction.begin()
-            curr += 1
-            print "%s / %s" %(str(curr), str(total))
-            obj = brain.getObject()
-            try:
-                obj.reindexObject()
-            except:
-                pass
-            transaction.commit()
+        self.find_images_without_ref()
     
         #self.import_entire_collection(['Exhibition']
         #self.reindex_all_objects()
