@@ -64,7 +64,7 @@ from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
 
-PORTAL_TYPE = "Image"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1509,6 +1509,8 @@ class Updater:
         return True
 
     def reindex_all_objects(self):
+        self.init_fields()
+        
         for name, field in self.fields:
             if name not in ['productionDating_productionDating']:
                 searchable(IObject, name)
