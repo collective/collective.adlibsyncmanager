@@ -1519,14 +1519,14 @@ class Updater:
         total = len(list(self.api.all_objects))
         curr = 0
 
-        for brain in list(self.api.all_objects)[:100]:
+        for brain in list(self.api.all_objects):
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             #obj.reindexObject(idxs=["SearchableText"])
             obj.reindexObject(idxs=["SearchableText"])
-            print obj.absolute_url()
-
+            obj.reindexObject(idxs=["identification_taxonomy_commonName"])
+            
         return True
 
     def reindex_all_books(self):
