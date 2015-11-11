@@ -1841,12 +1841,20 @@ class Updater:
     def find_images_without_ref(self):
         curr = 0
         total = len(list(self.api.all_images))
+        rep_reference = []
 
         for brain in list(self.api.all_images):
             obj = brain.getObject()
             reference = getattr(obj, 'reproductionData_identification_identifierURL', '')
+            rep_ref = getattr(obj, 'reproductionData_identification_reproductionReference', '')
             if reference in [None, '', ' ']:
                 self.log_status("%s__%s" %(obj.id, obj.absolute_url()), False)
+                if rep_ref not in rep_reference:
+                    rep_reference.append(rep_ref)
+
+
+        print "REFERENCES:"
+        print rep_reference
 
         return True
 
