@@ -1830,6 +1830,24 @@ class Updater:
 
         return True
 
+    def find_multiplefields(self, obj):
+
+        reprod_type = getattr(obj, 'reproductionData_identification_reproductionType', '')
+
+        if reprod_type:
+            if type(reprod_type) != list:
+                length = len(reprod_type)
+                if length > 1:
+                    priref = getattr(obj, 'priref', '')
+                    reproduction_ref = getattr(obj, 'reproductionData_identification_reproductionReference', '')
+                    identifier_url = getattr(obj, 'reproductionData_identification_identifierURL', '')
+                    url = obj.absolute_url()
+                    self.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url), False)
+
+        return True
+
+
+
     def check_special_fields(self, obj):
 
         fields = getattr(obj, 'fieldCollection_habitatStratigraphy_habitat', None)
@@ -1866,12 +1884,20 @@ class Updater:
         library_content_types = ['Book', 'Audiovisual', 'Article', 'Serial', 'Resource']
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
-        #self.dev = False
-        #self.portal_type = "Object"
-        #self.init_log_files()
+        self.dev = False
+        self.portal_type = "Object"
+        self.init_log_files()
         #self.find_images_without_ref()
+
+        total = len(list(self.all_images))
+        curr = 0
+        for brain in self.api.all_images:
+            curr += 1
+            print "%s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            self.find_multiplefields(obj)
     
-        self.import_entire_collection(['Taxonomie'])
+        #self.import_entire_collection(['Taxonomie'])
         #self.reindex_all_objects()
         self.api.success = True
         return True
