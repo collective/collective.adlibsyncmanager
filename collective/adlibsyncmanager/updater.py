@@ -1830,11 +1830,9 @@ class Updater:
 
         return True
 
-    def find_multiplefields(self, obj):
+    def find_multiplefields(self, obj, identifiers):
 
         reprod_type = getattr(obj, 'reproductionData_identification_reproductionType', '')
-
-        identifiers = []
 
         if reprod_type:
             if type(reprod_type) != list:
@@ -1850,8 +1848,7 @@ class Updater:
                     self.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url), False)
 
 
-        print "IDENTIFIERS"
-        print identifiers
+        
         return True
 
 
@@ -1897,14 +1894,18 @@ class Updater:
         self.init_log_files()
         #self.find_images_without_ref()
 
+        identifiers = []
+
         total = len(list(self.api.all_images))
         curr = 0
         for brain in self.api.all_images:
             curr += 1
             print "%s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            self.find_multiplefields(obj)
-    
+            self.find_multiplefields(obj, identifiers)
+        
+        print "IDENTIFIERS"
+        print identifiers
         #self.import_entire_collection(['Taxonomie'])
         #self.reindex_all_objects()
         self.api.success = True
