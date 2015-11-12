@@ -1834,6 +1834,8 @@ class Updater:
 
         reprod_type = getattr(obj, 'reproductionData_identification_reproductionType', '')
 
+        identifiers = []
+
         if reprod_type:
             if type(reprod_type) != list:
                 length = len(reprod_type)
@@ -1841,9 +1843,15 @@ class Updater:
                     priref = getattr(obj, 'priref', '')
                     reproduction_ref = getattr(obj, 'reproductionData_identification_reproductionReference', '')
                     identifier_url = getattr(obj, 'reproductionData_identification_identifierURL', '')
+                    if identifier_url not in identifiers:
+                        identifiers.append(identifier_url)
+
                     url = obj.absolute_url()
                     self.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url), False)
 
+
+        print "IDENTIFIERS"
+        print identifiers
         return True
 
 
