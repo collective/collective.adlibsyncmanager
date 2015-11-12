@@ -1643,8 +1643,7 @@ class Updater:
         
             if _id in self.images_ref_dict:
                 img_brain = self.images_ref_dict[_id]
-                img_obj = img_brain.getObject()
-                return img_obj
+                return img_brain
 
             else:
                 return None
@@ -1679,7 +1678,10 @@ class Updater:
                 _id = img.id
                 self.images_dict[_id] = img
                 if ref:
-                    self.images_ref_dict[ref] = img
+                    if ref in self.images_ref_dict:
+                        self.images_ref_dict[ref].append(img)
+                    else:
+                        self.images_ref_dict[ref] = [img]
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
             self.fields.extend(self.image_reference_fields)
@@ -1891,23 +1893,23 @@ class Updater:
         collection_content_types = ['Object', 'Image', 'PersonOrInstitution', 'Taxonomie', 'treatment', 'OutgoingLoan', 'IncomingLoan', 'ObjectEntry']
 
         self.dev = False
-        self.portal_type = "Object"
-        self.init_log_files()
+        #self.portal_type = "Image"
+        #self.init_log_files()
         #self.find_images_without_ref()
 
-        identifiers = []
+        #identifiers = []
 
-        total = len(list(self.api.all_images))
-        curr = 0
-        for brain in self.api.all_images:
-            curr += 1
-            print "%s / %s" %(str(curr), str(total))
-            obj = brain.getObject()
-            self.find_multiplefields(obj, identifiers)
-        print "IDENTIFIERS"
-        print identifiers
+        #total = len(list(self.api.all_images))
+        #curr = 0
+        #for brain in self.api.all_images:
+        #    curr += 1
+        #    print "%s / %s" %(str(curr), str(total))
+        #    obj = brain.getObject()
+        #    self.find_multiplefields(obj, identifiers)
+        #print "IDENTIFIERS"
+        #print identifiers
 
-        #self.import_entire_collection(['Image'])
+        self.import_entire_collection(['Image'])
         #self.reindex_all_objects()
         self.api.success = True
         return True
@@ -1948,45 +1950,47 @@ class Updater:
                         self.object_number = object_number
                         #plone_object = ""
                         if self.portal_type == "Image":
-                            plone_object = self.find_image_by_id(object_number)
+                            plone_objects = self.find_image_by_id(object_number)
                         else:
                             plone_object = self.api.find_item_by_type(object_number, self.portal_type)
 
-                        if plone_object:
-                            if self.portal_type == "Image":
-                                plone_object = IImageReference(plone_object)
+                        for plone_obj in plone_objects:
+                            plone_object = plone_obj.getObject()
+                            if plone_object:
+                                if self.portal_type == "Image":
+                                    plone_object = IImageReference(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                plone_object.start = ""
-                                plone_object.end = ""
-                                plone_object.whole_day = True
+                                if self.portal_type == "Exhibition":
+                                    plone_object.start = ""
+                                    plone_object.end = ""
+                                    plone_object.whole_day = True
 
-                            self.object_number = str(object_number)
-                            self.generate_field_types()
-                            self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.empty_fields(plone_object)
-                            self.update(xml_record, plone_object, object_number)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            self.fix_all_choices(plone_object)
+                                self.object_number = str(object_number)
+                                self.generate_field_types()
+                                self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                                self.empty_fields(plone_object)
+                                self.update(xml_record, plone_object, object_number)
+                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                                self.fix_all_choices(plone_object)
 
-                            if self.portal_type == "Exhibition":
-                                if plone_object.start:
-                                    IEventBasic(plone_object).start = plone_object.start
-                                if plone_object.end:
-                                    IEventBasic(plone_object).end = plone_object.end
-                            
-                            #plone_object.reindexObject(idxs=["identification_taxonomy_commonName"]) 
-                        else:
-                            if create_new:
-                                created_object = self.create_object(xml_record)
-                                self.update(xml_record, created_object, object_number)
-                                self.fix_all_choices(created_object)
-                                created_object.reindexObject()
-                                self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
-                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                                if self.portal_type == "Exhibition":
+                                    if plone_object.start:
+                                        IEventBasic(plone_object).start = plone_object.start
+                                    if plone_object.end:
+                                        IEventBasic(plone_object).end = plone_object.end
+                                
+                                #plone_object.reindexObject(idxs=["identification_taxonomy_commonName"]) 
                             else:
-                                self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number))) 
+                                if create_new:
+                                    created_object = self.create_object(xml_record)
+                                    self.update(xml_record, created_object, object_number)
+                                    self.fix_all_choices(created_object)
+                                    created_object.reindexObject()
+                                    self.log_status("%s__ __New object created with type %s."%(str(object_number), str(self.portal_type)))
+                                    self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                                else:
+                                    self.error("%s__ __Object is not found on Plone with priref/object_number."%(str(object_number))) 
                     else:
                         continue
 
