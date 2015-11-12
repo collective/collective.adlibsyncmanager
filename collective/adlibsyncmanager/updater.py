@@ -1889,7 +1889,7 @@ class Updater:
         self.init_log_files()
         #self.find_images_without_ref()
 
-        total = len(list(self.all_images))
+        total = len(list(self.api.all_images))
         curr = 0
         for brain in self.api.all_images:
             curr += 1
