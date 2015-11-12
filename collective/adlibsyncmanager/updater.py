@@ -1527,7 +1527,7 @@ class Updater:
         curr = 0
 
         for brain in list(self.api.all_objects):
-            transaction.being()
+            transaction.begin()
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
