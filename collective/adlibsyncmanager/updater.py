@@ -1675,13 +1675,14 @@ class Updater:
             for img in list(self.api.all_images)[:10000]:
                 img_obj = img.getObject()
                 ref = img_obj.reproductionData_identification_identifierURL
-                _id = img.id
-                self.images_dict[_id] = img
+                #_id = img.id
+                #self.images_dict[_id] = img
                 if ref:
                     if ref in self.images_ref_dict:
                         self.images_ref_dict[ref].append(img)
                     else:
-                        self.images_ref_dict[ref] = [img]
+                        self.images_ref_dict[ref] = list()
+                        self.images_ref_dict[ref].append(img)
 
             self.image_reference_fields = getFieldsInOrder(IImageReference)
             self.fields.extend(self.image_reference_fields)
