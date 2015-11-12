@@ -1895,19 +1895,19 @@ class Updater:
         self.init_log_files()
         #self.find_images_without_ref()
 
-        #identifiers = []
+        identifiers = []
 
-        #total = len(list(self.api.all_images))
-        #curr = 0
-        #for brain in self.api.all_images:
-        #    curr += 1
-        #    print "%s / %s" %(str(curr), str(total))
-        #    obj = brain.getObject()
-        #    self.find_multiplefields(obj, identifiers)
-        #print "IDENTIFIERS"
-        #print identifiers
+        total = len(list(self.api.all_images))
+        curr = 0
+        for brain in self.api.all_images:
+            curr += 1
+            print "%s / %s" %(str(curr), str(total))
+            obj = brain.getObject()
+            self.find_multiplefields(obj, identifiers)
+        print "IDENTIFIERS"
+        print identifiers
 
-        self.import_entire_collection(['Image'])
+        #self.import_entire_collection(['Image'])
         #self.reindex_all_objects()
         self.api.success = True
         return True
