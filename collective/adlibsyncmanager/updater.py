@@ -1527,12 +1527,14 @@ class Updater:
         curr = 0
 
         for brain in list(self.api.all_objects):
+            transaction.being()
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             #obj.reindexObject(idxs=["SearchableText"])
             obj.reindexObject(idxs=["SearchableText"])
             obj.reindexObject(idxs=["identification_taxonomy_commonName"])
+            transaction.commit()
 
         return True
 
