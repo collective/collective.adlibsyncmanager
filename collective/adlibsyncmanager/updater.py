@@ -1910,8 +1910,8 @@ class Updater:
         #print "IDENTIFIERS"
         #print identifiers
 
-        self.import_entire_collection(['Taxonomie'])
-        #self.reindex_all_objects()
+        #self.import_entire_collection(['Taxonomie'])
+        self.reindex_all_objects()
         self.api.success = True
         return True
 
