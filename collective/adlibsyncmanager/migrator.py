@@ -128,13 +128,13 @@ class APIMigrator:
         self.all_audiovisuals = all_audiovisuals
         self.all_images = all_images
 
-        self.taxonomies_ref ={}
+        #self.taxonomies_ref ={}
 
-        for tax in self.all_taxonomies:
-            tax_obj = tax.getObject()
-            priref = getattr(tax_obj, 'priref', '')
-            if priref:
-                self.taxonomies_ref[priref] = tax
+        #for tax in self.all_taxonomies:
+        #    tax_obj = tax.getObject()
+        #    priref = getattr(tax_obj, 'priref', '')
+        #    if priref:
+        #        self.taxonomies_ref[priref] = tax
 
     def build_api_request_all(self):
         url = ""
