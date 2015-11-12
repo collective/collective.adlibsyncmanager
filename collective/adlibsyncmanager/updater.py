@@ -1672,7 +1672,7 @@ class Updater:
         elif self.portal_type == "Image":
             self.images_dict = {}
             self.images_ref_dict = {}
-            for img in self.api.all_images:
+            for img in list(self.api.all_images)[:10000]:
                 img_obj = img.getObject()
                 ref = img_obj.reproductionData_identification_identifierURL
                 _id = img.id
@@ -1946,7 +1946,7 @@ class Updater:
                 object_number = self.get_object_number(xml_record, self.portal_type)
 
                 if object_number:
-                    if object_number in IDENTIFIERS or len(RESTRICTIONS) == 0:
+                    if object_number in IDENTIFIERS:
                         self.object_number = object_number
                         #plone_object = ""
                         if self.portal_type == "Image":
@@ -1956,6 +1956,7 @@ class Updater:
 
                         for plone_obj in plone_objects:
                             plone_object = plone_obj.getObject()
+
                             if plone_object:
                                 if self.portal_type == "Image":
                                     plone_object = IImageReference(plone_object)
