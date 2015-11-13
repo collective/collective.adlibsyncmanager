@@ -1220,7 +1220,7 @@ class Updater:
 
     def start(self):
 
-        indexes = (
+        """indexes = (
                     ('associations_associatedSubjects_subject','KeywordIndex'),
                     ('associations_associatedSubjects_period','KeywordIndex'),
                     ('associations_associatedSubjects_association','KeywordIndex'),
@@ -1261,7 +1261,8 @@ class Updater:
                     ('numbersRelationships_relationshipsWithOtherObjects_relatedObjects_association','KeywordIndex')
                 )
 
-        self.utils.create_indexes(indexes)
+        self.utils.create_indexes(indexes)"""
+        self.utils.reindex_all_objects()
 
         self.api.success = True
         return True

@@ -290,9 +290,7 @@ class SyncUtils:
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            #obj.reindexObject(idxs=["SearchableText"])
-            obj.reindexObject(idxs=["SearchableText"])
-            obj.reindexObject(idxs=["identification_taxonomy_commonName"])
+            obj.reindexObject()
             transaction.commit()
 
         return True
