@@ -158,6 +158,7 @@ class SyncUtils:
         priref = getattr(person, 'priref', "")
         title = getattr(person, 'title', "")
 
+
         if title:
             title_separated = [x.strip() for x in title.split(",")]
             length = len(title_separated)
