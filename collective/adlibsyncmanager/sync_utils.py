@@ -275,8 +275,8 @@ class SyncUtils:
         return True
 
     def reindex_all_objects(self):
-        self.api.portal_type = "Object"
-        self.api.init_fields()
+        self.api_updater.portal_type = "Object"
+        self.api_updater.init_fields()
         
         for name, field in self.fields:
             if name not in ['productionDating_productionDating']:
