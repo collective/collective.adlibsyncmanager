@@ -158,7 +158,6 @@ class SyncUtils:
         priref = getattr(person, 'priref', "")
         title = getattr(person, 'title', "")
 
-
         if title:
             title_separated = [x.strip() for x in title.split(",")]
             length = len(title_separated)
@@ -279,7 +278,7 @@ class SyncUtils:
         self.api_updater.portal_type = "Object"
         self.api_updater.init_fields()
         
-        for name, field in self.fields:
+        for name, field in self.api_updater.fields:
             if name not in ['productionDating_productionDating']:
                 searchable(IObject, name)
 
