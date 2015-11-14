@@ -646,15 +646,18 @@ class SyncUtils:
 
         return True
 
-    def find_img_record(self, identifier_url):
+    def find_img_record(self, identifier_url, rep=False):
+        term = 'image_reference'
+        if rep:
+            term = 'reference_number'
         for record in list(self.api_updater.collection):
-            if record.find('image_reference') != None:
-                ref = record.find('image_reference').text
+            if record.find(term) != None:
+                ref = record.find(term).text
                 if ref == identifier_url:
                     return record
         return None
 
-    def find_multiplefields(self, obj, curr, total):
+    def find_multiplefields(self, obj, curr, total, REPS):
 
         reprod_type = getattr(obj, 'reproductionData_identification_reproductionType', '')
 
@@ -666,10 +669,15 @@ class SyncUtils:
                     reproduction_ref = getattr(obj, 'reproductionData_identification_reproductionReference', '')
                     identifier_url = getattr(obj, 'reproductionData_identification_identifierURL', '')
 
-                    #url = obj.absolute_url()
-                    #self.api_updater.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url))
+                    url = obj.absolute_url()
+                    self.api_updater.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url))
+                    
+                    if not reproduction_ref:
+                        if reproduction_ref not in REPS:
+                            REPS.append(reproduction_ref)
 
-                    if identifier_url:
+                    #identifier_url = reproduction_ref
+                    """if identifier_url:
                         if identifier_url in IDENTIFIERS:
                             record = self.find_img_record(identifier_url)
                             if record:
@@ -683,26 +691,30 @@ class SyncUtils:
                                 self.api_updater.log_status("! STATUS !__URL: %s" %(str(obj.absolute_url())))
                                 self.api_updater.fix_all_choices(obj)
                             else:
-                                self.api_updater.log_status("! STATUS !__Cannot find identifier url in XML %s, %s" %(identifier_url, priref))
+                                self.api_updater.log_status("! STATUS !__Cannot find identifier url in XML %s, %s" %(identifier_url, priref))"""
 
         return True
 
     def update_images_with_xml(self):
         total = len(list(self.api.all_images))
-        curr = 15479
+        curr = 0
 
-        for brain in list(self.api.all_images)[15479:]:
-            transaction.begin()
+        REPS = []
+        for brain in list(self.api.all_images):
+            #transaction.begin()
             try:
                 curr += 1
                 print "%s / %s" %(str(curr), str(total))
                 obj = brain.getObject()
                 obj_img = IImageReference(obj)
-                self.find_multiplefields(obj_img, curr, total)
-                transaction.commit()
+                self.find_multiplefields(obj_img, curr, total, REPS)
+                #transaction.commit()
             except:
-                transaction.abort()
+                #transaction.abort()
                 pass
+
+        print "REPS"
+        print REPS
         return True
 
     def check_special_fields(self, obj):
