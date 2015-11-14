@@ -648,8 +648,8 @@ class SyncUtils:
 
     def find_img_record(self, identifier_url):
         for record in list(self.api_updater.collection):
-            if xml_record.find('image_reference') != None:
-                ref = xml_record.find('image_reference').text
+            if record.find('image_reference') != None:
+                ref = record.find('image_reference').text
                 if ref == identifier_url:
                     return record
         return None
