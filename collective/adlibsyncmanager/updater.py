@@ -66,7 +66,7 @@ from collective.dexteritytextindexer.utils import searchable
 
 from .sync_utils import SyncUtils
 
-PORTAL_TYPE = "Image"
+PORTAL_TYPE = "Object"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1249,15 +1249,15 @@ class Updater:
 
         self.utils.create_indexes(indexes)"""
         self.dev = False
-        self.portal_type = "Image"
-        self.init_fields()
-        self.init_log_files()
+        self.portal_type = "Object"
+        #self.init_fields()
+        #self.init_log_files()
 
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
-        self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
+        #collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
+        #self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
-        self.generate_field_types()
-        self.utils.update_images_with_xml()
+        #self.generate_field_types()
+        self.import_entire_collection(['Object'])
         #self.utils.reindex_all_objects()
 
         self.api.success = True
@@ -1272,7 +1272,7 @@ class Updater:
             self.init_fields()
             self.init_log_files()
 
-            collection_xml = CONTENT_TYPES_PATH[self.portal_type]['prod']['total']
+            collection_xml = CONTENT_TYPES_PATH[self.portal_type]['thirdparty']
             self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
             self.generate_field_types()
