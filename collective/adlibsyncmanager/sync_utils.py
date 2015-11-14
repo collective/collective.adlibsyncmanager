@@ -646,7 +646,7 @@ class SyncUtils:
 
         return True
 
-    def find_img_record(identifier_url):
+    def find_img_record(self, identifier_url):
         for record in list(self.api_updater.collection):
             if xml_record.find('image_reference') != None:
                 ref = xml_record.find('image_reference').text
