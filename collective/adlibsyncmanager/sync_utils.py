@@ -654,7 +654,7 @@ class SyncUtils:
                     return record
         return None
 
-    def find_multiplefields(self, obj):
+    def find_multiplefields(self, obj, curr, total):
 
         reprod_type = getattr(obj, 'reproductionData_identification_reproductionType', '')
 
@@ -697,7 +697,7 @@ class SyncUtils:
             print "%s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             obj_img = IImageReference(obj)
-            self.find_multiplefields(obj_img)
+            self.find_multiplefields(obj_img, curr, total)
             transaction.commit()
 
         return True
