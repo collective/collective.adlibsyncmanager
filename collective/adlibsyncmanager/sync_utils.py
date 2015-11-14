@@ -672,7 +672,7 @@ class SyncUtils:
                     url = obj.absolute_url()
                     self.api_updater.log_status("%s__%s__%s__%s__%s"%(str(reprod_type), priref, reproduction_ref, identifier_url, url))
                     
-                    if not reproduction_ref:
+                    if reproduction_ref:
                         if reproduction_ref not in REPS:
                             REPS.append(reproduction_ref)
 
