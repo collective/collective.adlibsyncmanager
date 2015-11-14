@@ -691,15 +691,18 @@ class SyncUtils:
         total = len(list(self.api.all_images))
         curr = 0
 
-        for brain in list(self.api.all_images):
+        for brain in list(self.api.all_images)[15479:]:
             transaction.begin()
-            curr += 1
-            print "%s / %s" %(str(curr), str(total))
-            obj = brain.getObject()
-            obj_img = IImageReference(obj)
-            self.find_multiplefields(obj_img, curr, total)
-            transaction.commit()
-
+            try:
+                curr += 1
+                print "%s / %s" %(str(curr), str(total))
+                obj = brain.getObject()
+                obj_img = IImageReference(obj)
+                self.find_multiplefields(obj_img, curr, total)
+                transaction.commit()
+            except:
+                transaction.abort()
+                pass
         return True
 
     def check_special_fields(self, obj):
