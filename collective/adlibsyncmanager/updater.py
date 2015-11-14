@@ -66,7 +66,7 @@ from collective.dexteritytextindexer.utils import searchable
 
 from .sync_utils import SyncUtils
 
-PORTAL_TYPE = "Taxonomie"
+PORTAL_TYPE = "Image"
 
 from .contenttypes_path import CONTENT_TYPES_PATH
 
@@ -1196,20 +1196,6 @@ class Updater:
             self.fields.extend(self.exhibition_fields)
 
         elif self.portal_type == "Image":
-            self.images_dict = {}
-            self.images_ref_dict = {}
-            for img in list(self.api.all_images)[:10000]:
-                img_obj = img.getObject()
-                ref = img_obj.reproductionData_identification_identifierURL
-                #_id = img.id
-                #self.images_dict[_id] = img
-                if ref:
-                    if ref in self.images_ref_dict:
-                        self.images_ref_dict[ref].append(img)
-                    else:
-                        self.images_ref_dict[ref] = list()
-                        self.images_ref_dict[ref].append(img)
-
             self.image_reference_fields = getFieldsInOrder(IImageReference)
             self.fields.extend(self.image_reference_fields)
 
@@ -1262,7 +1248,10 @@ class Updater:
                 )
 
         self.utils.create_indexes(indexes)"""
-        self.utils.reindex_all_objects()
+        self.portal_type = "Image"
+        self.init_fields()
+        self.utils.update_images_with_xml()
+        #self.utils.reindex_all_objects()
 
         self.api.success = True
         return True
