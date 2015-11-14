@@ -684,10 +684,6 @@ class SyncUtils:
                                 self.api_updater.fix_all_choices(obj)
                             else:
                                 self.api_updater.log_status("! STATUS !__Cannot find identifier url in XML %s, %s" %(identifier_url, priref))
-                        else:
-                            continue
-                    else:
-                        continue
 
         return True
 
