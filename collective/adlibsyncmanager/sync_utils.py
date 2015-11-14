@@ -696,11 +696,13 @@ class SyncUtils:
         curr = 0
 
         for brain in list(self.api.all_images):
+            transaction.begin()
             curr += 1
             print "%s / %s" %(str(curr), str(total))
             obj = brain.getObject()
             obj_img = IImageReference(obj)
             self.find_multiplefields(obj_img)
+            transaction.commit()
 
         return True
 
