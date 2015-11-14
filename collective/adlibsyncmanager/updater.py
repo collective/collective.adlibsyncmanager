@@ -1268,7 +1268,7 @@ class Updater:
 
         for content_type in content_types:
             self.portal_type = content_type
-            self.import_portaltypes_utils(self.portal_type)
+            #self.import_portaltypes_utils(self.portal_type)
             self.init_fields()
             self.init_log_files()
 
