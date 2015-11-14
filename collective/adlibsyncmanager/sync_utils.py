@@ -689,7 +689,7 @@ class SyncUtils:
 
     def update_images_with_xml(self):
         total = len(list(self.api.all_images))
-        curr = 0
+        curr = 15479
 
         for brain in list(self.api.all_images)[15479:]:
             transaction.begin()
