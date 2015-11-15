@@ -1249,7 +1249,7 @@ class Updater:
 
         self.utils.create_indexes(indexes)"""
         self.dev = False
-        self.portal_type = "Object"
+        #self.portal_type = "Object"
         #self.init_fields()
         #self.init_log_files()
 
@@ -1257,8 +1257,8 @@ class Updater:
         #self.collection, self.xml_root = self.api.get_zm_collection(collection_xml)
 
         #self.generate_field_types()
-        self.import_entire_collection(['Object'])
-        #self.utils.reindex_all_objects()
+        #self.import_entire_collection(['Object'])
+        self.utils.reindex_all_objects()
 
         self.api.success = True
         return True

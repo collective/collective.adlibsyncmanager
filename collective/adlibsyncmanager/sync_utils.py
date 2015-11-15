@@ -282,8 +282,7 @@ class SyncUtils:
         self.api_updater.init_fields()
         
         for name, field in self.api_updater.fields:
-            if name not in ['productionDating_productionDating']:
-                searchable(IObject, name)
+            searchable(IObject, name)
 
         total = len(list(self.api.all_objects))
         curr = 0
