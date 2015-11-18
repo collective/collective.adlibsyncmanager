@@ -41,7 +41,10 @@ RESOURCE_CORE = {
 
     #'':'exhibitionsAuctionsCollections_collection-collectionName',
     'collection.notes':'exhibitionsAuctionsCollections_collection-notes',
-    'object.object_number':'linkedObjects_linkedobjects',
+
+    #Changed to list backreferences
+    #'object.object_number':'linkedObjects_linkedobjects',
+    'object.object_number':'',
 
     'copy.number':'',
     'shelf_mark':'copiesAndShelfMarks_defaultShelfMark', 

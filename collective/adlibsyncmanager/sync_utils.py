@@ -6,6 +6,9 @@ This script migrates XML files into Plone Objects
 
 Supposed to be run as an external method trhough the boilerplate script migration.py 
 """
+from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
+from collective.leadmedia.utils import autoCropImage
+
 
 import string
 from Acquisition import aq_parent, aq_inner
@@ -63,6 +66,8 @@ from z3c.relationfield import RelationValue
 from zope import component
 from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
+
+from z3c.relationfield.event import addRelations
 
 DEBUG = False
 RUNNING = True
@@ -277,22 +282,36 @@ class SyncUtils:
 
         return True
 
+    def fix_images_in_collection(self, path):
+        collection = api.content.get(path=path)
+        batch = collection.queryCatalog(batch=True, b_size=60)
+        seq = batch._sequence
+        for item in seq:
+            transaction.begin()
+            leadMedia = item.leadMedia
+            obj = uuidToObject(leadMedia)
+            autoCropImage(obj)
+            transaction.commit()
+
+        return True
+
     def reindex_all_objects(self):
         self.api_updater.portal_type = "Object"
         self.api_updater.init_fields()
         
-        for name, field in self.api_updater.fields:
-            searchable(IObject, name)
+        #for name, field in self.api_updater.fields:
+        #    searchable(IObject, name)
 
         total = len(list(self.api.all_objects))
         curr = 0
 
-        for brain in list(self.api.all_objects):
+        for brain in list(self.api.all_objects)[:9999]:
             transaction.begin()
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            obj.reindexObject(idxs=['SearchableText'])
+            #obj.reindexObject(idxs=['SearchableText'])
+            addRelations(obj, None)
             transaction.commit()
 
         return True

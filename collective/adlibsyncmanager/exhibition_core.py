@@ -29,10 +29,13 @@ EXHIBITION_CORE = {
     'documentation-documentation.page_reference':'documentation_documentation-pageMark',
     'documentation-documentation.notes':'documentation_documentation-notes',
 
+    #Changed to list backreferences
+    #'object.object_number':'linkedObjects_linkedobjects', # relation
+    'object.object_number':'',#tag is ignored
 
-    'object.object_number':'linkedObjects_linkedobjects', # relation
-
+    ###
     # Ignored tags
+    ###
 
     # From relation with object
     'object.object_number-object_number':'',

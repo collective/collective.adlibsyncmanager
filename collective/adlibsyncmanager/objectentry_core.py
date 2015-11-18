@@ -76,7 +76,11 @@ OBJECTENTRY_CORE = {
     'miscellaneous_transport_content':'listWithLinkedObjects_transportContentNote', 
 
     'Object-in':'',
-    'Object-in-object-in.object_number':'listWithLinkedObjects_linkedObjects-objectNumber',#relation
+    
+    #Changed to list backreferences
+    #'Object-in-object-in.object_number':'listWithLinkedObjects_linkedObjects-objectNumber',#relation
+    'Object-in-object-in.object_number':'',
+
     'Object-in-object-in.status':'listWithLinkedObjects_linkedObjects-status',
     'Object-in-object-in.condition_check':'listWithLinkedObjects_linkedObjects-conditionChecked',#bool
     'Object-in-object-in.reason':'listWithLinkedObjects_linkedObjects-transportReason',

@@ -132,7 +132,12 @@ AUDIOVISUAL_CORE = {
  	'volume':'relations_volume', 
  	'use':'relations_analyticalCataloguing_partsOf',
     'used_for':'relations_analyticalCataloguing_consistsof',
-    'object.object_number':'relations_museumobjects',
+
+    # changed to list backreferences
+    #'object.object_number':'relations_museumobjects',
+
+    # changed to list backreferences
+    'object.object_number':'',
 
     # Ignore fields from relation with object
     'object.object_number-object_number':'',

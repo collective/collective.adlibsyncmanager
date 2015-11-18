@@ -41,8 +41,9 @@ TREATMENT_CORE = {
     'reproduction-reproduction.notes': 'reproductions_reproduction-notes',
 	
 	# Linked objects
-	'Object-object.object_number':"linkedObjects_linkedObjects-objectNumber",#repeatable
-
+    #Changed to list backreferences
+	#'Object-object.object_number':"linkedObjects_linkedObjects-objectNumber",#repeatable
+    'Object-object.object_number':'',
 
     # Ignored tags
     "Object":"",
