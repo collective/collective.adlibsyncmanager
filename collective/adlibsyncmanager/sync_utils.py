@@ -409,6 +409,38 @@ class SyncUtils:
 
         return True
 
+    def unpublish_content(self, path=None):
+        if not path:
+            path = '/zm/nl/intern'
+
+        container = self.api.portal_catalog(path={'query': path})
+        total = len(container)
+        curr = 0
+
+        for brain in container:
+            transition.begin()
+            
+            state = getattr(brain, 'review_state', None)
+            if state:
+                if state == "published":
+                    print "Unpublishing %s / %s" %(str(curr), str(total))
+                    obj = brain.getObject()
+                    api.content.transition(obj=obj, transition="unpublish", comment='Unpublish private collection record.')
+            transaction.commit()
+
+        return True
+
+    def fix_all_dimensions(self, obj):
+
+        field = getattr(obj, 'physicalCharacteristics_dimension', None)
+        if field:
+            transaction.begin()
+            new_field = [line for line in field if line['value'] != '' and line['value'] != ' ']
+            setattr(obj, 'physicalCharacteristics_dimension', new_field)
+            transaction.commit()
+        else:
+            return False
+
     def find_image_by_id(self, _id):
         if _id:
             image_path_split = _id.lower().split("\\")

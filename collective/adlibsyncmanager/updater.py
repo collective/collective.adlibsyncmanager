@@ -1258,7 +1258,9 @@ class Updater:
 
         #self.generate_field_types()
         #self.import_entire_collection(['Object'])
-        self.utils.reindex_all_objects()
+        #self.utils.reindex_all_objects()
+
+        self.utils.unpublish_content()
 
         self.api.success = True
         return True

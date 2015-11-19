@@ -44,6 +44,7 @@ collective/adlibsyncmanager/resource_utils.py
 collective/adlibsyncmanager/serial_core.py
 collective/adlibsyncmanager/serial_utils.py
 collective/adlibsyncmanager/sync_mechanism.py
+collective/adlibsyncmanager/sync_utils.py
 collective/adlibsyncmanager/taxonomy_core.py
 collective/adlibsyncmanager/taxonomy_utils.py
 collective/adlibsyncmanager/tests.py
