@@ -305,13 +305,13 @@ class SyncUtils:
         total = len(list(self.api.all_objects))
         curr = 0
 
-        for brain in list(self.api.all_objects)[:9999]:
+        for brain in list(self.api.all_objects):
             transaction.begin()
             curr += 1
             print "Reindexing %s / %s" %(str(curr), str(total))
             obj = brain.getObject()
-            #obj.reindexObject(idxs=['SearchableText'])
-            addRelations(obj, None)
+            obj.reindexObject(idxs=['identification_objectNumber'])
+            #addRelations(obj, None)
             transaction.commit()
 
         return True
@@ -419,7 +419,7 @@ class SyncUtils:
 
         for brain in container:
             transition.begin()
-            
+            curr += 1
             state = getattr(brain, 'review_state', None)
             if state:
                 if state == "published":

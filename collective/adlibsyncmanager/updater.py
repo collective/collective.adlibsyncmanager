@@ -1260,7 +1260,7 @@ class Updater:
         #self.import_entire_collection(['Object'])
         #self.utils.reindex_all_objects()
 
-        self.utils.unpublish_content()
+        self.utils.reindex_all_objects()
 
         self.api.success = True
         return True
