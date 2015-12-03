@@ -3,7 +3,7 @@
 #
 
 def migrate(self):
-    from collective.adlibsyncmanager.api_migrator import APIMigrator
+    from collective.adlibsyncmanager.migrator import APIMigrator
     
  
     folder = "nl/collectie/schilderijen"
@@ -14,8 +14,8 @@ def migrate(self):
     #
     IMAGE_FOLDER = ""
 
-    type_to_create = "add_translations"
-    set_limit = len(art_list);
+    type_to_create = ""
+    set_limit = 100000
     
     #Create the migrator
     migrator = APIMigrator(self, folder, IMAGE_FOLDER, type_to_create, set_limit, art_list)
