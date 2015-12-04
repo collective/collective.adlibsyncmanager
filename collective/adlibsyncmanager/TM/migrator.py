@@ -107,8 +107,7 @@ class Migrator:
 
     def init_log_files(self):
 
-        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[ENV]['path'])
-        
+        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[ENV]['path'])        
         self.error_path = self.get_log_path('error', ENV)
         self.warning_path = self.get_log_path('warning', ENV)
         self.status_path = self.get_log_path('status', ENV)
@@ -139,12 +138,12 @@ class Migrator:
         else:
             return ""
 
-    def get_log_path(self, log_type='error', env="dev"):
+    def get_log_path(self, log_type='error'):
         path = ""
 
-        if env in SUPPORTED_ENV:
+        if ENV in SUPPORTED_ENV:
             timestamp = datetime.datetime.today().isoformat()
-            path = self.log_files_path[log_type][env] % (self.portal_type, timestamp)
+            path = self.log_files_path[log_type][ENV] % (self.portal_type, timestamp)
         else:
             print "#### Environment '%s' for log file is unsupported. ####" %(str(server))
 
