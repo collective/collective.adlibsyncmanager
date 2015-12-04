@@ -10,7 +10,7 @@ CONTENT_TYPES_PATH = {
 		    },
 		    "prod": {
 		        "single":"",
-		        "total":"/var/www/zm-collectie-v2/xml/Objects-all-v02.xml"
+		        "total":"/var/www/tm-data/xml/coins.xml"
 		    }
 		}
 	}
@@ -21,7 +21,7 @@ IMAGES_HD_PATH = {
 		'path':'/Volumes/Website Numis/Numis voorwebsite/*.jpg'
 	},
 	'prod': {
-		'path':'/var/www/tm-data/Numis voorwebsite/*.jpg'
+		'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
 	}
 }
 

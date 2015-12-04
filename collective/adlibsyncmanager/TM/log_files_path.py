@@ -6,7 +6,7 @@ LOG_FILES_PATH = {
 		"dev":"/Users/AG/Projects/NewTeylersMuseum/logs/error/error_%s_%s.csv",
 		"prod":"/var/www/tm-logs/error/error_%s_%s.csv"
 	},
-
+	
 	"status": {
 		"dev":'/Users/AG/Projects/NewTeylersMuseum/logs/status/status_%s_%s.csv',
 		"prod":"/var/www/tm-logs/status/status_%s_%s.csv"

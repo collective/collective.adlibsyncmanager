@@ -44,8 +44,9 @@ from .log_files_path import LOG_FILES_PATH
 RESTRICTIONS = []
 SUPPORTED_ENV = ['dev', 'prod']
 UPLOAD_IMAGES = True
+FOLDER_PATH = "nl/collectie/munten"
 
-ENV = "dev"
+ENV = "prod"
 DEBUG = False
 RUNNING = True
 
@@ -265,10 +266,10 @@ class Migrator:
 
         return value
 
-    def create_object(self, priref, xml_record):
+    def create_object(self, priref, xml_record, folder_path='nl/'):
         created_object = None
 
-        folder_path = "nl/test-new-import"
+        folder_path = folder_path
         container = self.updater.api.get_folder(folder_path)
 
         title = self.updater.get_title_by_type(xml_record)
@@ -420,11 +421,11 @@ class Migrator:
                 return True, is_new
             else:
                 if create_if_not_found:
-                    object_created = self.create_object(priref, xml_record)
+                    object_created = self.create_object(priref, xml_record, FOLDER_PATH)
                     layout = object_created.getLayout()
                     if layout != "double_view":
                         object_created.setLayout("double_view")
-                        
+
                     imported, is_new = self.import_record(priref, object_created, xml_record, False)
                     return object_created, True
                 else:
@@ -439,7 +440,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[100:200]:
             try:
                 curr += 1
                 transaction.begin()
