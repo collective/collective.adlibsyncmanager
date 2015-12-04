@@ -138,7 +138,7 @@ class Migrator:
         else:
             return ""
 
-    def get_log_path(self, log_type='error'):
+    def get_log_path(self, log_type='error', env="dev"):
         path = ""
 
         if ENV in SUPPORTED_ENV:
