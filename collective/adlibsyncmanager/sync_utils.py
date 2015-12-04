@@ -25,11 +25,9 @@ from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IChoice, ITextLine, IList, IText, IBool, IDatetime
 from collective.z3cform.datagridfield.interfaces import IDataGridField
 from plone.app.textfield.interfaces import IRichText
-from collective.object.utils.interfaces import IListField
+
 from zc.relation.interfaces import ICatalog
 from zope.component import getUtility
-
-from plone.app.event.dx.behaviors import IEventBasic
 
 import fnmatch
 from lxml import etree
@@ -59,15 +57,21 @@ from collective.leadmedia.utils import addCropToTranslation
 from collective.leadmedia.utils import imageObjectCreated
 from plone.app.textfield.value import RichTextValue
 from plone.event.interfaces import IEventAccessor
-from collective.object.utils.interfaces import INotes
-from collective.imageReference.imageReference import IImageReference
+
 
 from z3c.relationfield import RelationValue
 from zope import component
-from collective.object.object import IObject
 from collective.dexteritytextindexer.utils import searchable
-
 from z3c.relationfield.event import addRelations
+
+try:
+	from collective.object.object import IObject
+	from collective.object.utils.interfaces import INotes
+	from collective.imageReference.imageReference import IImageReference
+	from collective.object.utils.interfaces import IListField
+except:
+	pass
+
 
 DEBUG = False
 RUNNING = True

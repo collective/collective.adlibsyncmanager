@@ -42,13 +42,8 @@ from plone.app.textfield.value import RichTextValue
 from z3c.relationfield import RelationValue
 from zope import component
 
-#from .book_migrator import BookMigrator
-#from .incomingloan_migrator import IncomingLoanMigrator
-#from .objectentry_migrator import ObjectEntryMigrator
-#from .archive_migrator import ArchiveMigrator
-#from .converter import Converter
-#from .relations import Relations
 from .updater import Updater
+from .TM.migrator import Migrator
 
 ORGANIZATION = "teylers"
 API_REQUEST_URL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicebooks&search=(shelf_mark='%s')&xmltype=structured"
@@ -91,12 +86,14 @@ class APIMigrator:
 
         self.skipped_ids = []
 
-        self.folder_path = "nl/intern".split('/')
+        self.folder_path = "nl".split('/')
         container = self.get_container()
         catalog = getToolByName(container, 'portal_catalog')
         self.portal_catalog = catalog
 
         all_objects = catalog(portal_type='Object', Language="all")
+
+        """
         all_persons = catalog(portal_type='PersonOrInstitution', Language="all")
         all_archives = catalog(portal_type='Archive', Language="all")
         all_treatments = catalog(portal_type='treatment', Language="all")
@@ -134,7 +131,7 @@ class APIMigrator:
             tax_obj = tax.getObject()
             priref = getattr(tax_obj, 'priref', '')
             if priref:
-                self.taxonomies_ref[priref] = tax
+                self.taxonomies_ref[priref] = tax"""
 
     def build_api_request_all(self):
         url = ""
@@ -6005,6 +6002,16 @@ class APIMigrator:
 
         return records, xmlDoc
 
+    def get_tm_collection(self, path):
+        xmlFilePath = path
+        xmlDoc = etree.parse(xmlFilePath)
+
+        root = xmlDoc.getroot()
+        recordList = root.find("recordList")
+        records = recordList.getchildren()
+
+        return records, xmlDoc
+
     def image_in_list_images(self, name, images_list):
         #
         # Check if image is in server
@@ -10789,171 +10796,16 @@ class APIMigrator:
             self.is_book = False
             self.use_books = True
 
-            self.type_migrator = "updater"
+            self.type_migrator = "TM"
 
-            if self.type_migrator == "books":
-                book_migrator = BookMigrator(self)
-                book_migrator.start()
-
-            elif self.type_migrator == "updater":
+            if self.type_migrator == "TM":
                 updater = Updater(self)
-                updater.start()
+                importer = Migrator(updater)
+                importer.start()
 
-            elif self.type_migrator == "update_treatments":
-                self.update_treatments()
-
-            elif self.type_migrator == "converter":
-                converter = Converter(self)
-                converter.start()
-
-            elif self.type_migrator == "relations":
-                relations = Relations(self)
-                relations.start()   
-
-            elif self.type_migrator == "incomming_loans":
-                print "#### incoming loans"
-                self.folder_path = "nl/binnenkomende-bruiklenen/binnenkomende-bruiklenen".split('/')
-                inloan_migrator = IncomingLoanMigrator(self)
-                inloan_migrator.start()
-
-            elif self.type_migrator == "objectentry":
-                objectentry_migrator = ObjectEntryMigrator(self)
-                objectentry_migrator.start()
-
-            elif self.type_migrator == "archive":
-                self.folder_path = "nl/archiefstukken/archiefstukken".split('/')
-                archive_migrator = ArchiveMigrator(self)
-                archive_migrator.start()
             else:
-                #self.import_zm_collection_test()
-                #converter = Converter(self)
-                #converter.start()
-                #print "Import persons!"
-                #self.import_persons_institutions()
-                self.move_all_folders_content()
-                #self.create_alphabetic_folders()
-                #self.move_persons_folder()
+                print "Type of Migrator unsupported."
 
-
-            ###
-            ### EXTRAS
-            ###
-
-
-            #self.transform_linkedObjects_relatedObjects()
-            #self.import_zm_outgoingloan_test()
-            #print "#### archiefstukken"
-            #self.folder_path = "nl/archiefstukken/archiefstukken".split('/')
-            #archive_migrator = ArchiveMigrator(self)
-            #archive_migrator.start()
-            #self.transform_linkedObjects_relatedObjects()
-            #print "No type of migrator selected"
-            #self.folder_path = 'nl/uitgaande-bruiklenen/uitgaande-bruiklenen'.split('/')
-            #self.import_zm_outgoingloan_test()
-            #self.find_missing_exhibitions()
-            #self.folder_path = 'nl/collectie/objecten-in-beheer-van-derden'.split('/')
-            #self.transform_exhibition_example_institutions()
-            #self.update_ex_dates()
-            #self.transform_exhibition_example_institutions()
-            #self.folder_path = "nl/test-folder".split("/")
-            #self.import_zm_collection_test()
-            ##self.import_persons_institutions()
-            #self.import_zm_treatments()
-            #self.update_images_metadata()
-            #self.folder_path = 'nl/collectie'.split('/')
-            #self.check_themes()
-            #self.move_images()
-            #self.check_visual_documentation()
-            #self.check_images_in_plone()
-            #self.transform_dimensions_field()
-            #self.update_visual_metadata()
-            #self.check_visual_documentation()
-            #self.get_all_without_slideshow()
-            #self.update_images_metadata()
-            #self.folder_path = "nl/bezoek-het-museum/tentoonstellingen".split('/')
-            #self.import_zm_exhibition_test()
-            #self.import_zm_collection()
-            #self.folder_path = "nl/conserverings-behandelingen/conserverings-behandelingen".split('/')
-            #self.import_persons_institutions()
-            #self.import_zm_treatments()
-
-            #self.update_exhibitions()
-            
-            #self.import_zm_exhibition_test()
-            
-            #container = self.get_container()
-            ###catalog = getToolByName(container, 'portal_catalog')
-            #all_images = catalog(portal_type='Image', Language="all")
-
-            #self.find_image_by_ref(all_images)
-
-            #self.check_visual_documentation()
-            #self.create_visual_documentation()
-            #self.update_images_metadata()
-            #self.transform_exhibition_example_linkedObjects()
-
-            #self.verify_object_numbers()
-            #self.check_zm_migration_plone()
-            #self.check_themes()
-            #self.check_zm_collection()
-            #self.folder_path = 'nl/collectie/kunstnijverheid'.split('/')
-            #self.update_zm_collection()
-
-            #self.folder_path = 'nl/collectie/mode-en-streekdracht'.split('/')
-            #self.update_zm_collection()
-
-             
-            #self.folder_path = 'nl/collectie/kunstnijverheid'.split('/')
-            #self.divide_collection_by_folder()
-            #self.import_zm_collection()
-            #self.transform_exhibition_example_linkedObjects()
-            #self.check_duplicated_objects()
-            #self.delete_all_objects_container()
-            #self.test_move_folder()
-        else:
-            if self.type_to_create == "api_test":
-                self.migrate_test_api()
-            elif self.type_to_create == "create_test":
-                self.test_create_object()
-            elif self.type_to_create == "create_test_add_images":
-                self.test_create_object()
-                self.test_add_image()
-            elif self.type_to_create == "add_objects":
-                #self.add_objects()
-                self.add_new_objects()
-                self.add_images()
-            elif self.type_to_create == "add_objects_and_images":
-                #self.add_objects()
-                #self.add_images()
-                pass
-            elif self.type_to_create == "add_translations":
-                self.add_translations()
-            elif self.type_to_create == "add_objecten":
-                self.add_new_objects()
-                self.add_images()
-            elif self.type_to_create == "update_objects":
-                self.update_objects()
-            elif self.type_to_create == "all":
-                #self.add_objects()
-                #self.add_images()
-                #self.add_translations()
-                pass
-            elif self.type_to_create == 'add_test_objects':
-                self.add_test_objects()
-                self.add_images()
-            elif self.type_to_create == 'add_crops':
-                self.add_crops()
-            elif self.type_to_create == 'transform_coins':
-                self.transform_coins()
-            elif self.type_to_create == 'fix_drawings':
-                self.fix_drawings_from_api()
-            elif self.type_to_create == 'add_view_to_coins':
-                self.add_view_to_coins()
-            elif self.type_to_create == "add_crops_and_views":
-                self.add_crops()
-                self.add_view_to_instruments()
-            elif self.type_to_create == "add_view_to_instruments":
-                self.add_view_to_instruments()
 
 
 
