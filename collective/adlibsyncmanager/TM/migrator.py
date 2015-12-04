@@ -159,11 +159,14 @@ class Migrator:
     ## FINDS
     def find_object_by_priref(self, priref):
         if priref:
-            brains = self.updater.api.portal_catalog(object_priref=priref)
+            brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object")
             if brains:
                 brain = brains[0]
                 obj = brain.getObject()
-                return obj
+                if getattr(obj, 'priref', None) == priref:
+                    return obj
+                else:
+                    return None
             else:
                 return None
         else:
