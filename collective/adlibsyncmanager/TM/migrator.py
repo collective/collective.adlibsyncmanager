@@ -44,7 +44,7 @@ from .log_files_path import LOG_FILES_PATH
 RESTRICTIONS = []
 SUPPORTED_ENV = ['dev', 'prod']
 UPLOAD_IMAGES = True
-FOLDER_PATH = "nl/test-new-import"
+FOLDER_PATH = "nl/collectie/munten"
 
 ENV = "prod"
 DEBUG = False
