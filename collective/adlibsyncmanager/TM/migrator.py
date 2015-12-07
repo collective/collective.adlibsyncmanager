@@ -44,7 +44,7 @@ from .log_files_path import LOG_FILES_PATH
 RESTRICTIONS = []
 SUPPORTED_ENV = ['dev', 'prod']
 UPLOAD_IMAGES = True
-FOLDER_PATH = "nl/collectie/munten"
+FOLDER_PATH = "nl/test-new-import"
 
 ENV = "prod"
 DEBUG = False
@@ -255,9 +255,20 @@ class Migrator:
             return self.updater.api.trim_white_spaces(xml_element.text)
 
         elif field_type == "rich-text":
-            text = xml_element.text
-            value = RichTextValue(text, 'text/html', 'text/html')
-            return value
+            parent = xml_element.getparent()
+            if parent:
+                if parent.find('label.type') != None:
+                    if parent.find('label.type').get('option') == "WEBTEXT":
+                        text = xml_element.text
+                        value = RichTextValue(text, 'text/html', 'text/html')
+                        return value
+                    else:
+                        value = RichTextValue('', 'text/html', 'text/html')
+                else:
+                    value = RichTextValue('', 'text/html', 'text/html')
+                return RichTextValue('', 'text/html', 'text/html')
+            else:
+                return RichTextValue('', 'text/html', 'text/html')
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
@@ -408,6 +419,38 @@ class Migrator:
 
         return True
 
+    def create_description_field(self, plone_object):
+        description = ""
+        authors = getattr(plone_object,'creator', None)
+        periods = getattr(plone_object,'object_dating', None)
+        
+        if authors:
+            field = authors[0]
+            author = self.updater.utils.create_production_field(field)
+        else:
+            author = ""
+
+        if periods:
+            field = periods[0]
+            period = self.updater.utils.create_prod_dating_field(field)
+        else:
+            period = ""
+
+        if author and period:
+            description = "%s, %s" %(author, period)
+        elif author:
+            description = "%s" %(author)
+        elif period:
+            description = "%s" %(period)
+        
+        return description
+
+    def generate_special_fields(self, plone_object):
+        object_title = getattr(plone_object, 'title', '')
+        setattr(plone_object, 'object_title', object_title)
+        description = self.create_description_field(plone_object)
+        setattr(plone_object, 'description', description)
+        return True
 
     def import_record(self, priref, plone_object, xml_record, create_if_not_found=True):
             if plone_object:
@@ -415,6 +458,7 @@ class Migrator:
                 self.updater.empty_fields(plone_object, True)
                 self.update(xml_record, plone_object, priref)
                 self.updater.fix_all_choices(plone_object)
+                self.generate_special_fields(plone_object)
 
                 plone_object.reindexObject() 
                 is_new = False
@@ -442,30 +486,31 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[100:200]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
 
                 priref = self.get_priref(xml_record)
-                self.updater.object_number = priref
-                if priref:
-                    plone_object = self.find_object_by_priref(priref)
-                    imported, is_new = self.import_record(priref, plone_object, xml_record)
-                    if imported:
-                        # Log status
-                        if is_new:
-                            self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                            if UPLOAD_IMAGES:
-                                self.upload_images(priref, imported, xml_record)
+                if priref in ['8000069', '8006953', '8000670']:
+                    self.updater.object_number = priref
+                    if priref:
+                        plone_object = self.find_object_by_priref(priref)
+                        imported, is_new = self.import_record(priref, plone_object, xml_record)
+                        if imported:
+                            # Log status
+                            if is_new:
+                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                                if UPLOAD_IMAGES:
+                                    self.upload_images(priref, imported, xml_record)
+                            else:
+                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         else:
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            pass
                     else:
-                        pass
-                else:
-                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
                 transaction.commit()
 

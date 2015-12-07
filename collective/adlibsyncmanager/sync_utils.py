@@ -166,6 +166,117 @@ class SyncUtils:
 
         return True
 
+    def create_author_name(self, value):
+        
+        final_author = ""
+
+        author_name = value
+        brackets_content = re.findall('\(.*?\)',value)
+        for b in brackets_content:
+            author_name = author_name.replace(b, '')
+            author_name = author_name.strip()
+
+        split_name = author_name.split(',')
+        new_author = []
+
+        if (len(split_name) > 1) and (len(split_name) > 0):
+            new_author.append(split_name[-1])
+            new_author.append(split_name[0])
+        elif len(split_name) > 0:
+            new_author.append(split_name[0])
+        else:
+            new_author.append(value)
+
+        final_author_name = " ".join(new_author)
+
+        final_brackets = []
+        final_brackets.append(final_author_name)
+        final_brackets.extend(brackets_content)
+
+        final_value = " ".join(final_brackets)
+
+        return final_value
+
+    def create_prod_dating_field(self, field):
+        period = None
+        start_date = field['start']
+        start_date_precision = field['start_precision']
+        end_date = field['end']
+        end_date_precision = field['end_precision']
+
+        if end_date == start_date:
+            end_date = ""
+
+        result = ""
+
+        if period != "" and period != None and period != " ":
+            result = "%s" %(period)
+
+        if start_date != "" and start_date != " ":
+            if result:
+                if start_date_precision != "" and start_date_precision != " ":
+                    result = "%s, %s %s" %(result, start_date_precision, start_date)
+                else:
+                    result = "%s, %s" %(result, start_date)
+            else:
+                if start_date_precision != "" and start_date_precision != " ":
+                    result = "%s %s" %(start_date_precision, start_date)
+                else:
+                    result = "%s" %(start_date)
+    
+
+        if end_date != "" and end_date != " ":
+            if result:
+                if end_date_precision != "" and end_date_precision != " ":
+                    result = "%s - %s %s" %(result, end_date_precision, start_date)
+                else:
+                    result = "%s - %s" %(result, end_date)
+            else:
+                if end_date_precision != "" and end_date_precision != " ":
+                    result = "%s %s" %(end_date_precision, start_date)
+                else:
+                    result = "%s" %(end_date)
+
+        return result
+
+    def create_production_field(self, author):
+
+        authors = []
+
+        NOT_ALLOWED = ['', None, ' ']
+        
+        maker = author['creator']
+        qualifier = author['qualifier']
+        role = author['role']
+        date_of_birth = author['date_of_birth']
+        date_of_death = author['date_of_death']
+
+        production = self.create_author_name(maker)
+
+        dates = ""
+        if date_of_birth not in NOT_ALLOWED:
+            dates = "%s" %(date_of_birth)
+            if date_of_death not in NOT_ALLOWED:
+                dates = "%s-%s" %(dates, date_of_death)
+        elif date_of_death not in NOT_ALLOWED:
+            dates = "%s" %(date_of_death)
+
+        if dates not in NOT_ALLOWED:
+            if production:
+                production = "%s (%s)" %(production, dates)
+
+        if role not in NOT_ALLOWED:
+            if production:
+                production = "%s (%s)" %(production, role)
+            else:
+                production = "(%s)" %(role)
+
+        authors.append(production)
+
+        final_production = "".join(authors)
+
+        return final_production
+
     def fix_person_name(self, person):
         priref = getattr(person, 'priref', "")
         title = getattr(person, 'title', "")
