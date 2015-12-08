@@ -177,6 +177,10 @@ class SyncUtils:
             author_name = author_name.strip()
 
         split_name = author_name.split(',')
+
+        if len(split_name) > 2:
+        	return value
+
         new_author = []
 
         if (len(split_name) > 1) and (len(split_name) > 0):
