@@ -486,30 +486,32 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[100:200]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
                 transaction.begin()
 
                 priref = self.get_priref(xml_record)
                 self.updater.object_number = priref
-                if priref:
-                    plone_object = self.find_object_by_priref(priref)
-                    imported, is_new = self.import_record(priref, plone_object, xml_record)
-                    if imported:
-                        # Log status
-                        if is_new:
-                            self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                            if UPLOAD_IMAGES:
-                                self.upload_images(priref, imported, xml_record)
+                if priref in ['8000069', '8006953', '8000670']:
+                    if priref:
+
+                        plone_object = self.find_object_by_priref(priref)
+                        imported, is_new = self.import_record(priref, plone_object, xml_record)
+                        if imported:
+                            # Log status
+                            if is_new:
+                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                                if UPLOAD_IMAGES:
+                                    self.upload_images(priref, imported, xml_record)
+                            else:
+                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         else:
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            pass
                     else:
-                        pass
-                else:
-                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
                 transaction.commit()
 
