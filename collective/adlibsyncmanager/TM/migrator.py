@@ -46,7 +46,7 @@ CREATE_NEW = True
 RESTRICTIONS = []
 SUPPORTED_ENV = ['dev', 'prod', 'sync']
 UPLOAD_IMAGES = True
-FOLDER_PATH = "nl/test-new-import"
+FOLDER_PATH = "nl/collectie/test-new-import"
 TEST_EXAMPLES = ['8000069', '8006953', '8000670']
 IMPORT_TYPE = "import"
 TIME_LIMIT = False
@@ -180,7 +180,7 @@ class Migrator:
         return path
 
     def get_collection(self):
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['single']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['total']
         self.collection, self.xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         self.updater.collection = self.collection
