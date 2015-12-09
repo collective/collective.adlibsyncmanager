@@ -140,6 +140,7 @@ class Updater:
         self.DEBUG = DEBUG
         self.RUNNING = RUNNING
         self.is_tm = False
+        self.IMPORT_TYPE = "import"
 
     def log(self, text=""):
         if self.DEBUG:
@@ -640,7 +641,11 @@ class Updater:
     def log_status(self, text, use_timestamp=True):
         if text:
             timestamp = datetime.datetime.today().isoformat()
-            text = text.encode('ascii', 'ignore')
+            try:
+                text = text.encode('ascii', 'ignore')
+            except:
+                text = text
+
             if not use_timestamp:
                 final_log = "%s" %(str(text))
             else:
@@ -648,6 +653,7 @@ class Updater:
             
             list_log = final_log.split('__')
             print final_log.replace('__', ' ')
+            print list_log
             self.status_wr.writerow(list_log)
         else:
             return True
@@ -681,7 +687,8 @@ class Updater:
                     value = "No value"
                 value.encode('ascii', 'ignore')
 
-                self.log("%s%s__%s__%s" %("[ Warning ]__", object_number, xml_path, value))
+                if self.IMPORT_TYPE != 'sync':
+                    self.log("%s%s__%s__%s" %("[ Warning ]__", object_number, xml_path, value))
 
             return True
         except:

@@ -34,6 +34,7 @@ from plone.event.interfaces import IEventAccessor
 from z3c.relationfield import RelationValue
 import glob
 
+
 from .teylers_contenttypes_path import CONTENT_TYPES_PATH
 from .teylers_contenttypes_path import IMAGES_HD_PATH
 
@@ -41,10 +42,14 @@ from .teylers_core import CORE
 from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
+CREATE_NEW = True
 RESTRICTIONS = []
-SUPPORTED_ENV = ['dev', 'prod']
+SUPPORTED_ENV = ['dev', 'prod', 'sync']
 UPLOAD_IMAGES = True
-FOLDER_PATH = "nl/collectie/munten"
+FOLDER_PATH = "nl/test-new-import"
+TEST_EXAMPLES = ['8000069', '8006953', '8000670']
+IMPORT_TYPE = "import"
+TIME_LIMIT = False
 
 ENV = "prod"
 DEBUG = False
@@ -65,10 +70,20 @@ class Migrator:
         self.log_files_path = LOG_FILES_PATH
         self.images_hd_path = IMAGES_HD_PATH
         self.list_images_in_hd = []
+        self.ENV = ENV
+        self.UPLOAD_IMAGES = UPLOAD_IMAGES
+        self.CREATE_NEW = CREATE_NEW
+        self.DEBUG = DEBUG
+        self.RUNNING = RUNNING
+        self.FOLDER_PATH = FOLDER_PATH
+        self.CORE = CORE
+        self.IMPORT_TYPE = IMPORT_TYPE
+        self.subfields_types = subfields_types
+        self.relation_types = relation_types
+        self.TIME_LIMIT = TIME_LIMIT
 
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
-
 
         self.updater.schema = self.schema
         self.updater.fields = self.fields
@@ -76,6 +91,8 @@ class Migrator:
         self.updater.datagrids = {}
         self.updater.xml_path = ""
         self.updater.is_tm = True
+
+        self.syncing = False
 
     ## LOGS
     def log(self, text=""):
@@ -105,18 +122,27 @@ class Migrator:
     def warning(self, text=""):
         self.updater.warning(text)
 
+    def set_core(self, core):
+        self.CORE = core
+        self.updater.CORE = core
+        return True
+
     def init_log_files(self):
 
-        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[ENV]['path'])        
-        self.error_path = self.get_log_path('error', ENV)
-        self.warning_path = self.get_log_path('warning', ENV)
-        self.status_path = self.get_log_path('status', ENV)
-        self.log_images_path = self.get_log_path('images', ENV)
+        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.ENV]['path'])        
+        self.error_path = self.get_log_path('error', self.ENV)
+        self.warning_path = self.get_log_path('warning', self.ENV)
+        self.status_path = self.get_log_path('status', self.ENV)
+        self.log_images_path = self.get_log_path('images', self.ENV)
 
-        self.error_log_file = open(self.error_path, "w+")
-        self.warning_log_file = open(self.warning_path, "w+")
-        self.status_log_file = open(self.status_path, "w+")
-        self.images_log_file = open(self.log_images_path, "w+")
+        read_mode = "w+"
+        if self.IMPORT_TYPE == 'sync':
+            read_mode = "a"
+
+        self.error_log_file = open(self.error_path, "a")
+        self.warning_log_file = open(self.warning_path, "a")
+        self.status_log_file = open(self.status_path, "a")
+        self.images_log_file = open(self.log_images_path, "a")
 
         self.error_wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
         self.warning_wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
@@ -141,16 +167,20 @@ class Migrator:
     def get_log_path(self, log_type='error', env="dev"):
         path = ""
 
-        if ENV in SUPPORTED_ENV:
+        if self.ENV in SUPPORTED_ENV:
             timestamp = datetime.datetime.today().isoformat()
-            path = self.log_files_path[log_type][ENV] % (self.portal_type, timestamp)
+            if self.IMPORT_TYPE != 'sync':
+                path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV] % (self.portal_type, timestamp)
+            else:
+                path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV]
+
         else:
             print "#### Environment '%s' for log file is unsupported. ####" %(str(server))
 
         return path
 
     def get_collection(self):
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][ENV]['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['single']
         self.collection, self.xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         self.updater.collection = self.collection
@@ -467,7 +497,7 @@ class Migrator:
                 return True, is_new
             else:
                 if create_if_not_found:
-                    object_created = self.create_object(priref, xml_record, FOLDER_PATH)
+                    object_created = self.create_object(priref, xml_record, self.FOLDER_PATH)
                     layout = object_created.getLayout()
                     if layout != "double_view":
                         object_created.setLayout("double_view")
@@ -478,6 +508,35 @@ class Migrator:
                     self.error("%s__ __Object is not found on Plone with priref."%(str(priref))) 
                     return False, False
 
+    def time_limit_check(self):
+        if self.TIME_LIMIT:
+            now = datetime.datetime.now()
+            if now.time() > datetime.time(6):
+                return False
+        else:
+            return True
+
+    def time_limit_stop(self, curr, total, priref):
+        # LOG
+        msg = "! STATUS ! Script stopped after time limit. [%s] %s / %s" %(str(priref), str(curr), str(total))
+
+        self.log_status("! STATUS !__Script stopped after time limit. [%s] %s / %s" %(str(priref), str(curr), str(total)))
+
+        # Send email
+        api.portal.send_email(
+            recipient='andre@itsnotthatkind.org',
+            sender='andre@intk.com',
+            subject="TM - Import status",
+            body=msg
+        )
+
+        self.error_log_file.close()
+        self.warning_log_file.close()
+        self.status_log_file.close()
+
+        transaction.commit()
+        return True
+
     ## START
     def start(self):
         self.init_log_files()
@@ -486,32 +545,38 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[200:300]:
             try:
                 curr += 1
+
                 transaction.begin()
-
+                
                 priref = self.get_priref(xml_record)
-                self.updater.object_number = priref
-                if priref in ['8000069', '8006953', '8000670']:
-                    if priref:
+                time_limit_continue = self.time_limit_check()
 
-                        plone_object = self.find_object_by_priref(priref)
-                        imported, is_new = self.import_record(priref, plone_object, xml_record)
-                        if imported:
-                            # Log status
-                            if is_new:
-                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                                if UPLOAD_IMAGES:
-                                    self.upload_images(priref, imported, xml_record)
-                            else:
-                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                if not time_limit_continue:
+                    self.time_limit_stop(curr, total, priref)
+                    return True
+
+                self.updater.object_number = priref
+                if priref:
+
+                    plone_object = self.find_object_by_priref(priref)
+                    imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
+                    if imported:
+                        # Log status
+                        if is_new:
+                            self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                            if self.UPLOAD_IMAGES:
+                                self.upload_images(priref, imported, xml_record)
                         else:
-                            pass
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                     else:
-                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                        pass
+                else:
+                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
                 transaction.commit()
 

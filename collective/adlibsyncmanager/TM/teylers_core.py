@@ -6,6 +6,7 @@
 CORE = {
     "priref":"priref",
     "Label-label.text":"text",
+    "Content_person-content.person.name-name":"creator-creator",
     "Production-creator-name":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
     "Production-creator.role-term":"creator-role",
@@ -29,10 +30,10 @@ CORE = {
 
     "":"fossil_dating",
 
-    "Production-production.place":"object_production_period-place",
-    "Production-production.period":"object_production_period-period",
-    "Production-production.reason":"object_production_period-reason",
-    "Production-production.notes":"object_production_period-notes",
+    #"production.place-name":"object_production_period-place",
+    "production.period-term":"object_production_period-period",
+    #"production.reason-term":"object_production_period-reason",
+    #"production.notes":"object_production_period-notes",
 
     "":"production_notes",
     "":"search_year",

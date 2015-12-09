@@ -91,47 +91,7 @@ class APIMigrator:
         catalog = getToolByName(container, 'portal_catalog')
         self.portal_catalog = catalog
 
-        all_objects = catalog(portal_type='Object', Language="all")
-
-        """
-        all_persons = catalog(portal_type='PersonOrInstitution', Language="all")
-        all_archives = catalog(portal_type='Archive', Language="all")
-        all_treatments = catalog(portal_type='treatment', Language="all")
-        all_exhibitions = catalog(portal_type='Exhibition', Language="all")
-        all_outgoing = catalog(portal_type='OutgoingLoan', Language="all")
-        all_incoming = catalog(portal_type='IncomingLoan', Language="all")
-        all_articles = catalog(portal_type='Article', Language="all")
-        all_objectentries = catalog(portal_type='ObjectEntry', Language="all")
-        all_resources = catalog(portal_type='Resource', Language="all")
-        all_books = catalog(portal_type='Book', Language="all")
-        all_taxonomies = catalog(portal_type='Taxonomie', Language="all")
-        all_serials = catalog(portal_type='Serial', Language="all")
-        all_audiovisuals = catalog(portal_type='Audiovisual', Language="all")
-        all_images = catalog(portal_type='Image', Language="all")
-
-        self.all_books = all_books
-        self.all_objects = all_objects
-        self.all_persons = all_persons
-        self.all_archives = all_archives
-        self.all_treatments = all_treatments
-        self.all_exhibitions = all_exhibitions
-        self.all_outgoing = all_outgoing
-        self.all_incoming = all_incoming
-        self.all_articles = all_articles
-        self.all_objectentries = all_objectentries
-        self.all_resources = all_resources
-        self.all_taxonomies = all_taxonomies
-        self.all_serials = all_serials
-        self.all_audiovisuals = all_audiovisuals
-        self.all_images = all_images
-
-        self.taxonomies_ref ={}
-
-        for tax in self.all_taxonomies:
-            tax_obj = tax.getObject()
-            priref = getattr(tax_obj, 'priref', '')
-            if priref:
-                self.taxonomies_ref[priref] = tax"""
+        #all_objects = catalog(portal_type='Object', Language="all")
 
     def build_api_request_all(self):
         url = ""
