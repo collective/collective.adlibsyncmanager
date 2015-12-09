@@ -560,25 +560,24 @@ class Migrator:
 
                 self.updater.object_number = priref
 
-                if priref in TEST_EXAMPLES:
-                    if priref:
+                if priref:
 
-                        plone_object = self.find_object_by_priref(priref)
-                        imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
-                        if imported:
-                            # Log status
-                            if is_new:
-                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                                if self.UPLOAD_IMAGES:
-                                    self.upload_images(priref, imported, xml_record)
-                            else:
-                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                    plone_object = self.find_object_by_priref(priref)
+                    imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
+                    if imported:
+                        # Log status
+                        if is_new:
+                            self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                            if self.UPLOAD_IMAGES:
+                                self.upload_images(priref, imported, xml_record)
                         else:
-                            pass
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                     else:
-                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                        pass
+                else:
+                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
                 transaction.commit()
 
