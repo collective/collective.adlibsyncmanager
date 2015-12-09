@@ -653,7 +653,6 @@ class Updater:
             
             list_log = final_log.split('__')
             print final_log.replace('__', ' ')
-            print list_log
             self.status_wr.writerow(list_log)
         else:
             return True
