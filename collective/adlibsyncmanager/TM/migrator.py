@@ -180,7 +180,7 @@ class Migrator:
         return path
 
     def get_collection(self):
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['single']
         self.collection, self.xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         self.updater.collection = self.collection

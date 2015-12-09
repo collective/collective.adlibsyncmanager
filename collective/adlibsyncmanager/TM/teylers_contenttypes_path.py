@@ -9,7 +9,7 @@ CONTENT_TYPES_PATH = {
 		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-coins-v03.xml"
 		    },
 		    "prod": {
-		        "single":"",
+		        "single":"/var/www/tm-data/xml/single-coin.xml",
 		        "total":"/var/www/tm-data/xml/coins-v03.xml"
 		    }
 		}
