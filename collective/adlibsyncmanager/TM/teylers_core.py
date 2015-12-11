@@ -30,7 +30,7 @@ CORE = {
 
     "":"fossil_dating",
 
-    #"production.place-name":"object_production_period-place",
+    "Production-production.place-term":"object_production_period-place",
     "production.period-term":"object_production_period-period",
     #"production.reason-term":"object_production_period-reason",
     #"production.notes":"object_production_period-notes",
@@ -51,7 +51,7 @@ CORE = {
     "":"common_name",
     "":"scientific_name",
     "":"chemical_composition",
-    "field_coll_place":"field_coll_place",
+    "field_coll.place-term":"field_coll_place",
 
     "object_number":"object_number",
     "Description-description":"object_descriptions-description",
@@ -59,7 +59,7 @@ CORE = {
     "Inscription-inscription.content":"object_inscription-content",
     "Inscription-inscription.type-term":"object_inscription-type",
 
-    "acquisition.source":"acquisition_source",
+    "Acquisition_source-acquisition.source-name":"acquisition_source",
     "":"credit_line",
     "Reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
     "":"digital_reference",

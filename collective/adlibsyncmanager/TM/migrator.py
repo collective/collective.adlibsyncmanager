@@ -47,9 +47,10 @@ RESTRICTIONS = []
 SUPPORTED_ENV = ['dev', 'prod', 'sync']
 UPLOAD_IMAGES = True
 FOLDER_PATH = "nl/collectie/munten-en-penningen-new"
-TEST_EXAMPLES = ['8000069', '8006953', '8000670']
+TEST_EXAMPLES = ['8015607', '8006953', '8000670']
 IMPORT_TYPE = "import"
 TIME_LIMIT = False
+WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site web', 'Website-Text']
 
 ENV = "prod"
 DEBUG = False
@@ -180,7 +181,7 @@ class Migrator:
         return path
 
     def get_collection(self):
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['single']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['total']
         self.collection, self.xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         self.updater.collection = self.collection
@@ -214,6 +215,8 @@ class Migrator:
             if has_field:
                 current_value = getattr(plone_object, plone_fieldroot)
                 field_type = self.updater.get_type_of_field(plone_fieldroot)
+
+
                 value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
                 self.updater.setattribute(plone_object, plone_fieldroot, field_type, value)
             else:
@@ -288,10 +291,20 @@ class Migrator:
             parent = xml_element.getparent()
             if parent:
                 if parent.find('label.type') != None:
-                    if parent.find('label.type').get('option') == "WEBTEXT":
+                    if parent.find('label.type').get('option') in WEBSITE_TEXT:
                         text = xml_element.text
                         value = RichTextValue(text, 'text/html', 'text/html')
                         return value
+                    elif parent.find('label.type').find('value') != None:
+                        if parent.find('label.type').find('value').text in WEBSITE_TEXT:
+                            text = xml_element.text
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            return value
+                    elif parent.find('label.type').find('text') != None:
+                        if parent.find('label.type').find('text').text in WEBSITE_TEXT:
+                            text = xml_element.text
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            return value
                     else:
                         value = RichTextValue('', 'text/html', 'text/html')
                 else:
@@ -560,24 +573,25 @@ class Migrator:
 
                 self.updater.object_number = priref
 
-                if priref:
+                if priref in TEST_EXAMPLES:
+                    if priref:
 
-                    plone_object = self.find_object_by_priref(priref)
-                    imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
-                    if imported:
-                        # Log status
-                        if is_new:
-                            self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                            if self.UPLOAD_IMAGES:
-                                self.upload_images(priref, imported, xml_record)
+                        plone_object = self.find_object_by_priref(priref)
+                        imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
+                        if imported:
+                            # Log status
+                            if is_new:
+                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                                if self.UPLOAD_IMAGES:
+                                    self.upload_images(priref, imported, xml_record)
+                            else:
+                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                         else:
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            pass
                     else:
-                        pass
-                else:
-                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
                 transaction.commit()
 
