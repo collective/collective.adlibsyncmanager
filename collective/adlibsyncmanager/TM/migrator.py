@@ -43,15 +43,38 @@ from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
 CREATE_NEW = True
-RESTRICTIONS = []
-SUPPORTED_ENV = ['dev', 'prod', 'sync']
-UPLOAD_IMAGES = True
-FOLDER_PATH = "nl/collectie/munten-en-penningen-new"
-TEST_EXAMPLES = ['8015607', '8006953', '8000670']
-IMPORT_TYPE = "import"
 TIME_LIMIT = False
+UPLOAD_IMAGES = False
+
+PORTAL_TYPE = "Object"
+OBJECT_TYPE = "fossils"
+IMPORT_TYPE = "import"
+TYPE_IMPORT_FILE = "single"
+
+#
+# Utils - Options - Validations
+#
+SUPPORTED_ENV = ['dev', 'prod', 'sync']
 WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site web', 'Website-Text']
 
+FOLDER_PATHS = {
+    "coins": "nl/collectie/munten-en-penningen-new",
+    "fossils": "nl/collectie/fossielen-en-mineralen-new"
+}
+
+TEST_EXAMPLES = {
+    "coins": ['8015607', '8006953', '8000670'],
+    "fossils": ['7008516']
+}
+
+RESTRICTIONS = {
+    "coins": [],
+    "fossils": ['object_type', 'object_production_period', 'object_dating']
+}
+
+#
+# Environment
+#
 ENV = "prod"
 DEBUG = False
 RUNNING = True
@@ -60,9 +83,9 @@ class Migrator:
     
     def __init__(self, Updater):
         self.updater = Updater
-        self.portal_type = "Object"
-        self.updater.portal_type = "Object"
-        self.object_type = "coins"
+        self.portal_type = PORTAL_TYPE
+        self.updater.portal_type = PORTAL_TYPE
+        self.object_type = OBJECT_TYPE
         self.updater.RUNNING = RUNNING
         self.updater.DEBUG = DEBUG
         self.updater.CORE = CORE
@@ -76,13 +99,15 @@ class Migrator:
         self.CREATE_NEW = CREATE_NEW
         self.DEBUG = DEBUG
         self.RUNNING = RUNNING
-        self.FOLDER_PATH = FOLDER_PATH
+        self.FOLDER_PATHS = FOLDER_PATHS
         self.CORE = CORE
         self.IMPORT_TYPE = IMPORT_TYPE
         self.subfields_types = subfields_types
         self.relation_types = relation_types
+        self.TYPE_IMPORT_FILE = TYPE_IMPORT_FILE
         self.TIME_LIMIT = TIME_LIMIT
 
+        # Init schema
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
         self.fields = getFieldsInOrder(self.schema)
 
@@ -181,7 +206,7 @@ class Migrator:
         return path
 
     def get_collection(self):
-        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV]['total']
+        collection_xml = CONTENT_TYPES_PATH[self.portal_type][self.object_type][self.ENV][self.TYPE_IMPORT_FILE]
         self.collection, self.xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         self.updater.collection = self.collection
@@ -202,6 +227,15 @@ class Migrator:
                 return None
         else:
             return None
+
+    def valid_field(self, name):
+        if RESTRICTIONS[self.object_type]:
+            if name in RESTRICTIONS[self.object_type]:
+                return False
+            else:
+                return True
+        else:
+            return True
     
     ## CORE
     def write(self, xml_path, xml_element, plone_object, priref):
@@ -216,8 +250,11 @@ class Migrator:
                 current_value = getattr(plone_object, plone_fieldroot)
                 field_type = self.updater.get_type_of_field(plone_fieldroot)
 
+                if self.valid_field(plone_fieldroot):
+                    value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
+                else:
+                    value = current_value
 
-                value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
                 self.updater.setattribute(plone_object, plone_fieldroot, field_type, value)
             else:
                 self.error("Field not available in Plone object: %s" %(plone_fieldroot))
@@ -510,10 +547,14 @@ class Migrator:
                 return True, is_new
             else:
                 if create_if_not_found:
-                    object_created = self.create_object(priref, xml_record, self.FOLDER_PATH)
+                    object_created = self.create_object(priref, xml_record, self.FOLDER_PATHS[self.object_type])
+
                     layout = object_created.getLayout()
-                    if layout != "double_view":
-                        object_created.setLayout("double_view")
+                    if self.object_type == 'coins':
+                        if layout != "double_view":
+                            object_created.setLayout("double_view")
+                    else:
+                        object_created.setLayout("view")
 
                     imported, is_new = self.import_record(priref, object_created, xml_record, False)
                     return object_created, True
@@ -573,7 +614,7 @@ class Migrator:
 
                 self.updater.object_number = priref
 
-                if priref in TEST_EXAMPLES:
+                if priref in TEST_EXAMPLES[self.object_type]:
                     if priref:
 
                         plone_object = self.find_object_by_priref(priref)

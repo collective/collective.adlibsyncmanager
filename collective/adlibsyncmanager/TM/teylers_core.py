@@ -48,8 +48,8 @@ CORE = {
 
     "":"location",
     "":"publisher",
-    "":"common_name",
-    "":"scientific_name",
+    "Taxonomy-taxonomy.scientific_name-common_name":"common_name",
+    "Taxonomy-taxonomy.scientific_name-scientific_name":"scientific_name",
     "":"chemical_composition",
     "field_coll.place-term":"field_coll_place",
 

@@ -12,6 +12,16 @@ CONTENT_TYPES_PATH = {
 		        "single":"/var/www/tm-data/xml/single-coin.xml",
 		        "total":"/var/www/tm-data/xml/coins-v03.xml"
 		    }
+		},
+		"fossils": {
+			"dev":{
+		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-fossil-v01.xml",
+		        "total":""
+		    },
+		    "prod": {
+		        "single":"/var/www/tm-data/xml/single-fossil.xml",
+		        "total":"/var/www/tm-data/xml/fossils.xml"
+		    }
 		}
 	}
 }
