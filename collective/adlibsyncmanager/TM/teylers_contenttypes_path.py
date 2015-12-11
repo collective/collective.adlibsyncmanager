@@ -10,7 +10,7 @@ CONTENT_TYPES_PATH = {
 		    },
 		    "prod": {
 		        "single":"/var/www/tm-data/xml/single-coin.xml",
-		        "total":"/var/www/tm-data/xml/coins-v03.xml"
+		        "total":"/var/www/tm-data/xml/coins-v04.xml"
 		    }
 		},
 		"fossils": {

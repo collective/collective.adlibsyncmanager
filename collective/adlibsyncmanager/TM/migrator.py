@@ -44,10 +44,10 @@ from .log_files_path import LOG_FILES_PATH
 
 CREATE_NEW = True
 TIME_LIMIT = False
-UPLOAD_IMAGES = False
+UPLOAD_IMAGES = True
 
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "fossils"
+OBJECT_TYPE = "coins"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -599,7 +599,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
 
