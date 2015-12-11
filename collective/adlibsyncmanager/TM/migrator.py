@@ -49,7 +49,7 @@ UPLOAD_IMAGES = False
 PORTAL_TYPE = "Object"
 OBJECT_TYPE = "fossils"
 IMPORT_TYPE = "import"
-TYPE_IMPORT_FILE = "single"
+TYPE_IMPORT_FILE = "total"
 
 #
 # Utils - Options - Validations
@@ -69,7 +69,7 @@ TEST_EXAMPLES = {
 
 RESTRICTIONS = {
     "coins": [],
-    "fossils": ['object_type', 'object_production_period', 'object_dating']
+    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension']
 }
 
 #
@@ -599,7 +599,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
 
@@ -614,7 +614,7 @@ class Migrator:
 
                 self.updater.object_number = priref
 
-                if priref in TEST_EXAMPLES[self.object_type]:
+                if priref not in TEST_EXAMPLES[self.object_type]:
                     if priref:
 
                         plone_object = self.find_object_by_priref(priref)
