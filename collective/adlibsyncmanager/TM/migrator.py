@@ -502,15 +502,18 @@ class Migrator:
                 if reproduction.find('reproduction.reference') != None:
                     if reproduction.find('reproduction.reference').find('reference_number') != None:
                         reference_number = reproduction.find('reproduction.reference').find('reference_number').text
-                        reference_split = reference_number.split("\\")
-                        if reference_split:
-                            image_name = reference_split[-1]
-                            new_image_name = self.convert_image_name(image_name)
-                            path = self.find_image_in_hd(new_image_name)
-                            self.add_image(new_image_name, path, priref, plone_object)
+                        if reference_number:
+                            reference_split = reference_number.split("\\")
+                            if reference_split:
+                                image_name = reference_split[-1]
+                                new_image_name = self.convert_image_name(image_name)
+                                path = self.find_image_in_hd(new_image_name)
+                                self.add_image(new_image_name, path, priref, plone_object)
+                            else:
+                                path = self.find_image_in_hd(reference_number)
+                                self.add_image(reference_number, path, priref, plone_object)
                         else:
-                            path = self.find_image_in_hd(reference_number)
-                            self.add_image(reference_number, path, priref, plone_object)
+                            self.log_images("%s__%s__%s"%(priref, '', "Cannot find image reference in XML."))
                     else:
                         self.log_images("%s__%s__%s"%(priref, '', "Cannot find image reference in XML."))
 
