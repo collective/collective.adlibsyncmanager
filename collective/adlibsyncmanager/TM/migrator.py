@@ -44,7 +44,7 @@ from .log_files_path import LOG_FILES_PATH
 
 CREATE_NEW = True
 TIME_LIMIT = False
-UPLOAD_IMAGES = True
+UPLOAD_IMAGES = False
 
 PORTAL_TYPE = "Object"
 OBJECT_TYPE = "instruments"
