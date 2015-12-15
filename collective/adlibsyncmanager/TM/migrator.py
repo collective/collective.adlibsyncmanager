@@ -92,7 +92,7 @@ VIEW_TYPES = {
 #
 # Environment
 #
-ENV = "dev"
+ENV = "prod"
 DEBUG = False
 RUNNING = True
 
