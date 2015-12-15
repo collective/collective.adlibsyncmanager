@@ -1073,15 +1073,20 @@ class Updater:
 
         return True
 
-    def get_required_field_by_type(self, xml_record):
+    def get_required_field_by_type(self, xml_record, obj_type='Object'):
         title = ""
         if self.portal_type == "Taxonomie":
             if xml_record.find("scientific_name") != None:
                 title = xml_record.find("scientific_name").text
 
         elif self.portal_type == "Object":
-            if xml_record.find("object_number") != None:
-                title = xml_record.find("object_number").text
+            if obj_type == 'book':
+                if xml_record.find("shelf_mark") != None:
+                    title = xml_record.find("shelf_mark").text
+
+            else:
+                if xml_record.find("object_number") != None:
+                    title = xml_record.find("object_number").text
 
         elif self.portal_type == "treatment":
             if xml_record.find("treatment_number") != None:

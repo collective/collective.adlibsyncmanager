@@ -47,9 +47,9 @@ TIME_LIMIT = False
 UPLOAD_IMAGES = False
 
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "instruments"
+OBJECT_TYPE = "books"
 IMPORT_TYPE = "import"
-TYPE_IMPORT_FILE = "single"
+TYPE_IMPORT_FILE = "total"
 
 #
 # Utils - Options - Validations
@@ -61,14 +61,16 @@ FOLDER_PATHS = {
     "coins": "nl/collectie/munten-en-penningen-new",
     "fossils": "nl/collectie/fossielen-en-mineralen-new",
     "kunst": "nl/collectie/kunst-new",
-    "instruments": "nl/collectie/instrumenten-new"
+    "instruments": "nl/collectie/instrumenten-new",
+    "books": "nl/collectie/boeken-new"
 }
 
 TEST_EXAMPLES = {
     "coins": ['8015607', '8006953', '8000670'],
     "fossils": ['7008516'],
     "kunst": ['336', '37213', '16434'],
-    "instruments": ['4000017']
+    "instruments": ['4000017'],
+    "books": ['12908']
 }
 
 RESTRICTIONS = {
@@ -76,6 +78,7 @@ RESTRICTIONS = {
     "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension'],
     "kunst": ['acquisition_source', 'object_inscription', 'object_descriptions'],
     "instruments":['object_descriptions'],
+    "books": []
 }
 
 VIEW_TYPES = {
@@ -83,12 +86,13 @@ VIEW_TYPES = {
     "fossils": "view",
     "kunst": "view",
     "instruments":"view",
+    "books":"view"
 }
 
 #
 # Environment
 #
-ENV = "prod"
+ENV = "dev"
 DEBUG = False
 RUNNING = True
 
@@ -344,16 +348,19 @@ class Migrator:
                 if parent.find('label.type') != None:
                     if parent.find('label.type').get('option') in WEBSITE_TEXT:
                         text = xml_element.text
+                        text = text.replace('\n','<br />')
                         value = RichTextValue(text, 'text/html', 'text/html')
                         return value
                     elif parent.find('label.type').find('value') != None:
                         if parent.find('label.type').find('value').text in WEBSITE_TEXT:
                             text = xml_element.text
+                            text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
                     elif parent.find('label.type').find('text') != None:
                         if parent.find('label.type').find('text').text in WEBSITE_TEXT:
                             text = xml_element.text
+                            text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
                     else:
@@ -380,7 +387,7 @@ class Migrator:
         container = self.updater.api.get_folder(folder_path)
 
         title = self.updater.get_title_by_type(xml_record)
-        object_number = self.updater.get_required_field_by_type(xml_record)
+        object_number = self.updater.get_required_field_by_type(xml_record, 'book')
         if not title and object_number:
             #fallback object number
             title = object_number
@@ -545,11 +552,20 @@ class Migrator:
         
         return description
 
-    def generate_special_fields(self, plone_object):
+    def generate_special_fields(self, plone_object, xml_record):
         object_title = getattr(plone_object, 'title', '')
+        
+        if self.object_type == 'books':
+            if xml_record.find('Title') != None:
+                if xml_record.find('Title').find('lead_word') != None:
+                    lead_word = xml_record.find('Title').find('lead_word').text
+                    new_title = "%s %s" %(lead_word, object_title)
+                    setattr(plone_object, 'title', new_title)
+
         setattr(plone_object, 'object_title', object_title)
         description = self.create_description_field(plone_object)
         setattr(plone_object, 'description', description)
+
         return True
 
     def import_record(self, priref, plone_object, xml_record, create_if_not_found=True):
@@ -558,7 +574,7 @@ class Migrator:
                 self.updater.empty_fields(plone_object, True)
                 self.update(xml_record, plone_object, priref)
                 self.updater.fix_all_choices(plone_object)
-                self.generate_special_fields(plone_object)
+                self.generate_special_fields(plone_object, xml_record)
 
                 plone_object.reindexObject() 
                 is_new = False
@@ -637,7 +653,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
 

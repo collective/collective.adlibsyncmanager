@@ -42,6 +42,16 @@ CONTENT_TYPES_PATH = {
 		        "single":"/var/www/tm-data/xml/single-instrument.xml",
 		        "total":"/var/www/tm-data/xml/instruments.xml"
 		    }
+		},
+		"books": {
+			"dev":{
+		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-book-v01.xml",
+		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-books-v01.xml"
+		    },
+		    "prod": {
+		        "single":"/var/www/tm-data/xml/single-book.xml",
+		        "total":"/var/www/tm-data/xml/books.xml"
+		    }
 		}
 	}
 }
@@ -70,6 +80,17 @@ IMAGES_HD_PATH = {
 		}
 	},
 	'instruments': {
+		'dev': { 
+			'path':''
+		},
+		'prod': {
+			'path':''
+		},
+		'sync': {
+			'path':''
+		}
+	},
+	'books': {
 		'dev': { 
 			'path':''
 		},

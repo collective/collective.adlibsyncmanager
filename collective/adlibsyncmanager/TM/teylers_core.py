@@ -7,6 +7,10 @@ CORE = {
     "priref":"priref",
     "Label-label.text":"text",
     "Content_person-content.person.name-name":"creator-creator",
+
+    "Author-author.name-name": "object_author-creator",
+    "Author-author.role-term": "object_author-role",
+
     "Production-creator-name":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
     "Production-creator.role-term":"creator-role",
@@ -17,7 +21,7 @@ CORE = {
 
     "administration_name":"administration_name",
     "":"author",
-    "":"illustrator",
+    "Illustrator-illustrator.name-name":"illustrator",
     "":"object_category",
     "":"book_title",
     "":"translated_title",
@@ -38,6 +42,7 @@ CORE = {
     "":"production_notes",
     "":"search_year",
     "Material-material-term":"object_material-material",
+    "material_type-term":"object_material-material",
     "Technique-technique-term":"technique",
 
     "Dimension-dimension.type-term":"object_dimension-type",
@@ -46,14 +51,15 @@ CORE = {
     "Dimension-dimension.part":"object_dimension-part",
     "Dimension-dimension.notes":"object_dimension-notes",
 
-    "":"location",
-    "":"publisher",
+    "place_of_publication":"location",
+    "publisher-name":"publisher",
     "Taxonomy-taxonomy.scientific_name-common_name":"common_name",
     "Taxonomy-taxonomy.scientific_name-scientific_name":"scientific_name",
     "":"chemical_composition",
     "field_coll.place-term":"field_coll_place",
 
     "object_number":"object_number",
+    "shelf_mark":"object_number",
     "Description-description":"object_descriptions-description",
 
     "Inscription-inscription.content":"object_inscription-content",
@@ -62,7 +68,12 @@ CORE = {
     "Acquisition_source-acquisition.source-name":"acquisition_source",
     "credit_line":"credit_line",
     "Reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
-    "":"digital_reference",
+    "reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
+    
+    "Digital_reference-digital_reference":"object_digital_reference-reference",
+    "Digital_reference-digital_reference.description":"object_digital_reference-description",
+    
+    "year_of_publication": "object_dating-start",
 
     #Ignored tags
 
