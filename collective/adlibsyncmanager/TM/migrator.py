@@ -49,7 +49,7 @@ UPLOAD_IMAGES = False
 PORTAL_TYPE = "Object"
 OBJECT_TYPE = "instruments"
 IMPORT_TYPE = "import"
-TYPE_IMPORT_FILE = "total"
+TYPE_IMPORT_FILE = "single"
 
 #
 # Utils - Options - Validations
@@ -618,7 +618,9 @@ class Migrator:
             else:
                 return False
         elif self.ENV in ['prod']:
-            if priref not in TEST_EXAMPLES[self.object_type]:
+            if priref not in TEST_EXAMPLES[self.object_type] and self.TYPE_IMPORT_FILE == 'total':
+                return True
+            elif self.TYPE_IMPORT_FILE == 'single':
                 return True
             else:
                 return False
@@ -635,7 +637,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
 
