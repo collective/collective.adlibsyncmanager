@@ -101,5 +101,16 @@ IMAGES_HD_PATH = {
 			'path':''
 		}
 	},
+	'fossils': {
+		'dev': { 
+			'path':''
+		},
+		'prod': {
+			'path':''
+		},
+		'sync': {
+			'path':''
+		}
+	},
 }
 
