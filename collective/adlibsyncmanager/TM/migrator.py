@@ -47,9 +47,9 @@ TIME_LIMIT = False
 UPLOAD_IMAGES = True
 
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "kunst"
+OBJECT_TYPE = "instruments"
 IMPORT_TYPE = "import"
-TYPE_IMPORT_FILE = "single"
+TYPE_IMPORT_FILE = "total"
 
 #
 # Utils - Options - Validations
@@ -82,7 +82,7 @@ VIEW_TYPES = {
     "coins": "double_view",
     "fossils": "view",
     "kunst": "view",
-    "instruments":"multiple_view",
+    "instruments":"view",
 }
 
 #
@@ -607,7 +607,7 @@ class Migrator:
         return True
 
     def valid_priref(self, priref):
-        if self.ENV in ['dev', 'prod']:
+        if self.ENV in ['dev']:
             if priref in TEST_EXAMPLES[self.object_type] and self.TYPE_IMPORT_FILE == 'single':
                 return True
             elif self.TYPE_IMPORT_FILE == 'total':
@@ -632,7 +632,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
 
@@ -649,7 +649,6 @@ class Migrator:
 
                 if self.valid_priref(priref):
                     if priref:
-
                         plone_object = self.find_object_by_priref(priref)
                         imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
                         if imported:

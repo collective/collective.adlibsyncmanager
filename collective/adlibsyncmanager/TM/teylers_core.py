@@ -74,7 +74,18 @@ CORE = {
     "Production":"",
     "Reproduction":"",
     "Technique":"",
-    "Title":""
+    "Title":"",
+
+    'Edit':'',
+    'Edit-edit.name':'',
+    'Edit-edit.time':'',
+    'Edit-edit.date':'',
+    'Edit-edit.source':'',
+    'Edit-edit.notes':'',
+    'input.source':'',
+    'input.date':'',
+    'input.name':'',
+    'input.time': '',
 } 
 
 

@@ -36,11 +36,11 @@ CONTENT_TYPES_PATH = {
 		"instruments": {
 			"dev":{
 		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-instrument-FK0014.xml",
-		        "total":""
+		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-instruments-v01.xml"
 		    },
 		    "prod": {
-		        "single":"/var/www/tm-data/xml/single-kunst-1.xml",
-		        "total":"/var/www/tm-data/xml/kunst.xml"
+		        "single":"/var/www/tm-data/xml/single-instrument.xml",
+		        "total":"/var/www/tm-data/xml/instruments.xml"
 		    }
 		}
 	}
