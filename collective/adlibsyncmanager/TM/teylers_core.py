@@ -15,7 +15,7 @@ CORE = {
     
     "Title-title":"title",
 
-    "":"administration_name",
+    "administration_name":"administration_name",
     "":"author",
     "":"illustrator",
     "":"object_category",
@@ -37,7 +37,7 @@ CORE = {
 
     "":"production_notes",
     "":"search_year",
-    "Material-material-term":"material",
+    "Material-material-term":"object_material-material",
     "Technique-technique-term":"technique",
 
     "Dimension-dimension.type-term":"object_dimension-type",
@@ -60,7 +60,7 @@ CORE = {
     "Inscription-inscription.type-term":"object_inscription-type",
 
     "Acquisition_source-acquisition.source-name":"acquisition_source",
-    "":"credit_line",
+    "credit_line":"credit_line",
     "Reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
     "":"digital_reference",
 

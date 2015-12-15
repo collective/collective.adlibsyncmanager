@@ -22,19 +22,63 @@ CONTENT_TYPES_PATH = {
 		        "single":"/var/www/tm-data/xml/single-fossil.xml",
 		        "total":"/var/www/tm-data/xml/fossils.xml"
 		    }
+		},
+		"kunst": {
+			"dev":{
+		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-kunst-KG12857.xml",
+		        "total":""
+		    },
+		    "prod": {
+		        "single":"/var/www/tm-data/xml/single-kunst-1.xml",
+		        "total":"/var/www/tm-data/xml/kunst.xml"
+		    }
+		},
+		"instruments": {
+			"dev":{
+		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-instrument-FK0014.xml",
+		        "total":""
+		    },
+		    "prod": {
+		        "single":"/var/www/tm-data/xml/single-kunst-1.xml",
+		        "total":"/var/www/tm-data/xml/kunst.xml"
+		    }
 		}
 	}
 }
 
 IMAGES_HD_PATH = {
-	'dev': {
-		'path':'/Volumes/Website Numis/Numis voorwebsite/*.jpg'
+	'coins': {
+		'dev': { 
+			'path':'/Volumes/Website Numis/Numis voorwebsite/*.jpg'
+		},
+		'prod': {
+			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
+		},
+		'sync': {
+			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
+		}
 	},
-	'prod': {
-		'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
+	'kunst': {
+		'dev': { 
+			'path':'/Volumes/INTK Kunst/Kunst web dec 2015/JPEG/*.jpg'
+		},
+		'prod': {
+			'path':'/var/www/tm-data/Kunst/*.jpg'
+		},
+		'sync': {
+			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
+		}
 	},
-	'sync': {
-		'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
-	}
+	'instruments': {
+		'dev': { 
+			'path':''
+		},
+		'prod': {
+			'path':''
+		},
+		'sync': {
+			'path':''
+		}
+	},
 }
 

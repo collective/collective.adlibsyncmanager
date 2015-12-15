@@ -65,12 +65,12 @@ from collective.dexteritytextindexer.utils import searchable
 from z3c.relationfield.event import addRelations
 
 try:
-	from collective.object.object import IObject
-	from collective.object.utils.interfaces import INotes
-	from collective.imageReference.imageReference import IImageReference
-	from collective.object.utils.interfaces import IListField
+    from collective.object.object import IObject
+    from collective.object.utils.interfaces import INotes
+    from collective.imageReference.imageReference import IImageReference
+    from collective.object.utils.interfaces import IListField
 except:
-	pass
+    pass
 
 
 DEBUG = False
@@ -179,7 +179,7 @@ class SyncUtils:
         split_name = author_name.split(',')
 
         if len(split_name) > 2:
-        	return value
+            return value
 
         new_author = []
 
@@ -202,6 +202,7 @@ class SyncUtils:
         return final_value
 
     def create_prod_dating_field(self, field):
+        NOT_ALLOWED = ['', ' ', None, []]
         period = None
         start_date = field['start']
         start_date_precision = field['start_precision']
@@ -213,31 +214,34 @@ class SyncUtils:
 
         result = ""
 
-        if period != "" and period != None and period != " ":
+        if period not in NOT_ALLOWED:
             result = "%s" %(period)
 
-        if start_date != "" and start_date != " ":
+        if start_date not in NOT_ALLOWED:
             if result:
-                if start_date_precision != "" and start_date_precision != " ":
+                if start_date_precision not in NOT_ALLOWED:
                     result = "%s, %s %s" %(result, start_date_precision, start_date)
                 else:
                     result = "%s, %s" %(result, start_date)
             else:
-                if start_date_precision != "" and start_date_precision != " ":
+                if start_date_precision not in NOT_ALLOWED:
                     result = "%s %s" %(start_date_precision, start_date)
                 else:
                     result = "%s" %(start_date)
     
 
-        if end_date != "" and end_date != " ":
+        if end_date not in NOT_ALLOWED:
             if result:
-                if end_date_precision != "" and end_date_precision != " ":
-                    result = "%s - %s %s" %(result, end_date_precision, start_date)
+                if end_date_precision not in NOT_ALLOWED:
+                    if end_date_precision != start_date_precision:
+                        result = "%s - %s %s" %(result, end_date_precision, end_date)
+                    else:
+                        result = "%s - %s" %(result, end_date)
                 else:
                     result = "%s - %s" %(result, end_date)
             else:
-                if end_date_precision != "" and end_date_precision != " ":
-                    result = "%s %s" %(end_date_precision, start_date)
+                if end_date_precision not in NOT_ALLOWED:
+                    result = "%s %s" %(end_date_precision, end_date)
                 else:
                     result = "%s" %(end_date)
 

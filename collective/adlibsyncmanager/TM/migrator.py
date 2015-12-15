@@ -44,12 +44,12 @@ from .log_files_path import LOG_FILES_PATH
 
 CREATE_NEW = True
 TIME_LIMIT = False
-UPLOAD_IMAGES = True
+UPLOAD_IMAGES = False
 
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "coins"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
-TYPE_IMPORT_FILE = "total"
+TYPE_IMPORT_FILE = "single"
 
 #
 # Utils - Options - Validations
@@ -59,17 +59,30 @@ WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site we
 
 FOLDER_PATHS = {
     "coins": "nl/collectie/munten-en-penningen-new",
-    "fossils": "nl/collectie/fossielen-en-mineralen-new"
+    "fossils": "nl/collectie/fossielen-en-mineralen-new",
+    "kunst": "nl/collectie/kunst-new",
+    "instruments": "nl/collectie/instrumenten-new"
 }
 
 TEST_EXAMPLES = {
     "coins": ['8015607', '8006953', '8000670'],
-    "fossils": ['7008516']
+    "fossils": ['7008516'],
+    "kunst": ['336', '37213', '16434'],
+    "instruments": ['4000017']
 }
 
 RESTRICTIONS = {
     "coins": [],
-    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension']
+    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension'],
+    "kunst": ['acquisition_source', 'object_inscription', 'object_descriptions'],
+    "instruments":['object_descriptions'],
+}
+
+VIEW_TYPES = {
+    "coins": "double_view",
+    "fossils": "view",
+    "kunst": "view",
+    "instruments":"multiple_view",
 }
 
 #
@@ -106,6 +119,7 @@ class Migrator:
         self.relation_types = relation_types
         self.TYPE_IMPORT_FILE = TYPE_IMPORT_FILE
         self.TIME_LIMIT = TIME_LIMIT
+        self.VIEW_TYPES = VIEW_TYPES
 
         # Init schema
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
@@ -155,7 +169,7 @@ class Migrator:
 
     def init_log_files(self):
 
-        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.ENV]['path'])        
+        self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.object_type][self.ENV]['path'])        
         self.error_path = self.get_log_path('error', self.ENV)
         self.warning_path = self.get_log_path('warning', self.ENV)
         self.status_path = self.get_log_path('status', self.ENV)
@@ -398,6 +412,9 @@ class Migrator:
         # TMNK_06362-k.jpg -> TMNK 06362b.jpg 
         #
 
+        if self.object_type != 'coins':
+            return image_name
+
         # verify if convertible
         if ("-v.jpg" in image_name) or ("-k.jpg" in image_name):
             pass
@@ -549,12 +566,10 @@ class Migrator:
                 if create_if_not_found:
                     object_created = self.create_object(priref, xml_record, self.FOLDER_PATHS[self.object_type])
 
+                    obj_layout = self.VIEW_TYPES[self.object_type]
                     layout = object_created.getLayout()
-                    if self.object_type == 'coins':
-                        if layout != "double_view":
-                            object_created.setLayout("double_view")
-                    else:
-                        object_created.setLayout("view")
+                    if layout != obj_layout:
+                        object_created.setLayout(obj_layout)
 
                     imported, is_new = self.import_record(priref, object_created, xml_record, False)
                     return object_created, True
@@ -591,6 +606,24 @@ class Migrator:
         transaction.commit()
         return True
 
+    def valid_priref(self, priref):
+        if self.ENV in ['dev', 'prod']:
+            if priref in TEST_EXAMPLES[self.object_type] and self.TYPE_IMPORT_FILE == 'single':
+                return True
+            elif self.TYPE_IMPORT_FILE == 'total':
+                return True
+            else:
+                return False
+        elif self.ENV in ['prod']:
+            if priref not in TEST_EXAMPLES[self.object_type]:
+                return True
+            else:
+                return False
+        else:
+            return True
+
+        return False
+
     ## START
     def start(self):
         self.init_log_files()
@@ -614,7 +647,7 @@ class Migrator:
 
                 self.updater.object_number = priref
 
-                if priref not in TEST_EXAMPLES[self.object_type]:
+                if self.valid_priref(priref):
                     if priref:
 
                         plone_object = self.find_object_by_priref(priref)
