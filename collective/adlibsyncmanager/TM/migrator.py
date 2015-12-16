@@ -42,7 +42,7 @@ from .teylers_core import CORE
 from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
-CREATE_NEW = False
+CREATE_NEW = True
 TIME_LIMIT = False
 UPLOAD_IMAGES = True
 
@@ -566,9 +566,16 @@ class Migrator:
         if self.object_type == 'books':
             if xml_record.find('Title') != None:
                 if xml_record.find('Title').find('lead_word') != None:
-                    lead_word = xml_record.find('Title').find('lead_word').text
-                    new_title = "%s %s" %(lead_word, object_title)
-                    setattr(plone_object, 'title', new_title)
+                    lead_word = ""
+                    if self.IMPORT_TYPE == "sync":
+                        if xml_record.find('Title').find('lead_word').find('value') != None:
+                            lead_word = xml_record.find('Title').find('lead_word').find('value').text
+                    else:
+                        lead_word = xml_record.find('Title').find('lead_word').text
+
+                    if lead_word:
+                        new_title = "%s %s" %(lead_word, object_title)
+                        setattr(plone_object, 'title', new_title)
 
         elif self.object_type == "fossils":
             title = self.updater.get_title_by_type(xml_record)
@@ -601,7 +608,7 @@ class Migrator:
                 self.updater.fix_all_choices(plone_object)
                 self.generate_special_fields(plone_object, xml_record)
 
-                plone_object.reindexObject() 
+                #plone_object.reindexObject() 
                 is_new = False
                 if not create_if_not_found:
                     is_new = True
@@ -678,10 +685,10 @@ class Migrator:
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 0, 0
+        curr, limit = 22000, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[:22014]:
+        for xml_record in list(self.collection)[22000:]:
             try:
                 curr += 1
 

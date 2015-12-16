@@ -83,6 +83,8 @@ class SyncMechanism:
         self.errors = 0
         self.migrator.CREATE_NEW = False
         self.migrator.CORE = CORE
+        self.migrator.updater.CORE = CORE
+        self.collection_type = ""
         
 
     ##### Utils #####
@@ -145,7 +147,7 @@ class SyncMechanism:
 
         timestamp = datetime.today().isoformat()
         self.write_log_details("%s__## Test for one minute ago"%(collection), timestamp)
-        last_hour_time = datetime.today() - timedelta(minutes = 120)
+        last_hour_time = datetime.today() - timedelta(minutes = 1)
         last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
         self.migrator.updater.xml_root = self.xmldoc
@@ -166,6 +168,7 @@ class SyncMechanism:
         #print "Build request for: %s" % (quoted_query)
         self.api_request = API_COLLECTION_REQUEST % (collection, quoted_query)
 
+        print self.api_request
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
         response = urllib2.urlopen(req)
@@ -181,41 +184,88 @@ class SyncMechanism:
 
         return records
 
+    def get_record_by_priref(self, priref, collection):
+        query = "priref='%s'"
+
+        self.xmldoc = self.build_api_request(priref, query, collection)
+        self.migrator.updater.xml_root = self.xmldoc
+        records = self.get_records(self.xmldoc)
+
+        if len(records):
+            return records[0]
+        else:
+            return None
+
     def test_api(self):
         self.object_type = ""
+        # Run tests
+        #
+        self.is_test = True
+
+        self.test_query('ChoiceMunten', "modification greater '%s'")
+        self.test_query('ChoiceGeologie', "modification greater '%s'")
+        self.test_query('ChoiceKunst', "modification greater '%s'")
+        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
+        self.test_query('ChoiceBooks', "modification greater '%s'")
+
+
+        self.creation_success = True
+        self.success = True
+        return
+
+    def update_sync_records(self, records):
+        curr = 0
+        total = len(records)
+        for record in records:
+            curr += 1
+            priref = self.migrator.get_priref(record)
+            xml_record = self.get_record_by_priref(priref, self.collection_type)
+
+            if xml_record:
+                if self.migrator.valid_priref(priref):
+                    if priref:
+                        plone_object = self.migrator.find_object_by_priref(priref)
+                        imported, is_new = self.migrator.import_record(priref, plone_object, xml_record)
+                        if imported:
+                            # Log status
+                            if is_new:
+                                self.migrator.log_status("%s__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.migrator.log_status("%s__URL: %s" %(str(imported.absolute_url())))
+                                if self.migrator.UPLOAD_IMAGES:
+                                    self.migrator.upload_images(priref, imported, xml_record)
+                            else:
+                                self.migrator.log_status("%s__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.migrator.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        else:
+                            pass
+                    else:
+                        self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+            else:
+                #TODO log error
+                pass
+
+    def run_sync(self):
+
         # Run tests
         #
         self.is_test = True
         #self.test_query('ChoiceMunten', "modification greater '%s'")
         #self.test_query('ChoiceGeologie', "modification greater '%s'")
 
-        records = self.test_query('ChoiceKunst', "modification greater '%s'")
-        curr = 0
-        total = len(records)
-        for xml_record in records:
-            curr += 1
-            priref = self.migrator.get_priref(xml_record)
-            if self.migrator.valid_priref(priref):
-                if priref:
-                    plone_object = self.migrator.find_object_by_priref(priref)
-                    imported, is_new = self.migrator.import_record(priref, plone_object, xml_record)
-                    if imported:
-                        # Log status
-                        if is_new:
-                            self.migrator.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.migrator.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                            if self.migrator.UPLOAD_IMAGES:
-                                self.migrator.upload_images(priref, imported, xml_record)
-                        else:
-                            self.migrator.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.migrator.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                    else:
-                        pass
-                else:
-                    self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+        # Munten
 
-        #self.test_query('ChoiceInstrumenten', "modification greater '%s'")
-        #self.test_query('ChoiceBooks', "modification greater '%s'")
+        # Kunst
+        records = self.test_query('ChoiceKunst', "modification greater '%s'")
+        self.collection_type = 'ChoiceKunst'
+        self.migrator.object_type = "kunst"
+        self.update_sync_records(records)
+
+        # Geologie
+
+        #
+
+        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
+        self.test_query('ChoiceBooks', "modification greater '%s'")
 
 
         self.creation_success = True

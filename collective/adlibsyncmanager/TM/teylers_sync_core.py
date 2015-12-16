@@ -36,8 +36,6 @@ CORE = {
 
     "Production-production.place":"object_production_period-place",
     "production.period":"object_production_period-period",
-    #"production.reason-term":"object_production_period-reason",
-    #"production.notes":"object_production_period-notes",
 
     "":"production_notes",
     "":"search_year",
@@ -51,10 +49,10 @@ CORE = {
     "Dimension-dimension.part":"object_dimension-part",
     "Dimension-dimension.notes":"object_dimension-notes",
 
-    "place_of_publication":"location",
+    "place_of_publication-value":"location",
     "publisher":"publisher",
-    "Taxonomy-taxonomy.scientific_name-common_name":"common_name",
-    "Taxonomy-taxonomy.scientific_name-scientific_name":"scientific_name",
+    "Taxonomy-taxonomy.common_name":"common_name",
+    "Taxonomy-taxonomy.scientific_name":"scientific_name",
     "":"chemical_composition",
     "field_coll.place":"field_coll_place",
 
@@ -64,13 +62,13 @@ CORE = {
     "Inscription-inscription.content":"object_inscription-content",
     "Inscription-inscription.type":"object_inscription-type",
 
-    "Acquisition_source-acquisition.source-name":"acquisition_source",
+    "Acquisition_source-acquisition.source":"acquisition_source",
     "credit_line":"credit_line",
     "Reproduction-reproduction.reference":"object_reproduction_reference-reference",
     "reproduction-reproduction.reference":"object_reproduction_reference-reference",
     
     "Digital_reference-digital_reference":"object_digital_reference-reference",
-    "Digital_reference-digital_reference.description":"object_digital_reference-description",
+    "Digital_reference-digital_reference.description-value":"object_digital_reference-description",
     
     "year_of_publication": "object_dating-start",
 
@@ -104,7 +102,6 @@ CORE = {
     "Label-label.source":"",
     "reproduction":"",
     "reproduction-reproduction.format":"",
-    "reproduction-reproduction.reference":"",
     "reproduction-reproduction.reference-format":"",
     "reproduction-reproduction.reference-production_date":"",
     "reproduction-reproduction.reference-reproduction_type":"",
@@ -113,14 +110,10 @@ CORE = {
     "reproduction-reproduction.type":"",
     "reproduction-reproduction.creator":"",
     "Illustrator":"",
-    "Illustrator-illustrator.name":"",
-    "Illustrator-illustrator.role":"",
     "record_access.owner":"",
     "Digital_reference":"",
     "notes":"",
     "Author":"",
-    "Author-author.name":"",
-    "Author-author.role":"",
 } 
 
 

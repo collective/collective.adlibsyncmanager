@@ -1124,9 +1124,15 @@ class Updater:
 
         elif self.portal_type == "Object":
             if self.is_tm:
-                if xml_record.find("Title") != None:
-                    if xml_record.find("Title").find('title') != None:
-                        title = xml_record.find("Title").find('title').text
+                if self.IMPORT_TYPE == 'sync':
+                    if xml_record.find("Title") != None:
+                        if xml_record.find("Title").find('title') != None:
+                            if xml_record.find("Title").find('title').find('value') != None:
+                                title = xml_record.find("Title").find('title').find('value').text
+                else:
+                    if xml_record.find("Title") != None:
+                        if xml_record.find("Title").find('title') != None:
+                            title = xml_record.find("Title").find('title').text
             else:
                 if xml_record.find("title") != None:
                     title = xml_record.find("title").text
