@@ -11,13 +11,13 @@ CORE = {
     "Author-author.name-name": "object_author-creator",
     "Author-author.role-term": "object_author-role",
 
-    "Production-creator-name":"creator-creator",
+    "Production-creator":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
-    "Production-creator.role-term":"creator-role",
-    "Production-creator-birth.date-start":"creator-date_of_birth",
-    "Production-creator-death.date-start":"creator-date_of_death",
+    "Production-creator.role":"creator-role",
+    "Production-creator.date_of_birth":"creator-date_of_birth",
+    "Production-creator.date_of_death":"creator-date_of_death",
     
-    "Title-title":"title",
+    "Title-title-value":"title",
 
     "administration_name":"administration_name",
     "":"author",
@@ -25,7 +25,7 @@ CORE = {
     "":"object_category",
     "":"book_title",
     "":"translated_title",
-    "Object_name-object_name-term":"object_type",
+    "Object_name-object_name":"object_type",
 
     "Production_date-production.date.end":"object_dating-end",
     "Production_date-production.date.start":"object_dating-start",
@@ -34,8 +34,8 @@ CORE = {
 
     "":"fossil_dating",
 
-    "Production-production.place-term":"object_production_period-place",
-    "production.period-term":"object_production_period-period",
+    "Production-production.place":"object_production_period-place",
+    "production.period":"object_production_period-period",
     #"production.reason-term":"object_production_period-reason",
     #"production.notes":"object_production_period-notes",
 
@@ -45,8 +45,8 @@ CORE = {
     "material_type-term":"object_material-material",
     "Technique-technique-term":"technique",
 
-    "Dimension-dimension.type-term":"object_dimension-type",
-    "Dimension-dimension.unit-term":"object_dimension-unit",
+    "Dimension-dimension.type":"object_dimension-type",
+    "Dimension-dimension.unit":"object_dimension-unit",
     "Dimension-dimension.value":"object_dimension-value",
     "Dimension-dimension.part":"object_dimension-part",
     "Dimension-dimension.notes":"object_dimension-notes",

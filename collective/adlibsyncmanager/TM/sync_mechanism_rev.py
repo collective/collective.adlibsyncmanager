@@ -79,6 +79,7 @@ class SyncMechanism:
         self.created = 0
         self.skipped = 0
         self.errors = 0
+        self.migrator.CREATE_NEW = False
         
 
     ##### Utils #####
@@ -125,30 +126,33 @@ class SyncMechanism:
 
         self.write_log_details("%s__TEST MODIFIED RECORDS" %(collection))
 
-        self.write_log_details("%s__## Test for long period"%(collection), timestamp)
-        self.date = '2015-12-09'
-        self.xmldoc = self.build_api_request(self.date, search_query, collection)
-        records = self.get_records(self.xmldoc)
-        self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), self.date))
-
-        timestamp = datetime.today().isoformat()
-        self.write_log_details("%s__## Test for last hour"%(collection), timestamp)
-        last_hour_time = datetime.today() - timedelta(hours = 1)
-        last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
-        self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
-        records = self.get_records(self.xmldoc)
-        self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), last_hour_datetime))
+        """self.write_log_details("%s__## Test for long period"%(collection), timestamp)
+                                self.date = '2015-12-09'
+                                self.xmldoc = self.build_api_request(self.date, search_query, collection)
+                                records = self.get_records(self.xmldoc)
+                                self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), self.date))
+                        
+                                timestamp = datetime.today().isoformat()
+                                self.write_log_details("%s__## Test for last hour"%(collection), timestamp)
+                                last_hour_time = datetime.today() - timedelta(hours = 1)
+                                last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
+                                self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
+                                records = self.get_records(self.xmldoc)
+                                self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), last_hour_datetime))"""
 
         timestamp = datetime.today().isoformat()
         self.write_log_details("%s__## Test for one minute ago"%(collection), timestamp)
-        last_hour_time = datetime.today() - timedelta(minutes = 1)
+        last_hour_time = datetime.today() - timedelta(minutes = 30)
         last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
+        self.migrator.updater.xml_root = self.xmldoc
         records = self.get_records(self.xmldoc)
         self.records_modified = len(records)
         self.write_log_details("%s__%s records modified since %s" % (collection, str(self.records_modified), last_hour_datetime), timestamp)
 
         self.write_log_details("%s__TEST MODIFIED RECORDS FINISHED ##" %(collection))
+
+        return records
 
     def build_api_request(self, request_date, search_query, collection):
         search = search_query
@@ -179,11 +183,36 @@ class SyncMechanism:
         # Run tests
         #
         self.is_test = True
-        self.test_query('ChoiceMunten', "modification greater '%s'")
-        self.test_query('ChoiceGeologie', "modification greater '%s'")
-        self.test_query('ChoiceKunst', "modification greater '%s'")
-        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
-        self.test_query('ChoiceBooks', "modification greater '%s'")
+        #self.test_query('ChoiceMunten', "modification greater '%s'")
+        #self.test_query('ChoiceGeologie', "modification greater '%s'")
+
+        records = self.test_query('ChoiceKunst', "modification greater '%s'")
+        curr = 0
+        total = len(records)
+        for xml_record in records:
+            curr += 1
+            priref = self.migrator.get_priref(xml_record)
+            if self.migrator.valid_priref(priref):
+                if priref:
+                    plone_object = self.migrator.find_object_by_priref(priref)
+                    imported, is_new = self.migrator.import_record(priref, plone_object, xml_record)
+                    if imported:
+                        # Log status
+                        if is_new:
+                            self.migrator.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.migrator.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
+                            if self.migrator.UPLOAD_IMAGES:
+                                self.migrator.upload_images(priref, imported, xml_record)
+                        else:
+                            self.migrator.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.migrator.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                    else:
+                        pass
+                else:
+                    self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+
+        #self.test_query('ChoiceInstrumenten', "modification greater '%s'")
+        #self.test_query('ChoiceBooks', "modification greater '%s'")
 
 
         self.creation_success = True

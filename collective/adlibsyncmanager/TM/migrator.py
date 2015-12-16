@@ -42,12 +42,13 @@ from .teylers_core import CORE
 from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
-CREATE_NEW = True
+CREATE_NEW = False
 TIME_LIMIT = False
 UPLOAD_IMAGES = True
 
+#if book change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "fossils"
+OBJECT_TYPE = "fossils" 
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -94,7 +95,7 @@ VIEW_TYPES = {
 #
 # Environment
 #
-ENV = "prod"
+ENV = "dev"
 DEBUG = False
 RUNNING = True
 
@@ -389,7 +390,7 @@ class Migrator:
         container = self.updater.api.get_folder(folder_path)
 
         title = self.updater.get_title_by_type(xml_record)
-        object_number = self.updater.get_required_field_by_type(xml_record, 'book')
+        object_number = self.updater.get_required_field_by_type(xml_record)
         if not title and object_number:
             #fallback object number
             title = object_number
@@ -588,18 +589,21 @@ class Migrator:
                     is_new = True
                 return True, is_new
             else:
-                if create_if_not_found:
-                    object_created = self.create_object(priref, xml_record, self.FOLDER_PATHS[self.object_type])
+                if self.CREATE_NEW:
+                    if create_if_not_found:
+                        object_created = self.create_object(priref, xml_record, self.FOLDER_PATHS[self.object_type])
 
-                    obj_layout = self.VIEW_TYPES[self.object_type]
-                    layout = object_created.getLayout()
-                    if layout != obj_layout:
-                        object_created.setLayout(obj_layout)
+                        obj_layout = self.VIEW_TYPES[self.object_type]
+                        layout = object_created.getLayout()
+                        if layout != obj_layout:
+                            object_created.setLayout(obj_layout)
 
-                    imported, is_new = self.import_record(priref, object_created, xml_record, False)
-                    return object_created, True
+                        imported, is_new = self.import_record(priref, object_created, xml_record, False)
+                        return object_created, True
+                    else:
+                        self.error("%s__ __Object is not found on Plone with priref."%(str(priref))) 
+                        return False, False
                 else:
-                    self.error("%s__ __Object is not found on Plone with priref."%(str(priref))) 
                     return False, False
 
     def time_limit_check(self):
@@ -659,7 +663,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:22014]:
             try:
                 curr += 1
 
@@ -677,7 +681,7 @@ class Migrator:
                 if self.valid_priref(priref):
                     if priref:
                         plone_object = self.find_object_by_priref(priref)
-                        imported, is_new = self.import_record(priref, plone_object, xml_record, self.CREATE_NEW)
+                        imported, is_new = self.import_record(priref, plone_object, xml_record)
                         if imported:
                             # Log status
                             if is_new:
