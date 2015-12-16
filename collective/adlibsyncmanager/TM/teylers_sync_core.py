@@ -8,8 +8,8 @@ CORE = {
     "Label-label.text":"text",
     "Content_person-content.person.name-name":"creator-creator",
 
-    "Author-author.name-name": "object_author-creator",
-    "Author-author.role-term": "object_author-role",
+    "Author-author.name": "object_author-creator",
+    "Author-author.role": "object_author-role",
 
     "Production-creator":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
@@ -41,9 +41,9 @@ CORE = {
 
     "":"production_notes",
     "":"search_year",
-    "Material-material-term":"object_material-material",
-    "material_type-term":"object_material-material",
-    "Technique-technique-term":"technique",
+    "Material-material":"object_material-material",
+    "material_type":"object_material-material",
+    "Technique-technique":"technique",
 
     "Dimension-dimension.type":"object_dimension-type",
     "Dimension-dimension.unit":"object_dimension-unit",
@@ -52,23 +52,22 @@ CORE = {
     "Dimension-dimension.notes":"object_dimension-notes",
 
     "place_of_publication":"location",
-    "publisher-name":"publisher",
+    "publisher":"publisher",
     "Taxonomy-taxonomy.scientific_name-common_name":"common_name",
     "Taxonomy-taxonomy.scientific_name-scientific_name":"scientific_name",
     "":"chemical_composition",
-    "field_coll.place-term":"field_coll_place",
+    "field_coll.place":"field_coll_place",
 
     "object_number":"object_number",
-    "":"object_number",
     "Description-description":"object_descriptions-description",
 
     "Inscription-inscription.content":"object_inscription-content",
-    "Inscription-inscription.type-term":"object_inscription-type",
+    "Inscription-inscription.type":"object_inscription-type",
 
     "Acquisition_source-acquisition.source-name":"acquisition_source",
     "credit_line":"credit_line",
-    "Reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
-    "reproduction-reproduction.reference-reference_number":"object_reproduction_reference-reference",
+    "Reproduction-reproduction.reference":"object_reproduction_reference-reference",
+    "reproduction-reproduction.reference":"object_reproduction_reference-reference",
     
     "Digital_reference-digital_reference":"object_digital_reference-reference",
     "Digital_reference-digital_reference.description":"object_digital_reference-description",

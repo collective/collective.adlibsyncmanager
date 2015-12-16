@@ -390,7 +390,7 @@ class Migrator:
         container = self.updater.api.get_folder(folder_path)
 
         title = self.updater.get_title_by_type(xml_record)
-        object_number = self.updater.get_required_field_by_type(xml_record)
+        object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
         if not title and object_number:
             #fallback object number
             title = object_number
@@ -562,6 +562,7 @@ class Migrator:
     def generate_special_fields(self, plone_object, xml_record):
         object_title = getattr(plone_object, 'title', '')
         
+
         if self.object_type == 'books':
             if xml_record.find('Title') != None:
                 if xml_record.find('Title').find('lead_word') != None:
@@ -569,6 +570,23 @@ class Migrator:
                     new_title = "%s %s" %(lead_word, object_title)
                     setattr(plone_object, 'title', new_title)
 
+        elif self.object_type == "fossils":
+            title = self.updater.get_title_by_type(xml_record)
+            object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
+            if not title and object_number:
+                #fallback object number
+                title = object_number
+            elif not title and not object_number:
+                #fallback priref
+                title = priref
+            elif not title:
+                title = ""
+            else:
+                title = title
+
+            setattr(plone_object, 'title', title)
+
+        object_title = getattr(plone_object, 'title', '')
         setattr(plone_object, 'object_title', object_title)
         description = self.create_description_field(plone_object)
         setattr(plone_object, 'description', description)

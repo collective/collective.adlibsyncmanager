@@ -59,7 +59,7 @@ CORE = {
     "field_coll.place-term":"field_coll_place",
 
     "object_number":"object_number",
-    "":"object_number",
+    #"shelf_mark":"object_number"
     "Description-description":"object_descriptions-description",
 
     "Inscription-inscription.content":"object_inscription-content",

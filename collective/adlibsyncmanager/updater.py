@@ -1080,7 +1080,7 @@ class Updater:
                 title = xml_record.find("scientific_name").text
 
         elif self.portal_type == "Object":
-            if obj_type == 'book':
+            if obj_type == 'books':
                 if xml_record.find("shelf_mark") != None:
                     title = xml_record.find("shelf_mark").text
 

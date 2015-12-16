@@ -17,6 +17,8 @@ import re
 import sys
 import smtplib
 
+from .teylers_sync_core import CORE
+
 # SET ORGANIZATION
 ORGANIZATION = "teylers"
 
@@ -80,6 +82,7 @@ class SyncMechanism:
         self.skipped = 0
         self.errors = 0
         self.migrator.CREATE_NEW = False
+        self.migrator.CORE = CORE
         
 
     ##### Utils #####
@@ -142,7 +145,7 @@ class SyncMechanism:
 
         timestamp = datetime.today().isoformat()
         self.write_log_details("%s__## Test for one minute ago"%(collection), timestamp)
-        last_hour_time = datetime.today() - timedelta(minutes = 30)
+        last_hour_time = datetime.today() - timedelta(minutes = 120)
         last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
         self.migrator.updater.xml_root = self.xmldoc
