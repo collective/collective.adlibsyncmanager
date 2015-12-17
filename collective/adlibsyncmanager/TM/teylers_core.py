@@ -22,7 +22,7 @@ CORE = {
     "administration_name":"administration_name",
     "":"author",
     "Illustrator-illustrator.name-name":"illustrator",
-    "":"object_category",
+    "object_category":"object_category",
     "":"book_title",
     "":"translated_title",
     "Object_name-object_name-term":"object_type",

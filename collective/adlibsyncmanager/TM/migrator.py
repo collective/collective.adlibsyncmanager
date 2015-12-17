@@ -48,7 +48,7 @@ UPLOAD_IMAGES = True
 
 #if book change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "fossils" 
+OBJECT_TYPE = "kunst" 
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -174,6 +174,21 @@ class Migrator:
         self.updater.CORE = core
         return True
 
+    def log_created(self, text, use_timestamp=True):
+        if self.IMPORT_TYPE == "sync":
+            if text:
+                timestamp = datetime.datetime.today().isoformat()
+                text = text.encode('ascii', 'ignore')
+                if not use_timestamp:
+                    final_log = "%s" %(str(text))
+                else:
+                    final_log = "[%s]__%s" %(str(timestamp), str(text))
+                
+                list_log = final_log.split('__')
+                self.created_wr.writerow(list_log)
+            else:
+                return True
+
     def init_log_files(self):
 
         self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.object_type][self.ENV]['path'])        
@@ -186,10 +201,10 @@ class Migrator:
         if self.IMPORT_TYPE == 'sync':
             read_mode = "a"
 
-        self.error_log_file = open(self.error_path, "a")
-        self.warning_log_file = open(self.warning_path, "a")
-        self.status_log_file = open(self.status_path, "a")
-        self.images_log_file = open(self.log_images_path, "a")
+        self.error_log_file = open(self.error_path, read_mode)
+        self.warning_log_file = open(self.warning_path, read_mode)
+        self.status_log_file = open(self.status_path, read_mode)
+        self.images_log_file = open(self.log_images_path, read_mode)
 
         self.error_wr = csv.writer(self.error_log_file, quoting=csv.QUOTE_ALL)
         self.warning_wr = csv.writer(self.warning_log_file, quoting=csv.QUOTE_ALL)
@@ -203,6 +218,11 @@ class Migrator:
         self.updater.error_wr = self.error_wr
         self.updater.warning_wr = self.warning_wr
         self.updater.status_wr = self.status_wr
+
+        if self.IMPORT_TYPE == "sync":
+            self.log_created_path = self.get_log_path('created', self.ENV)
+            self.created_log_file = open(self.log_created_path, read_mode)
+            self.created_wr = csv.writer(self.created_log_file, quoting=csv.QUOTE_ALL)
 
     ## GETS
     def get_priref(self, xml_record):
@@ -608,7 +628,7 @@ class Migrator:
                 self.updater.fix_all_choices(plone_object)
                 self.generate_special_fields(plone_object, xml_record)
 
-                #plone_object.reindexObject() 
+                plone_object.reindexObject() 
                 is_new = False
                 if not create_if_not_found:
                     is_new = True
@@ -685,10 +705,10 @@ class Migrator:
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 22000, 0
+        curr, limit = 0, 0
         total = len(list(self.collection))
 
-        for xml_record in list(self.collection)[22000:]:
+        for xml_record in list(self.collection):
             try:
                 curr += 1
 

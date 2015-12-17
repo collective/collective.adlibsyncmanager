@@ -30,6 +30,14 @@ API_REQUEST_URL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ash
 API_REQUEST_URL_BOOKS = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicebooks&search=(shelf_mark='%s')&xmltype=structured"
 
 
+COLLECTION_OBJ_TYPE = {
+    'ChoiceMunten': "coins",
+    'ChoiceGeologie': "fossils",
+    'ChoiceKunst':"kunst",
+    'ChoiceInstrumenten':"instruments",
+    'ChoiceBooks':"books"
+}
+
 COLLECTION_PATH = {
     'ChoiceMunten':{
         'dev':"",
@@ -57,7 +65,7 @@ class SyncMechanism:
     def __init__(self, portal, teylers_migrator, date, creation_date, _type, folder, log_path):
         self.METHODS = {
             'test': self.test_api,
-            'sync_date': self.sync_date,
+            'sync_date': self.run_sync,
         }
 
         self.migrator = teylers_migrator
@@ -84,6 +92,7 @@ class SyncMechanism:
         self.migrator.CREATE_NEW = False
         self.migrator.CORE = CORE
         self.migrator.updater.CORE = CORE
+        self.migrator.UPLOAD_IMAGES = False
         self.collection_type = ""
         
 
@@ -147,7 +156,7 @@ class SyncMechanism:
 
         timestamp = datetime.today().isoformat()
         self.write_log_details("%s__## Test for one minute ago"%(collection), timestamp)
-        last_hour_time = datetime.today() - timedelta(minutes = 1)
+        last_hour_time = datetime.today() - timedelta(minutes = 120)
         last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
         self.migrator.updater.xml_root = self.xmldoc
@@ -159,6 +168,8 @@ class SyncMechanism:
 
         return records
 
+    
+
     def build_api_request(self, request_date, search_query, collection):
         search = search_query
         search = search % (request_date)
@@ -168,7 +179,6 @@ class SyncMechanism:
         #print "Build request for: %s" % (quoted_query)
         self.api_request = API_COLLECTION_REQUEST % (collection, quoted_query)
 
-        print self.api_request
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
         response = urllib2.urlopen(req)
@@ -202,11 +212,11 @@ class SyncMechanism:
         #
         self.is_test = True
 
-        self.test_query('ChoiceMunten', "modification greater '%s'")
-        self.test_query('ChoiceGeologie', "modification greater '%s'")
-        self.test_query('ChoiceKunst', "modification greater '%s'")
-        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
-        self.test_query('ChoiceBooks', "modification greater '%s'")
+        #self.test_query('ChoiceMunten', "modification greater '%s'")
+        #self.test_query('ChoiceGeologie', "modification greater '%s'")
+        self.test_query('ChoiceKunst', "creation greater '%s'")
+        #self.test_query('ChoiceInstrumenten', "modification greater '%s'")
+        #self.test_query('ChoiceBooks', "modification greater '%s'")
 
 
         self.creation_success = True
@@ -229,13 +239,17 @@ class SyncMechanism:
                         if imported:
                             # Log status
                             if is_new:
-                                self.migrator.log_status("%s__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.migrator.log_status("%s__URL: %s" %(str(imported.absolute_url())))
+                                self.migrator.log_status("%s__Created [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
+                                self.migrator.log_status("%s__URL: %s" %(self.collection_type, str(imported.absolute_url())))
+                                if self.migrator.IMPORT_TYPE == "sync":
+                                    self.migrator.log_created("%s__Created [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
+                                    self.migrator.log_created("%s__URL: %s" %(self.collection_type, str(imported.absolute_url())))
+
                                 if self.migrator.UPLOAD_IMAGES:
                                     self.migrator.upload_images(priref, imported, xml_record)
                             else:
-                                self.migrator.log_status("%s__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.migrator.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                                self.migrator.log_status("%s__Updated [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
+                                self.migrator.log_status("%s__URL: %s" %(self.collection_type, str(plone_object.absolute_url())))
                         else:
                             pass
                     else:
@@ -244,30 +258,52 @@ class SyncMechanism:
                 #TODO log error
                 pass
 
-    def run_sync(self):
+    def sync_query_records(self, collection, query):
 
+        self.write_log_details("%s__SYNC RECORDS" %(collection))
+        search_query = query
+
+        self.xmldoc = self.build_api_request(self.date, search_query, collection)
+        self.migrator.updater.xml_root = self.xmldoc
+        records = self.get_records(self.xmldoc)
+        records_modified = len(records)
+
+        if self.migrator.CREATE_NEW:
+            self.write_log_details("%s__%s records created since %s" % (collection, str(records_modified), self.date))
+        else:
+            self.write_log_details("%s__%s records modified since %s" % (collection, str(records_modified), self.date))
+
+        return records
+
+
+    def run_sync(self):
+        #
         # Run tests
         #
-        self.is_test = True
-        #self.test_query('ChoiceMunten', "modification greater '%s'")
-        #self.test_query('ChoiceGeologie', "modification greater '%s'")
+        
+        collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
+        collections = ['ChoiceKunst']
 
-        # Munten
+        last_hour_time = datetime.today() - timedelta(minutes = 240)
+        last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
+        self.date = last_hour_datetime
 
-        # Kunst
-        records = self.test_query('ChoiceKunst', "modification greater '%s'")
-        self.collection_type = 'ChoiceKunst'
-        self.migrator.object_type = "kunst"
-        self.update_sync_records(records)
+        # Created
+        self.migrator.CREATE_NEW = True
+        for collection in collections:
+            self.collection_type = collection
+            records = self.sync_query_records(self.collection_type, "creation greater '%s'")
+            self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+            self.update_sync_records(records)
 
-        # Geologie
-
-        #
-
-        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
-        self.test_query('ChoiceBooks', "modification greater '%s'")
-
-
+        # Modified
+        self.migrator.CREATE_NEW = False
+        for collection in collections:
+            self.collection_type = collection
+            records = self.sync_query_records(self.collection_type, "modification greater '%s'")
+            self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+            self.update_sync_records(records)
+        
         self.creation_success = True
         self.success = True
         return
@@ -344,6 +380,7 @@ class SyncMechanism:
                 
     def start_sync(self):
         self.migrator.init_log_files()
+        self.type = "sync_date"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
         else:
