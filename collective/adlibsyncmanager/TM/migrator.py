@@ -261,7 +261,10 @@ class Migrator:
                 brain = brains[0]
                 obj = brain.getObject()
                 if getattr(obj, 'priref', None) == priref:
-                    return obj
+                    if 'kunst' in obj.absolute_url():
+                        return obj
+                    else:
+                        return None
                 else:
                     return None
             else:
@@ -707,13 +710,12 @@ class Migrator:
 
         curr, limit = 0, 0
         total = len(list(self.collection))
+        transaction.begin()
 
         for xml_record in list(self.collection):
             try:
                 curr += 1
 
-                transaction.begin()
-                
                 priref = self.get_priref(xml_record)
                 time_limit_continue = self.time_limit_check()
 
@@ -742,7 +744,8 @@ class Migrator:
                     else:
                         self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
-                transaction.commit()
+                if curr % 5000 == 0:
+                    transaction.get().commit()
 
             except Exception, e:
                 transaction.abort()
