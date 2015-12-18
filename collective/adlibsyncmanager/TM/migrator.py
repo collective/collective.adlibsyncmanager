@@ -33,7 +33,9 @@ from plone.app.textfield.value import RichTextValue
 from plone.event.interfaces import IEventAccessor
 from z3c.relationfield import RelationValue
 import glob
+from plone.multilingual.interfaces import ITranslationManager
 
+from collective.leadmedia.utils import autoCropImage
 
 from .teylers_contenttypes_path import CONTENT_TYPES_PATH
 from .teylers_contenttypes_path import IMAGES_HD_PATH
@@ -48,7 +50,7 @@ UPLOAD_IMAGES = True
 
 #if book change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "kunst" 
+OBJECT_TYPE = "coins" 
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -88,7 +90,7 @@ VIEW_TYPES = {
     "coins": "double_view",
     "fossils": "view",
     "kunst": "view",
-    "instruments":"view",
+    "instruments":"instruments_view",
     "books":"view"
 }
 
@@ -189,6 +191,21 @@ class Migrator:
             else:
                 return True
 
+    def log_deleted(self, text, use_timestamp=True):
+        if self.IMPORT_TYPE == "sync":
+            if text:
+                timestamp = datetime.datetime.today().isoformat()
+                text = text.encode('ascii', 'ignore')
+                if not use_timestamp:
+                    final_log = "%s" %(str(text))
+                else:
+                    final_log = "[%s]__%s" %(str(timestamp), str(text))
+                
+                list_log = final_log.split('__')
+                self.deleted_wr.writerow(list_log)
+            else:
+                return True
+
     def init_log_files(self):
 
         self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.object_type][self.ENV]['path'])        
@@ -223,6 +240,11 @@ class Migrator:
             self.log_created_path = self.get_log_path('created', self.ENV)
             self.created_log_file = open(self.log_created_path, read_mode)
             self.created_wr = csv.writer(self.created_log_file, quoting=csv.QUOTE_ALL)
+            
+            self.log_deleted_path = self.get_log_path('deleted', self.ENV)
+            self.deleted_log_file = open(self.log_deleted_path, read_mode)
+            self.deleted_wr = csv.writer(self.deleted_log_file, quoting=csv.QUOTE_ALL)
+
 
     ## GETS
     def get_priref(self, xml_record):
@@ -255,13 +277,14 @@ class Migrator:
 
     ## FINDS
     def find_object_by_priref(self, priref):
+        #return api.content.get(path='/nl/collectie/instrumenten-new/fk-0014-projectile-trolley')
         if priref:
-            brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object")
+            brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object") 
             if brains:
                 brain = brains[0]
                 obj = brain.getObject()
                 if getattr(obj, 'priref', None) == priref:
-                    if 'kunst' in obj.absolute_url():
+                    if self.FOLDER_PATHS[self.object_type] in obj.absolute_url():
                         return obj
                     else:
                         return None
@@ -505,34 +528,47 @@ class Migrator:
                 return image
         return None
 
-    def add_image(self, image_name, path, priref, plone_object):
+    def add_image(self, image_name, path, priref, plone_object, crop=False):
         if path:
             if 'slideshow' in plone_object:
                 container = plone_object['slideshow']
                 dirty_id = image_name
                 normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
-                try:
-                    image_file = open(path, "r")
-                    image_data = image_file.read()
+
+                if normalized_id not in container:
                     try:
-                        img = NamedBlobImage(
-                            data=image_data
-                        )
-                        image_file.close()
-                        container.invokeFactory(type_name="Image", id=normalized_id, title=image_name, image=img)
-                        self.log_status("! STATUS !__Created image [%s] for priref: %s" %(image_name, priref))
+                        image_file = open(path, "r")
+                        image_data = image_file.read()
+                        try:
+                            img = NamedBlobImage(
+                                data=image_data
+                            )
+                            image_file.close()
+                            container.invokeFactory(type_name="Image", id=normalized_id, title=image_name, image=img)
+
+                            if crop:
+                                img_obj = container[normalized_id]
+                                autoCropImage(img_obj)
+
+                            self.log_status("! STATUS !__Created image [%s] for priref: %s" %(image_name, priref))
+                        except:
+                            self.log_images("%s__%s__%s"%(priref, image_name, "Error while creating Image content type."))
+                            pass
                     except:
-                        self.log_images("%s__%s__%s"%(priref, image_name, "Error while creating Image content type."))
+                        self.log_images("%s__%s__%s"%(priref, path, "Cannot open image file from HD."))
                         pass
-                except:
-                    self.log_images("%s__%s__%s"%(priref, path, "Cannot open image file from HD."))
-                    pass
+                else:
+                    self.log_images("%s__%s__%s"%(priref, path, "Image already exists in website."))
             else:
-                self.log_images("%s__%s__%s"%(priref, image_name, "Cannot upload image to HD. Slideshow folder is not found."))
+                self.log_images("%s__%s__%s"%(priref, image_name, "Cannot create image in Object. Slideshow folder is not found."))
         else:
             self.log_images("%s__%s__%s"%(priref, image_name, "Cannot find image in HD."))
 
     def upload_images(self, priref, plone_object, xml_record):
+
+        if self.object_type == "instruments":
+            self.upload_multiple_images(priref, plone_object, xml_record)
+            return True
         
         if xml_record.findall('Reproduction') != None:
             for reproduction in xml_record.findall('Reproduction'):
@@ -553,6 +589,31 @@ class Migrator:
                             self.log_images("%s__%s__%s"%(priref, '', "Cannot find image reference in XML."))
                     else:
                         self.log_images("%s__%s__%s"%(priref, '', "Cannot find image reference in XML."))
+
+        return True
+
+
+    def upload_multiple_images(self, priref, plone_object, xml_record):
+
+        object_number = getattr(plone_object, 'object_number', None)
+
+        path = "%s%s/*.jpg" % (self.images_hd_path[self.object_type][self.ENV]['path'], object_number)
+
+        list_images = glob.glob(path)
+
+        if list_images:
+            for index, img in enumerate(list_images):
+                crop = False
+                if index == 0:
+                    crop = True
+                img_split = img.split("/")
+                image_name = img_split[-1]
+                self.add_image(image_name, img, priref, plone_object, crop)
+        else:
+            self.log_images("%s__%s__%s"%(priref, path.replace('*.jpg', ''), "Cannot find folder in HD."))
+
+        #for img in list_images:
+        #    print img
 
         return True
 
@@ -703,8 +764,152 @@ class Migrator:
 
         return False
 
+    def generate_special_translated_fields(self, obj, xml_record):
+
+        # Check body text - label.text
+        for field in xml_record.findall('label.text'):
+            parent = field.getparent()
+            if parent.find('label.type') != None:
+                if parent.find('label.type').find('text') != None:
+                    if parent.find('label.type').find('text').text in ['website text ENG']:
+                        text = field.text
+                        text = text.replace('\n','<br />')
+                        value = RichTextValue(text, 'text/html', 'text/html')
+                        setattr(obj, 'text', value)
+
+        # Check title.translation
+        if xml_record.find('title.translation') != None:
+            translation = xml_record.find('title.translation').text
+            if translation:
+                setattr(obj, 'title', translation)
+                setattr(obj, 'object_title', translation)
+
+                obj.reindexObject(idxs=['Title'])
+
+        return True
+
+    def add_images_translation(self, container):
+        curr = 0
+        for _id in container:
+            curr += 1
+            obj = container[_id]
+            if obj.portal_type == 'Image':
+                if not ITranslationManager(obj).has_translation('en'):
+                    ITranslationManager(obj).add_translation('en')
+                    img_translated = ITranslationManager(obj).get_translation('en')
+                    setattr(img_translated, 'image', getattr(obj, 'image', None))
+                    if curr == 1:
+                        addCropToTranslation(obj, img_translated)
+                else:
+                    # has translation - do not translate
+                    pass
+            else:
+                if not ITranslationManager(obj).has_translation('en'):
+                    ITranslationManager(obj).add_translation('en')
+                    obj_translated = ITranslationManager(obj).get_translation('en')
+                    setattr(obj_translated, 'title', getattr(obj, 'title', None))
+                else:
+                    # has translation - do not translate
+                    pass
+
+        return True
+
+    def generate_contents_translation(self, obj):
+
+        # get slideshow
+        if 'slideshow' in obj:
+            slideshow = obj['slideshow']
+
+            if not ITranslationManager(slideshow).has_translation('en'):
+                ITranslationManager(slideshow).add_translation('en')
+                slideshow_trans = ITranslationManager(slideshow).get_translation('en')
+                setattr(slideshow_trans, 'title', getattr(slideshow, 'title', ''))
+                slideshow_trans.portal_workflow.doActionFor(slideshow_trans, "publish", comment="Slideshow published")
+                self.add_images_translation(slideshow)
+
+            else:
+                self.add_images_translation(slideshow)
+                
+        else:
+            # Do not translate contents
+            pass
+
+        return True
+
+    def copy_original_to_translated(self, plone_object, translated_object):
+        original_fields = {}
+        original_fields['title'] = getattr(plone_object, 'title', '')
+        original_fields['description'] = getattr(plone_object, 'description', '')
+
+        for name, field in self.fields:
+            original_f = getattr(plone_object, name, '')
+            if original_f:
+                original_fields[name] = original_f
+
+        for key, value in original_fields.iteritems():
+            setattr(translated_object, key, value)
+
+        layout = plone_object.getLayout()
+        translated_object.setLayout(layout)
+
+        return True
+
+    def create_translations(self):
+        self.init_log_files()
+        self.get_collection()
+
+        curr, limit = 0, 0
+        total = len(list(self.collection))
+        
+        for xml_record in list(self.collection):
+            try:
+                transaction.begin()
+                curr += 1
+                priref = self.get_priref(xml_record)
+                if priref:
+                    # Create translation
+                    plone_object = self.find_object_by_priref(priref)
+                    if plone_object:
+                        # Check translation
+                        if not ITranslationManager(plone_object).has_translation('en'):
+                            try:
+                                ITranslationManager(plone_object).add_translation('en')
+                                translated_object = ITranslationManager(plone_object).get_translation('en')
+
+                                # Copy fields from original object
+                                self.copy_original_to_translated(plone_object, translated_object)
+                                self.generate_contents_translation(plone_object)
+                                self.generate_special_translated_fields(translated_object, xml_record)
+                                translated_object.reindexObject()
+
+                                self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
+                            except Exception, e:
+                                self.error("%s__ __Translation for object failed - %s"%(str(priref), str(e))) 
+                                raise
+                        else:
+                            self.log_status("! STATUS !__Translation for object already created. %s"%(str(priref))) 
+                    else:
+                        self.error("%s__ __Object is not found on Plone with priref."%(str(priref))) 
+                else:
+                    self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                transaction.commit()
+            except Exception, e:
+                transaction.abort()
+                self.error(" __ __An unknown exception ocurred. %s" %(str(e)))
+                self.error_log_file.close()
+                self.warning_log_file.close()
+                self.status_log_file.close()
+                self.images_log_file.close()
+                raise
+
+        return True
+
     ## START
     def start(self):
+        self.create_translations()
+        return True
+
         self.init_log_files()
         self.get_collection()
 
@@ -712,7 +917,7 @@ class Migrator:
         total = len(list(self.collection))
         transaction.begin()
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 curr += 1
 
@@ -744,7 +949,7 @@ class Migrator:
                     else:
                         self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
-                if curr % 5000 == 0:
+                if curr % 100 == 0:
                     transaction.get().commit()
 
             except Exception, e:

@@ -24,6 +24,8 @@ ORGANIZATION = "teylers"
 
 VALID_TYPES = ['test', 'sync_date']
 API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=%s&search=%s&limit=0"
+API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
+
 API_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicecollect&search=%s&limit=0"
 API_REQUEST_BOOKS = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicebooks&search=%s"
 API_REQUEST_URL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=choicecollect&search=(object_number='%s')&xmltype=structured&limit=0"
@@ -206,6 +208,31 @@ class SyncMechanism:
         else:
             return None
 
+    def test_deleted_records(self, collection, date):
+
+        last_hour_time = datetime.today() - timedelta(minutes = 360)
+        last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
+
+        quoted_query = urllib.quote(last_hour_datetime)
+
+        api_request = API_DELETED_REQUEST %(collection, quoted_query)
+        req = urllib2.Request(api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+
+        records = self.get_records(doc)
+
+        for record in records:
+            priref = record.find('priref').text
+
+            obj = self.migration.find_object_by_priref(priref)
+
+            print obj
+
+        return True
+
+
     def test_api(self):
         self.object_type = ""
         # Run tests
@@ -214,10 +241,13 @@ class SyncMechanism:
 
         #self.test_query('ChoiceMunten', "modification greater '%s'")
         #self.test_query('ChoiceGeologie', "modification greater '%s'")
-        self.test_query('ChoiceKunst', "creation greater '%s'")
+        #self.test_query('ChoiceKunst', "creation greater '%s'")
         #self.test_query('ChoiceInstrumenten', "modification greater '%s'")
         #self.test_query('ChoiceBooks', "modification greater '%s'")
 
+
+
+        self.test_deleted_records('ChoiceCollect', self.date)
 
         self.creation_success = True
         self.success = True
@@ -372,15 +402,13 @@ class SyncMechanism:
         # Sync for modified   #
         # # # # # # # # # # # #
         
-
-
         self.success = True
         self.creation_success = True
         return
                 
     def start_sync(self):
         self.migrator.init_log_files()
-        self.type = "sync_date"
+        self.type = "test"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
         else:

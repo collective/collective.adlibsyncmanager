@@ -81,10 +81,10 @@ IMAGES_HD_PATH = {
 	},
 	'instruments': {
 		'dev': { 
-			'path':''
+			'path':'/Volumes/INSTRUM-WEB/Instruments-web corrections/'
 		},
 		'prod': {
-			'path':''
+			'path':'/var/www/tm-data/Instruments/INSTRUM-WEB/Instruments-web corrections/'
 		},
 		'sync': {
 			'path':''

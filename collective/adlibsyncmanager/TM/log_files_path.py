@@ -47,6 +47,11 @@ LOG_FILES_PATH = {
 		"created": {
 			"dev":"/Users/AG/Projects/NewTeylersMuseum/logs/sync/created_objects.csv",
 			"prod":"/var/www/tm-logs/sync/created_objects.csv"
+		},
+		
+		"deleted": {
+			"dev":"/Users/AG/Projects/NewTeylersMuseum/logs/sync/deleted_objects.csv",
+			"prod":"/var/www/tm-logs/sync/deleted_objects.csv"
 		}
 	}
 	
