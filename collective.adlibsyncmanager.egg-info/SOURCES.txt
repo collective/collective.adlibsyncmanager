@@ -1,4 +1,5 @@
 .DS_Store
+KG 12563.jpg
 MANIFEST.in
 README.rst
 setup.cfg
@@ -44,6 +45,7 @@ collective/adlibsyncmanager/resource_utils.py
 collective/adlibsyncmanager/serial_core.py
 collective/adlibsyncmanager/serial_utils.py
 collective/adlibsyncmanager/sync_mechanism.py
+collective/adlibsyncmanager/sync_mechanism_rev.py
 collective/adlibsyncmanager/sync_utils.py
 collective/adlibsyncmanager/taxonomy_core.py
 collective/adlibsyncmanager/taxonomy_utils.py
@@ -56,6 +58,15 @@ collective/adlibsyncmanager/utils.py
 collective/adlibsyncmanager/Extensions/__init__.py
 collective/adlibsyncmanager/Extensions/adlib_migration.py
 collective/adlibsyncmanager/Extensions/adlib_sync_manager.py
+collective/adlibsyncmanager/TM/__init__.py
+collective/adlibsyncmanager/TM/adlib_sync_manager.py
+collective/adlibsyncmanager/TM/log_files_path.py
+collective/adlibsyncmanager/TM/migrator.py
+collective/adlibsyncmanager/TM/sync_mechanism_rev.py
+collective/adlibsyncmanager/TM/teylers_contenttypes_path.py
+collective/adlibsyncmanager/TM/teylers_core.py
+collective/adlibsyncmanager/TM/teylers_sync_core.py
+collective/adlibsyncmanager/TM/teylers_utils.py
 docs/HISTORY.rst
 docs/INSTALL.txt
 docs/LICENSE.GPL

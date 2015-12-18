@@ -50,7 +50,7 @@ UPLOAD_IMAGES = True
 
 #if book change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "coins" 
+OBJECT_TYPE = "kunst" 
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -907,18 +907,19 @@ class Migrator:
 
     ## START
     def start(self):
-        self.create_translations()
-        return True
+        #self.create_translations()
+        #return True
 
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 0, 0
+        curr, limit = 11677, 0
         total = len(list(self.collection))
-        transaction.begin()
+        
 
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection)[11677:]:
             try:
+                transaction.begin()
                 curr += 1
 
                 priref = self.get_priref(xml_record)
@@ -949,8 +950,8 @@ class Migrator:
                     else:
                         self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
-                if curr % 100 == 0:
-                    transaction.get().commit()
+                #if curr % 100 == 0:
+                transaction.commit()
 
             except Exception, e:
                 transaction.abort()
