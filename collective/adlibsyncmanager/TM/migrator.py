@@ -916,7 +916,8 @@ class Migrator:
 
         target_folder = self.updater.api.get_folder(target)
 
-        for xml_record in list(collection)[100:]:
+        for xml_record in list(collection):
+            transaction.begin()
             curr += 1
             for obj_name in xml_record.findall('Object_name'):
                 if obj_name.find('object_name') != None:
@@ -934,8 +935,10 @@ class Migrator:
                                 self.log_status("! STATUS !__Cannot find object with priref %s" %(priref))
 
                             if total >= 100:
+                                transaction.commit()
                                 return True
                             break
+            transaction.commit()
 
         print "Total '%s':" %(restriction)
         print total
