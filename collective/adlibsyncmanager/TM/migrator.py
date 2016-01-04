@@ -50,7 +50,7 @@ UPLOAD_IMAGES = True
 
 #if book change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "kunst" 
+OBJECT_TYPE = "books" 
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -970,8 +970,8 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
-        return True
+        #self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
+        #return True
 
         for xml_record in list(self.collection):
             try:
