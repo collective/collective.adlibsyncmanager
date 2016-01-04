@@ -926,7 +926,6 @@ class Migrator:
                         term = obj_name.find('object_name').find('term').text
                         if term == condition:
                             
-                            
                             priref = xml_record.find('priref').text
                             plone_object = self.find_object_by_priref(priref)
                             if plone_object:
@@ -942,7 +941,7 @@ class Migrator:
                             break
             transaction.commit()
 
-        print "Total '%s':" %(restriction)
+        print "Total '%s':" %(condition)
         print total
 
         return True
@@ -958,7 +957,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        self.move_kunst('nl/collectie/schilderijen-new', 'schilderij', self.collection)
+        self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
         return True
 
         for xml_record in list(self.collection):
