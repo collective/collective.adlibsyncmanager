@@ -278,13 +278,14 @@ class Migrator:
     ## FINDS
     def find_object_by_priref(self, priref):
         #return api.content.get(path='/nl/collectie/instrumenten-new/fk-0014-projectile-trolley')
+        
         if priref:
             brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object") 
             if brains:
                 brain = brains[0]
                 obj = brain.getObject()
                 if getattr(obj, 'priref', None) == priref:
-                    if self.FOLDER_PATHS[self.object_type] in obj.absolute_url():
+                    if 'kunst' in obj.absolute_url():
                         return obj
                     else:
                         return None
@@ -909,13 +910,13 @@ class Migrator:
 
     def move_kunst(self, target, condition, collection):
 
-        total = 0
+        total = len(list(collection))
         curr = 0
         #target = 'nl/collectie/tekening-new'
 
         target_folder = self.updater.api.get_folder(target)
 
-        for xml_record in list(collection)[:100]:
+        for xml_record in list(collection)[100:200]:
             curr += 1
             for obj_name in xml_record.findall('Object_name'):
                 if obj_name.find('object_name') != None:
