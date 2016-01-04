@@ -286,7 +286,7 @@ class Migrator:
                     #brain = brains[0]
                     obj = brain.getObject()
                     if getattr(obj, 'priref', None) == priref:
-                        if 'kunst' in obj.absolute_url():
+                        if self.FOLDER_PATHS[OBJECT_TYPE] in obj.absolute_url():
                             return obj
                         else:
                             pass
@@ -909,7 +909,7 @@ class Migrator:
     ## UTILS
 
     def move_kunst(self, target, condition, collection):
-
+        container = self.updater.api.get_folder('nl/collectie/kunst-new')
         col_total = len(list(collection))
         total = 0
         curr = 0
@@ -917,29 +917,42 @@ class Migrator:
 
         target_folder = self.updater.api.get_folder(target)
 
-        for xml_record in list(collection):
-            transaction.begin()
-            curr += 1
-            for obj_name in xml_record.findall('Object_name'):
-                if obj_name.find('object_name') != None:
-                    if obj_name.find('object_name').find('term') != None:
-                        term = obj_name.find('object_name').find('term').text
-                        if term == condition:
-                            
-                            priref = xml_record.find('priref').text
-                            plone_object = self.find_object_by_priref(priref)
-                            if plone_object:
-                                self.updater.api.move_obj_folder(plone_object, target_folder)
-                                self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, col_total))
-                                total += 1
-                            else:
-                                self.log_status("! STATUS !__Cannot find object with priref [%s] %s / %s" %(priref, curr, col_total))
+        
+        for _id in container:
+            obj = container[_id]
 
-                            if total >= 100:
-                                transaction.commit()
-                                return True
-                            break
-            transaction.commit()
+            obj_name = getattr(obj, 'object_type', None)
+            if obj_name == condition:
+                total += 1
+                self.updater.api.move_obj_folder(obj, target_folder)           
+                self.log_status("! STATUS !__Moved object %s" %(obj.absolute_url()))
+
+                if total >= 100:
+                    return True
+
+        """for xml_record in list(collection):
+                                    transaction.begin()
+                                    curr += 1
+                                    for obj_name in xml_record.findall('Object_name'):
+                                        if obj_name.find('object_name') != None:
+                                            if obj_name.find('object_name').find('term') != None:
+                                                term = obj_name.find('object_name').find('term').text
+                                                if term == condition:
+                                                    
+                                                    priref = xml_record.find('priref').text
+                                                    plone_object = self.find_object_by_priref(priref)
+                                                    if plone_object:
+                                                        self.updater.api.move_obj_folder(plone_object, target_folder)
+                                                        self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, col_total))
+                                                        total += 1
+                                                    else:
+                                                        self.log_status("! STATUS !__Cannot find object with priref [%s] %s / %s" %(priref, curr, col_total))
+                        
+                                                    if total >= 100:
+                                                        transaction.commit()
+                                                        return True
+                                                    break
+                                    transaction.commit()"""
 
         print "Total '%s':" %(condition)
         print total
