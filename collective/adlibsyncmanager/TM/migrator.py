@@ -916,7 +916,7 @@ class Migrator:
 
         target_folder = self.updater.api.get_folder(target)
 
-        for xml_record in list(collection)[100:200]:
+        for xml_record in list(collection)[100:]:
             curr += 1
             for obj_name in xml_record.findall('Object_name'):
                 if obj_name.find('object_name') != None:
@@ -931,9 +931,10 @@ class Migrator:
                                 self.updater.api.move_obj_folder(plone_object, target_folder)
                                 self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, total))
                             else:
-                                print 
                                 self.log_status("! STATUS !__Cannot find object with priref %s" %(priref))
 
+                            if total >= 100:
+                                return True
                             break
 
         print "Total '%s':" %(restriction)
