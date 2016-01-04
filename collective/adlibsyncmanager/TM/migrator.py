@@ -910,7 +910,8 @@ class Migrator:
 
     def move_kunst(self, target, condition, collection):
 
-        total = len(list(collection))
+        col_total = len(list(collection))
+        total = 0
         curr = 0
         #target = 'nl/collectie/tekening-new'
 
@@ -930,7 +931,7 @@ class Migrator:
                             plone_object = self.find_object_by_priref(priref)
                             if plone_object:
                                 self.updater.api.move_obj_folder(plone_object, target_folder)
-                                self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, total))
+                                self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, col_total))
                             else:
                                 self.log_status("! STATUS !__Cannot find object with priref %s" %(priref))
 
