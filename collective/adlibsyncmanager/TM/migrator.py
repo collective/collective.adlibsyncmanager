@@ -905,6 +905,41 @@ class Migrator:
 
         return True
 
+    ## UTILS
+
+    def move_kunst(self, target, condition, collection):
+
+        total = 0
+        curr = 0
+        #target = 'nl/collectie/tekening-new'
+
+        target_folder = self.updater.api.get_folder(target)
+
+        for xml_record in list(collection)[:100]:
+            curr += 1
+            for obj_name in xml_record.findall('Object_name'):
+                if obj_name.find('object_name') != None:
+                    if obj_name.find('object_name').find('term') != None:
+                        term = obj_name.find('object_name').find('term').text
+                        if term == condition:
+                            total += 1
+                            
+                            priref = xml_record.find('priref').text
+                            plone_object = self.find_object_by_priref(priref)
+                            if plone_object:
+                                self.updater.api.move_obj_folder(plone_object, target_folder)
+                                self.log_status("! STATUS !__Moved object [%s] %s / %s" %(priref, curr, total))
+                            else:
+                                print 
+                                self.log_status("! STATUS !__Cannot find object with priref %s" %(priref))
+
+                            break
+
+        print "Total '%s':" %(restriction)
+        print total
+
+        return True
+
     ## START
     def start(self):
         #self.create_translations()
@@ -913,11 +948,13 @@ class Migrator:
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 11677, 0
+        curr, limit = 0, 0
         total = len(list(self.collection))
         
+        self.move_kunst('nl/collectie/schilderijen-new', 'schilderij', self.collection)
+        return True
 
-        for xml_record in list(self.collection)[11677:]:
+        for xml_record in list(self.collection):
             try:
                 transaction.begin()
                 curr += 1

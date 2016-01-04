@@ -26,7 +26,7 @@ CONTENT_TYPES_PATH = {
 		"kunst": {
 			"dev":{
 		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-kunst-KG12857.xml",
-		        "total":""
+		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-kunst-v01.xml"
 		    },
 		    "prod": {
 		        "single":"/var/www/tm-data/xml/single-kunst-1.xml",
