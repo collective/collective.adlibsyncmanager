@@ -281,18 +281,18 @@ class Migrator:
         
         if priref:
             brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object") 
-            if brains:
-                brain = brains[0]
-                obj = brain.getObject()
-                if getattr(obj, 'priref', None) == priref:
-                    if 'kunst' in obj.absolute_url():
-                        return obj
+            for brain in brains:
+                if brain:
+                    #brain = brains[0]
+                    obj = brain.getObject()
+                    if getattr(obj, 'priref', None) == priref:
+                        if 'kunst' in obj.absolute_url():
+                            return obj
+                        else:
+                            pass
                     else:
                         return None
-                else:
-                    return None
-            else:
-                return None
+            return None
         else:
             return None
 
