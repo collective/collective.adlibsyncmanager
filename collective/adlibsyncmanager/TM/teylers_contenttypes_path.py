@@ -46,11 +46,11 @@ CONTENT_TYPES_PATH = {
 		"books": {
 			"dev":{
 		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-book-v01.xml",
-		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-books-v01.xml"
+		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-books-v04.xml"
 		    },
 		    "prod": {
 		        "single":"/var/www/tm-data/xml/single-book.xml",
-		        "total":"/var/www/tm-data/xml/books.xml"
+		        "total":"/var/www/tm-data/xml/books-v04.xml"
 		    }
 		}
 	}

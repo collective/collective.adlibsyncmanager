@@ -48,9 +48,9 @@ CREATE_NEW = True
 TIME_LIMIT = False
 UPLOAD_IMAGES = True
 
-#if book change shelf_mark in CORE dict
+#if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "books" 
+OBJECT_TYPE = "books"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -967,13 +967,13 @@ class Migrator:
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 0, 0
+        curr, limit = 662, 0
         total = len(list(self.collection))
         
         #self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
         #return True
 
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[662:]:
             try:
                 transaction.begin()
                 curr += 1
