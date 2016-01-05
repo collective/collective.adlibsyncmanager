@@ -452,14 +452,17 @@ class Migrator:
 
         dirty_id = "%s %s"%(str(object_number), str(title.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
-        container.invokeFactory(
-            type_name=self.portal_type,
-            id=normalized_id,
-            title=title
-        )
+        if normalized_id not in container:
+            container.invokeFactory(
+                type_name=self.portal_type,
+                id=normalized_id,
+                title=title
+            )
 
-        created_object = container[str(normalized_id)]
-        setattr(created_object, 'priref', priref)
+            created_object = container[str(normalized_id)]
+            setattr(created_object, 'priref', priref)
+        else:
+            created_object = container[normalized_id]
 
         return created_object
 
@@ -967,13 +970,13 @@ class Migrator:
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 662, 0
+        curr, limit = 1359, 0
         total = len(list(self.collection))
         
         #self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
         #return True
 
-        for xml_record in list(self.collection)[662:]:
+        for xml_record in list(self.collection)[1359:]:
             try:
                 transaction.begin()
                 curr += 1
