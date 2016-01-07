@@ -73,7 +73,8 @@ IMAGES_HD_PATH = {
 			'path':'/Volumes/INTK Kunst/Kunst web dec 2015/JPEG/*.jpg'
 		},
 		'prod': {
-			'path':'/var/www/tm-data/Kunst/JPEG/*.jpg'
+			#'path':'/var/www/tm-data/Kunst/JPEG/*.jpg'
+			'path':'/var/www/tm-data/Fossils/Boeken/*.jpg'
 		},
 		'sync': {
 			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
