@@ -906,7 +906,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection):
             try:
                 transaction.begin()
                 curr += 1
@@ -1005,8 +1005,8 @@ class Migrator:
 
     ## START
     def start(self):
-        self.create_translations()
-        return True
+        #self.create_translations()
+        #return True
 
         self.init_log_files()
         self.get_collection()
@@ -1017,7 +1017,7 @@ class Migrator:
         #self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
         #return True
 
-        for xml_record in list(self.collection)[500:600]:
+        for xml_record in list(self.collection):
             try:
                 transaction.begin()
                 curr += 1
@@ -1032,7 +1032,7 @@ class Migrator:
                 self.updater.object_number = priref
 
                 if self.valid_priref(priref):
-                    if priref:
+                    if priref in TEST_EXAMPLES[self.object_type]:
                         plone_object = self.find_object_by_priref(priref)
                         if plone_object:
                             self.update_existing(priref, plone_object, xml_record)
