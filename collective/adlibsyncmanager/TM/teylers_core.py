@@ -58,8 +58,8 @@ CORE = {
     "":"chemical_composition",
     "field_coll.place-term":"field_coll_place",
 
-    "object_number":"object_number",
-    #"shelf_mark":"object_number",# BOOKS 
+    #"object_number":"object_number",
+    "shelf_mark":"object_number",# BOOKS 
     "Description-description":"object_descriptions-description",
 
     "Inscription-inscription.content":"object_inscription-content",

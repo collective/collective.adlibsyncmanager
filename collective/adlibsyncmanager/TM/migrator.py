@@ -51,7 +51,7 @@ UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "instruments"
+OBJECT_TYPE = "books"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -812,21 +812,23 @@ class Migrator:
     def generate_special_translated_fields(self, obj, xml_record):
 
         # Check body text - label.text
-        for field in xml_record.findall('label.text'):
-            parent = field.getparent()
-            if parent.find('label.type') != None:
-                if parent.find('label.type').find('text') != None:
-                    if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG']:
-                        text = field.text
-                        text = text.replace('\n','<br />')
-                        value = RichTextValue(text, 'text/html', 'text/html')
-                        setattr(obj, 'text', value)
-                elif parent.find('label.type').find('value') != None:
-                    if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG']:
-                        text = field.text
-                        text = text.replace('\n','<br />')
-                        value = RichTextValue(text, 'text/html', 'text/html')
-                        setattr(obj, 'text', value)
+        for label in xml_record.findall('Label'):
+            if label.find('label.text') != None:
+                field = label.find('label.text')
+                parent = label
+                if parent.find('label.type') != None:
+                    if parent.find('label.type').find('text') != None:
+                        if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG']:
+                            text = field.text
+                            text = text.replace('\n','<br />')
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            setattr(obj, 'text', value)
+                    elif parent.find('label.type').find('value') != None:
+                        if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG']:
+                            text = field.text
+                            text = text.replace('\n','<br />')
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            setattr(obj, 'text', value)
 
         # Check title.translation
         if xml_record.find('title.translation') != None:
@@ -850,7 +852,9 @@ class Migrator:
                     img_translated = ITranslationManager(obj).get_translation('en')
                     setattr(img_translated, 'image', getattr(obj, 'image', None))
                     setattr(img_translated, 'title', getattr(obj, 'title', ''))
-                    img_translated.reindexObject()
+                    
+                    if self.object_type == "instruments":
+                        img_translated.reindexObject()
                     if curr == 1:
                         addCropToTranslation(obj, img_translated)
                 else:
