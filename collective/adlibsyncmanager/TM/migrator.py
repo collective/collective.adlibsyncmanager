@@ -1026,7 +1026,11 @@ class Migrator:
             obj = folder[_id]
             object_number = getattr(obj, 'object_number', None)
             if object_number:
-                if object_number.lower() in [number.lower() for number in FOSSILS_FIX]:
+                alternative = object_number
+                if "F " in object_number:
+                    alternative = object_number.replace('F ', '')
+
+                if (object_number.lower() in [number.lower() for number in FOSSILS_FIX]) or (alternative.lower() in [number.lower() for number in FOSSILS_FIX]):
                     image_name = "%s.jpg" %(object_number.lower())
                     image_path = self.find_image_in_hd(image_name)
                     self.add_image(image_name, image_path, getattr(obj, 'priref', ''), obj, True)
