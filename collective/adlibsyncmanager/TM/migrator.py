@@ -906,12 +906,12 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection)[500:600]:
+        for xml_record in list(self.collection):
             try:
                 transaction.begin()
                 curr += 1
                 priref = self.get_priref(xml_record)
-                if priref:
+                if priref in TEST_EXAMPLES[self.object_type]:
                     # Create translation
                     plone_object = self.find_object_by_priref(priref)
                     if plone_object:
