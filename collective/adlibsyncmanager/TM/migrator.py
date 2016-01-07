@@ -1030,7 +1030,7 @@ class Migrator:
                 if "F " in object_number:
                     alternative = alternative.replace("F ", "")
 
-                for number.lower() in FOSSILS_FIX:
+                for number in FOSSILS_FIX:
                     if object_number.lower() in number.lower():
                 #if (object_number.lower() in [number.lower() for number in FOSSILS_FIX]) or (alternative.lower() in [number.lower() for number in FOSSILS_FIX]):
                         image_name = "%s.jpg" %(object_number.lower())
