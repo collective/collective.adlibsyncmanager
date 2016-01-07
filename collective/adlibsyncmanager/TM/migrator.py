@@ -1028,12 +1028,14 @@ class Migrator:
             if object_number:
                 alternative = object_number
                 if "F " in object_number:
-                    alternative = object_number.replace('F ', '')
+                    alternative = alternative.replace("F ", "")
 
-                if (object_number.lower() in [number.lower() for number in FOSSILS_FIX]) or (alternative.lower() in [number.lower() for number in FOSSILS_FIX]):
-                    image_name = "%s.jpg" %(object_number.lower())
-                    image_path = self.find_image_in_hd(image_name)
-                    self.add_image(image_name, image_path, getattr(obj, 'priref', ''), obj, True)
+                for number.lower() in FOSSILS_FIX:
+                    if object_number.lower() in number.lower():
+                #if (object_number.lower() in [number.lower() for number in FOSSILS_FIX]) or (alternative.lower() in [number.lower() for number in FOSSILS_FIX]):
+                        image_name = "%s.jpg" %(object_number.lower())
+                        image_path = self.find_image_in_hd(image_name)
+                        self.add_image(image_name, image_path, getattr(obj, 'priref', ''), obj, True)
 
         return True 
 
