@@ -51,7 +51,7 @@ UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "fossils"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -906,7 +906,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection)[:100]:
+        for xml_record in list(self.collection)[500:600]:
             try:
                 transaction.begin()
                 curr += 1
