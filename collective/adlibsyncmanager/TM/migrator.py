@@ -46,7 +46,7 @@ from .log_files_path import LOG_FILES_PATH
 
 CREATE_NEW = True
 TIME_LIMIT = False
-UPLOAD_IMAGES = False
+UPLOAD_IMAGES = True
 UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
@@ -1038,8 +1038,8 @@ class Migrator:
                             self.update_existing(priref, plone_object, xml_record)
                             self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
                             self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            if self.UPDATE_TRANSLATIONS:
-                                self.update_object_translation(priref, plone_object, xml_record)
+                            #if self.UPDATE_TRANSLATIONS:
+                            #    self.update_object_translation(priref, plone_object, xml_record)
                         else:
                             if self.CREATE_NEW:
                                 created_object = self.create_new_object(priref, plone_object, xml_record)
