@@ -16,7 +16,7 @@ CONTENT_TYPES_PATH = {
 		"fossils": {
 			"dev":{
 		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-fossil-v01.xml",
-		        "total":""
+		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-fossils-v01.xml"
 		    },
 		    "prod": {
 		        "single":"/var/www/tm-data/xml/single-fossil.xml",

@@ -47,12 +47,14 @@ from .log_files_path import LOG_FILES_PATH
 CREATE_NEW = True
 TIME_LIMIT = False
 UPLOAD_IMAGES = False
+UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "books"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
+
 
 #
 # Utils - Options - Validations
@@ -129,6 +131,7 @@ class Migrator:
         self.TYPE_IMPORT_FILE = TYPE_IMPORT_FILE
         self.TIME_LIMIT = TIME_LIMIT
         self.VIEW_TYPES = VIEW_TYPES
+        self.UPDATE_TRANSLATIONS = UPDATE_TRANSLATIONS
 
         # Init schema
         self.schema = getUtility(IDexterityFTI, name=self.portal_type).lookupSchema()
@@ -450,7 +453,7 @@ class Migrator:
             title = title
 
 
-        dirty_id = "%s %s"%(str(object_number), str(title.encode('ascii', 'ignore')))
+        dirty_id = "%s %s"%(str(object_number.encode('ascii', 'ignore')), str(title.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
         if normalized_id not in container:
             container.invokeFactory(
@@ -719,6 +722,43 @@ class Migrator:
                 else:
                     return False, False
 
+    def update_existing(self, priref, plone_object, xml_record):
+        self.updater.generate_field_types()
+        self.updater.empty_fields(plone_object, True)
+        self.update(xml_record, plone_object, priref)
+        self.updater.fix_all_choices(plone_object)
+        self.generate_special_fields(plone_object, xml_record)
+
+        plone_object.reindexObject()
+
+        return plone_object
+
+    def update_object_translation(self, priref, plone_object, xml_record):
+        # get translation
+        if ITranslationManager(plone_object).has_translation('en'):
+            object_translated = ITranslationManager(plone_object).get_translation('en')
+            self.update_existing(priref, object_translated, xml_record)
+            self.log_status("! STATUS !__Updated translation")
+            self.log_status("! STATUS !__URL: %s" %(object_translated.absolute_url()))
+        else:
+            pass
+
+        return True
+
+
+    def create_new_object(self, priref, plone_object, xml_record):
+        if self.CREATE_NEW:
+            object_created = self.create_object(priref, xml_record, self.FOLDER_PATHS[self.object_type])
+            obj_layout = self.VIEW_TYPES[self.object_type]
+            layout = object_created.getLayout()
+            if layout != obj_layout:
+                object_created.setLayout(obj_layout)
+
+            self.update_existing(priref, object_created, xml_record)
+            return object_created
+        else:
+            return None
+
     def time_limit_check(self):
         if self.TIME_LIMIT:
             now = datetime.datetime.now()
@@ -865,7 +905,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[500:600]:
             try:
                 transaction.begin()
                 curr += 1
@@ -964,19 +1004,19 @@ class Migrator:
 
     ## START
     def start(self):
-        #self.create_translations()
-        #return True
+        self.create_translations()
+        return True
 
         self.init_log_files()
         self.get_collection()
 
-        curr, limit = 1359, 0
+        curr, limit = 0, 0
         total = len(list(self.collection))
         
         #self.move_kunst('nl/collectie/tekening-new', 'tekening', self.collection)
         #return True
 
-        for xml_record in list(self.collection)[1359:]:
+        for xml_record in list(self.collection)[500:600]:
             try:
                 transaction.begin()
                 curr += 1
@@ -993,19 +1033,24 @@ class Migrator:
                 if self.valid_priref(priref):
                     if priref:
                         plone_object = self.find_object_by_priref(priref)
-                        imported, is_new = self.import_record(priref, plone_object, xml_record)
-                        if imported:
-                            # Log status
-                            if is_new:
-                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(imported.absolute_url())))
-                                if self.UPLOAD_IMAGES:
-                                    self.upload_images(priref, imported, xml_record)
-                            else:
-                                self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        if plone_object:
+                            self.update_existing(priref, plone_object, xml_record)
+                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                            if self.UPDATE_TRANSLATIONS:
+                                self.update_object_translation(priref, plone_object, xml_record)
                         else:
-                            pass
+                            if self.CREATE_NEW:
+                                created_object = self.create_new_object(priref, plone_object, xml_record)
+                                if created_object:
+                                    self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                    self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                                    if self.UPLOAD_IMAGES:
+                                        self.upload_images(priref, created_object, xml_record)
+                                else:
+                                    self.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                            else:
+                                self.log_status("! STATUS !__Create new objects is disabled. Object not created. [%s] %s / %s" %(str(priref), str(curr), str(total)))
                     else:
                         self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
 
