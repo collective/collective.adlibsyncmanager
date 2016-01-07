@@ -95,7 +95,7 @@ IMAGES_HD_PATH = {
 			'path':''
 		},
 		'prod': {
-			'path':''
+			'path':'/var/www/tm-data/Fossils/Boeken/*.jpg'
 		},
 		'sync': {
 			'path':''
@@ -103,10 +103,10 @@ IMAGES_HD_PATH = {
 	},
 	'fossils': {
 		'dev': { 
-			'path':''
+			'path':'/Users/AG/Projects/NewTeylersMuseum/Fossils/*.jpg'
 		},
 		'prod': {
-			'path':''
+			'path':'/var/www/tm-data/Fossils/*.jpg'
 		},
 		'sync': {
 			'path':''

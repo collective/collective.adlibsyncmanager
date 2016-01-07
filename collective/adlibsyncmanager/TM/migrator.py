@@ -44,6 +44,8 @@ from .teylers_core import CORE
 from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
+FOSSILS_FIX = ["F 00545", "F 01524", "F 07424", "F 09102", "F 15776", "F 16269", "F 16390", "F 17003", "F 50001", "F 50003", "F 01324", "F 06928", "F 08432", "F 13280", "F 16266", "F 16277", "F 16724", "F 17046d", "F 50002", "M 01518"]
+
 CREATE_NEW = True
 TIME_LIMIT = False
 UPLOAD_IMAGES = True
@@ -51,7 +53,7 @@ UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "books"
+OBJECT_TYPE = "fossils"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -1015,13 +1017,34 @@ class Migrator:
 
         return True
 
+    def fix_fossils_images(self):
+        path = 'nl/collectie/fossielen-en-mineralen-new'
+
+        folder = self.updater.api.get_folder(path)
+
+        for _id in folder:
+            obj = folder[_id]
+            object_number = getattr(obj, 'object_number', None)
+            if object_number:
+                if object_number.lower() in [number.lower() for number in FOSSILS_FIX]:
+                    image_name = "%s.jpg" %(object_number.lower())
+                    image_path = self.find_image_in_hd(image_name)
+                    self.add_image(image_name, image_path, getattr(obj, 'priref', ''), obj, True)
+
+        return True 
+
     ## START
     def start(self):
-        self.create_translations()
-        return True
+        # Create translation
+        #self.create_translations()
+        #return True
 
         self.init_log_files()
         self.get_collection()
+
+        # Fix fossils
+        self.fix_fossils_images()
+        return True
 
         curr, limit = 0, 0
         total = len(list(self.collection))
