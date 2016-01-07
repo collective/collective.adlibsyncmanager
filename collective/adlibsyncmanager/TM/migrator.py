@@ -850,7 +850,7 @@ class Migrator:
                     img_translated = ITranslationManager(obj).get_translation('en')
                     setattr(img_translated, 'image', getattr(obj, 'image', None))
                     setattr(img_translated, 'title', getattr(obj, 'title', ''))
-                    img_translated.reindexObject(idxs=['Title'])
+                    img_translated.reindexObject()
                     if curr == 1:
                         addCropToTranslation(obj, img_translated)
                 else:
