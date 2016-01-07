@@ -51,7 +51,7 @@ UPDATE_TRANSLATIONS = True
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "kunst"
+OBJECT_TYPE = "instruments"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -906,12 +906,12 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[:100]:
             try:
                 transaction.begin()
                 curr += 1
                 priref = self.get_priref(xml_record)
-                if priref in TEST_EXAMPLES[self.object_type]:
+                if priref:
                     # Create translation
                     plone_object = self.find_object_by_priref(priref)
                     if plone_object:
