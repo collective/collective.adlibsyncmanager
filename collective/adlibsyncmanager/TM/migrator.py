@@ -1036,6 +1036,7 @@ class Migrator:
                         image_name = "%s.jpg" %(object_number.lower())
                         image_path = self.find_image_in_hd(image_name)
                         self.add_image(image_name, image_path, getattr(obj, 'priref', ''), obj, True)
+                        break
 
         return True 
 
