@@ -816,7 +816,13 @@ class Migrator:
             parent = field.getparent()
             if parent.find('label.type') != None:
                 if parent.find('label.type').find('text') != None:
-                    if parent.find('label.type').find('text').text in ['website text ENG']:
+                    if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG']:
+                        text = field.text
+                        text = text.replace('\n','<br />')
+                        value = RichTextValue(text, 'text/html', 'text/html')
+                        setattr(obj, 'text', value)
+                elif parent.find('label.type').find('value') != None:
+                    if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG']:
                         text = field.text
                         text = text.replace('\n','<br />')
                         value = RichTextValue(text, 'text/html', 'text/html')
@@ -843,6 +849,7 @@ class Migrator:
                     ITranslationManager(obj).add_translation('en')
                     img_translated = ITranslationManager(obj).get_translation('en')
                     setattr(img_translated, 'image', getattr(obj, 'image', None))
+                    setattr(img_translated, 'title', getattr(obj, 'title', ''))
                     if curr == 1:
                         addCropToTranslation(obj, img_translated)
                 else:
