@@ -800,7 +800,6 @@ class Migrator:
             else:
                 return False
         elif self.ENV in ['prod']:
-            return True
             if priref not in TEST_EXAMPLES[self.object_type] and self.TYPE_IMPORT_FILE == 'total':
                 return True
             elif self.TYPE_IMPORT_FILE == 'single':
