@@ -70,11 +70,12 @@ IMAGES_HD_PATH = {
 	},
 	'kunst': {
 		'dev': { 
-			'path':'/Volumes/INTK Kunst/Kunst web dec 2015/JPEG/*.jpg'
+			#'path':'/Volumes/INTK Kunst/Kunst web dec 2015/JPEG/*.jpg'
+			'path':'/Users/AG/Projects/NewTeylersMuseum/Art/*.jpg'
 		},
 		'prod': {
 			#'path':'/var/www/tm-data/Kunst/JPEG/*.jpg'
-			'path':'/var/www/tm-data/Fossils/Boeken/*.jpg'
+			'path':'/var/www/tm-data/Kunst-fix/*.jpg'
 		},
 		'sync': {
 			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'

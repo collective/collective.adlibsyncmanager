@@ -46,15 +46,17 @@ from .log_files_path import LOG_FILES_PATH
 
 FOSSILS_FIX = ["F 00545", "F 01524", "F 07424", "F 09102", "F 15776", "F 16269", "F 16390", "F 17003", "F 50001", "F 50003", "F 01324", "F 06928", "F 08432", "F 13280", "F 16266", "F 16277", "F 16724", "F 17046d", "F 50002", "M 01518"]
 KUNST_FIX = ['KT 1990 061', 'KT 2009 034', 'KT 1990 105', 'KT 2689', 'KT 2666', 'KT 1997 069', 'KT 2644', 'KT 2012 016', 'KT 2000 102', 'KT 1985 126', 'KT 1997 059', 'KT 2697', 'KT 2611', 'KT 2571', 'KT 2684', 'KT 1990 057', 'KT 2602', 'KT 1993 037', 'KT 2581', 'KT 1985 125', 'KT 1986 032', 'KT 2606', 'KT 1990 059', 'KT 2599', 'KT 2568', 'KT 2593', 'KT 2620', 'KT 2004 121', 'KT 2565', 'KT 1990 007', 'KT 2588', 'KT 2617', 'KT 2615', 'KT 2641', 'KT 2007 007', 'KT 2007 078', 'KT 2600', 'KT 2009 019', 'KT 2673', 'KT 2682', 'KT 2579', 'KT 2584', 'KT 2597', 'KT 2577', 'KT 2665', 'KT 2634', 'KT 2570', 'KT 1999 048', 'KT 2738', 'KT 2679', 'KT 2621', 'KT 2004 120', 'KT 2653', 'KT 2662', 'KT 1991 134', 'KT 2010 061', 'KT 2604', 'KT 2586', 'KT 2616', 'KT 1999 041', 'KT 2669', 'KT 1986 036', 'KT 1990 064', 'KT 1998_042', 'KT 2683', 'KT 1986 030', 'KT 2594', 'KT 2818', 'KT 1997 064', 'KT 2622', 'KT 2812', 'KT 2714', 'KT 2007_005', 'KT 1986 022', 'KT 2817', 'KT 2009 059', 'KT 1999 035', 'KT 1989 048', 'KT 2009 056', 'KT 2626', 'KT 2567', 'KT 2614', 'KT 1991 133', 'KT 2612', 'KT 2815', 'KT 2811', 'KT 2671', 'KT 1989 112', 'KT 2007 058', 'KT 1986 038', 'KT 2656', 'KT 2582', 'KT 1986 041', 'KT 2628', 'KT 2585', 'KT 2003 013', 'KT 2623', 'KT 2595', 'KT 2000 100', 'KT 1986 035', 'KT 1986 033', 'KT 2000 106', 'KT 2685', 'KT 2007 077', 'KT 2636', 'KT 2000 105', 'KT 2007 059', 'KT 1997 066', 'KT 2722', 'KT 2596', 'KT 2000 103', 'KT 2012 015', 'KT 1997 060', 'KT 2580', 'KT 1991 135', 'KT 2013 103', 'KT 2007 060', 'KT 1998 024', 'KT 2591', 'KT 2709', 'KT 2704', 'KT 2677', 'KT 1997 062', 'KT 2608', 'KT 1997 070', 'KT 2635', 'KT 1997 067', 'KT 1997 039', 'KT 2293', 'KT 2655', 'KT 2631', 'KT 2651', 'KT 2603', 'KT 1987 040', 'KT 2720', 'KT 2672', 'KT 2647', 'KT 2613', 'KT 1990 055', 'KT 2578', 'KT 2607', 'KT 2718', 'KT 2676', 'KT 1985 027', 'KT 2717', 'KT 1999 042', 'KT 2716', 'KT 2007 055', 'KT 2592', 'KT 2688', 'KT 1997 068', 'KT 2572', 'KT 2007 057', 'KT 2561', 'KT 2663', 'KT 1999 038', 'KT 2009 057', 'KT 2692', 'KT 1997 071', 'KT 2618', 'KT 2694', '._Boeken', 'KT 2664', 'KT 1993 039', 'KT 1990 004', 'KT 1990 049', 'KT 2630', 'KT 2695', 'KT 1997 061', 'KT 2566', 'KT 2693', 'KT 2652', 'KT 2005 023', 'KG 1990 062', 'KT 1990 003', 'KT 2699', 'KT 1999 047', 'KT 2007 061', 'KT 2009 058', 'KT 2576', 'KT 1985 024', 'KT 2000 134', 'KG 1985 025', 'KT 1989 045', 'KT 1996 078', 'KT 2013 002', 'KT 2678', 'KT 2650', 'KT 2707', 'KT 1990 050', 'KT 1997 065', 'KT 2633', 'KT 2691', 'KT 2813', 'KT 1986 040', 'KT 2681', 'KT 2006 011', 'KT 2569', 'KT 2674', 'KT 2000 156', 'KT 2668', 'KT 1999 037', 'KT 1999 043', 'KT 1989 047', 'KT 1985 026', 'KT 2007 056', 'KT 2007 076', 'KT 2637', 'KT 2703', 'KT 1986 037', 'KT 2696', 'KT 2711', 'KT 1990 005', 'KT 2690', 'KT 1989 046', 'KT 2680', 'KT 2575', 'KT 1986 021', 'KT 1986 039', 'KT 2000 101', 'KT 2013 001', 'KT 2649', 'KT 1997 058', 'KT 2698', 'KT 2661', 'KT 2564', 'KT 2657', 'KT 2675', 'KT 2712', 'KT 2705', 'KT 2000 107', 'KT 2719', 'KT 2625', 'KT 2708', 'KT 2563', 'KT 1997 063', 'KT 2632', 'KT 2700', 'KT 2574', 'KT 2598', 'KT 2605', 'KT 2816', 'KT 2654', 'KT 2009 062', 'KT 2645', 'KT 1986 034', 'KT 2687', 'KT 2012 014', 'KT 2589', 'KT 1996 082', 'KT 1999 039', 'KT 2646', 'KT 1990 106', 'KT 1986 023', 'KT 2583', 'KT 2005 015', 'KT 2713', 'KT 2686', 'KT 2643', 'KT 2639', 'KT 2009 061', 'KT 2638', 'KT 1990 083', 'KT 2003 017', 'KT 1989 001', 'KT 2629', 'KT 1990 083a', 'KT 2715', 'KT 2627', 'KT 1986 031', 'KT 2670', 'KT 1990 008', 'KT 2640', 'KT 2610', 'KT 1999 034', 'KT 1990 006', 'KT 2010 062', 'KT 2009 022', 'KT 2562', 'KT 1999 036', 'KT 2573', 'KT 2642', 'KT 2701', 'KT 1986 024', 'KT 2619', 'KT 2590', 'KT 2601', 'KT 2667', 'KT 1990 063', 'KT 2814', 'KT 2648', 'KT 2710', 'KT 2587', 'KT 2706', 'KT 2000 104', 'KT 1990 056', 'KT 2624']
+PAINTINGS_FIX = ['KS 001', 'KS 002', 'KS 003', 'KS 004', 'KS 005', 'KS 006', 'KS 007', 'KS 008', 'KS 009', 'KS 010', 'KS 011', 'KS 013', 'KS 014', 'KS 016', 'KS 017', 'KS 019', 'KS 020', 'KS 021', 'KS 022', 'KS 023', 'KS 024', 'KS 025', 'KS 027', 'KS 028', 'KS 029', 'KS 030', 'KS 031', 'KS 032', 'KS 033', 'KS 034', 'KS 035', 'KS 036', 'KS 037', 'KS 038', 'KS 039', 'KS 041', 'KS 043', 'KS 044', 'KS 045', 'KS 046', 'KS 047', 'KS 048', 'KS 049', 'KS 050', 'KS 051', 'KS 052', 'KS 056', 'KS 062', 'KS 063', 'KS 064', 'KS 065', 'KS 066', 'KS 067', 'KS 068', 'KS 069', 'KS 071', 'KS 072', 'KS 073', 'KS 076', 'KS 077', 'KS 078', 'KS 079', 'KS 080', 'KS 081', 'KS 082', 'KS 083', 'KS 085-2', 'KS 087', 'KS 088', 'KS 089', 'KS 090', 'KS 091', 'KS 092', 'KS 093', 'KS 094', 'KS 097', 'KS 098', 'KS 099', 'KS 100', 'KS 101', 'KS 103', 'KS 104', 'KS 105', 'KS 106', 'KS 108', 'KS 109', 'KS 110', 'KS 111', 'KS 112', 'KS 113', 'KS 114', 'KS 115', 'ks-116', 'KS 117', 'KS 118', 'KS 119', 'KS 121', 'KS 124', 'KS 125', 'KS 126', 'KS 127', 'KS 128', 'KS 129', 'KS 130', 'KS 131', 'KS 132', 'KS 133', 'KS 135', 'KS 136', 'KS 137', 'KS 138a', 'KS 139', 'KS 141', 'KS 142', 'KS 144', 'KS 145', 'KS 146', 'KS 148', 'KS 151', 'KS 156', 'KS 157', 'KS 160', 'KS 161', 'KS 165', 'KS 166', 'KS 167', 'KS 168', 'KS 169', 'KS 171', 'KS 174', 'KS 175', 'KS 176', 'KS 178', 'KS 180', 'KS 180a', 'KS 183', 'KS 186', 'KS 187', 'KS 190', 'KS 192', 'KS 194', 'KS 195', 'KS 196', 'KS 1984-001', 'KS 1985-001', 'KS 1985-002', 'KS 1986-002', 'KS 1986-003', 'KS 1987-002', 'KS 1988-001', 'KS 1988-002', 'KS 1989-004', 'KS 1989-005', 'KS 1989-006', 'KS 1989-007', 'KS 1989-008', 'KS 1989-009', 'KS 1989-010', 'KS 1989-010_1', 'KS 1989-011', 'KS 1989-012', 'KS 1989-013', 'KS 1989-014', 'KS 1990-001', 'KS 1990-003', 'KS 1990-003a', 'KS 1990-004', 'KS 1990-005', 'KS 1990-006', 'KS 1990-007', 'KS 1990-008', 'KS 1990-009', 'KS 1990-010', 'KS 1990-011', 'KS 1990-012', 'KS 1990-013', 'KS 1990-014', 'KS 1990-015', 'KS 1990-016', 'KS 1990-023', 'KS 1990-025', 'KS 1991-002', 'KS 1991-003', 'KS 1992-001', 'KS 1992-002', 'KS 1994-001', 'KS 1994-br-001', 'KS 1994-br-004', 'KS 1995-001', 'KS 1995-003-', 'KS 1995-004', 'KS 1996-001', 'KS 1996-002', 'KS 1996-003', 'KS 1996-004', 'KS 1997-01', 'KS 1998-001', 'KS 1998-002', 'KS 1998-003', 'KS 1999-002', 'KS 1999-003', 'KS 1999-004', 'ks-1999-005', 'KS 1999-006', 'KS 1999-007', 'KS 1999-008', 'KS 2000-001', 'KS 2000-002', 'KS 2000-003', 'KS 2000-004', 'KS 2000-005', 'KS 2000-007', 'KS 2000-008', 'KS 2001-001', 'KS 2001-002', 'KS 2001-003', 'KS 2001-004', 'KS 2001-005', 'KS 2003-002', 'KS 2004-001', 'KS 2005-001', 'KS 2006-006', 'KS 2006-br-001', 'KS 2008-001', 'KS 2009-001', 'KS 2010-001', 'KS 2010-002', 'KS 2011-001', 'KS 2012-001', 'KS 2014-003', 'KS 202', 'KS 206', 'KS 207', 'KS 208', 'KS 209', 'KS 210', 'KS 213', 'KS 216', 'KS 221', 'KS 222', 'KS 223', 'KS 224', 'KS 225', 'KS 225a', 'KS 226', 'KS 227', 'KS 228', 'KS 229', 'KS 230', 'KS 237', 'KS 239', 'KS 240', 'KS 241', 'KS 243', 'KS 244', 'KS 245', 'KS 246', 'KS 247', 'KS 248', 'KS 249', 'KS 250', 'KS 252', 'KS 254', 'KS 255', 'KS 256', 'KS 258', 'KS 266', 'KS 276', 'KS 281', 'KS 282', 'KS 283', 'KS 284', 'KS 285', 'KS geen-nummer-02', 'KS geen-nummer', 'KS HesHuizen', 'KS Hulk', 'KS Springer']
+
 
 CREATE_NEW = True
 TIME_LIMIT = False
 UPLOAD_IMAGES = True
-UPDATE_TRANSLATIONS = True
+UPDATE_TRANSLATIONS = False
 
 #if books change shelf_mark in CORE dict
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "coins"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -538,7 +540,7 @@ class Migrator:
                 return image
         return None
 
-    def add_image(self, image_name, path, priref, plone_object, crop=False):
+    def add_image(self, image_name, path, priref, plone_object, crop=False, replace=False):
         if path:
             if 'slideshow' in plone_object:
                 container = plone_object['slideshow']
@@ -568,7 +570,24 @@ class Migrator:
                         self.log_images("%s__%s__%s"%(priref, path, "Cannot open image file from HD."))
                         pass
                 else:
-                    self.log_images("%s__%s__%s"%(priref, path, "Image already exists in website."))
+                    if replace:
+                        image_file = open(path, "r")
+                        image_data = image_file.read()
+
+                        obj_image = container[normalized_id]
+                        img = NamedBlobImage(
+                            data=image_data
+                        )
+                        image_file.close()
+                        setattr(obj_image, 'image', img)
+
+                        if crop:
+                            autoCropImage(obj_image)
+
+                        self.log_status("! STATUS !__Image [%s] got replaced for priref: %s" %(image_name, priref))
+                    else:
+                        self.log_images("%s__%s__%s"%(priref, path, "Image already exists in website."))
+
             else:
                 self.log_images("%s__%s__%s"%(priref, image_name, "Cannot create image in Object. Slideshow folder is not found."))
         else:
@@ -1058,18 +1077,56 @@ class Migrator:
 
         return True 
 
+    def fix_paintings_images(self):
+        found_paintings = []
+
+        path = 'nl/collectie/kunst-new'
+
+        folder = self.updater.api.get_folder(path)
+
+        for _id in folder:
+            obj = folder[_id]
+            object_number = getattr(obj, 'object_number', None)
+            if object_number:
+                for number in PAINTINGS_FIX:
+                    if object_number.lower() in number.lower():
+                        found_paintings.append(object_number)
+                        image_name = "%s.jpg" %(object_number.lower())
+                        new_image_name = image_name.replace("ks ", "ks-")
+                        image_path = self.find_image_in_hd(new_image_name)
+                        self.add_image(new_image_name, image_path, getattr(obj, 'priref', ''), obj, True, True)
+                        break
+
+        print "Found paintings: [%s]" %(str(len(found_paintings)))
+        print found_paintings
+
+        return True 
+
+    def reindex_directory(self, path):
+        folder = self.updater.api.get_folder(path)
+        total = len(folder)
+        curr = 0
+
+        for _id in folder:
+            curr += 1
+            obj = folder[_id]
+            obj.reindexObject()
+            self.log_status("! STATUS !__Reindexed %s / %s" %(str(curr), str(total)))
+
+        return True
+
     ## START
     def start(self):
         # Create translation
-        self.create_translations()
-        return True
+        #self.create_translations()
+        #return True
 
         self.init_log_files()
-        self.get_collection()
+        #self.get_collection()
 
         # Fix fossils
-        #self.fix_kunst_images()
-        #return True
+        self.fix_paintings_images()
+        return True
 
         curr, limit = 0, 0
         total = len(list(self.collection))
@@ -1098,8 +1155,8 @@ class Migrator:
                             self.update_existing(priref, plone_object, xml_record)
                             self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
                             self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            #if self.UPDATE_TRANSLATIONS:
-                            #    self.update_object_translation(priref, plone_object, xml_record)
+                            if self.UPDATE_TRANSLATIONS:
+                                self.update_object_translation(priref, plone_object, xml_record)
                         else:
                             if self.CREATE_NEW:
                                 created_object = self.create_new_object(priref, plone_object, xml_record)
