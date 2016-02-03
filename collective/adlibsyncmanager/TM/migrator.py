@@ -1180,7 +1180,7 @@ class Migrator:
 
         for _id in folder:
             try:
-                #transaction.begin()
+                transaction.begin()
                 curr += 1
                 obj = folder[_id]
                 priref = getattr(obj, 'priref', '')
@@ -1256,7 +1256,9 @@ class Migrator:
                     print "No reproduction references found. Do nothing."
                     # there's no reproduction references - do nothing
                     pass
+                transaction.commit()
             except:
+                transaction.abort()
                 pass
     ## START
     def start(self):
