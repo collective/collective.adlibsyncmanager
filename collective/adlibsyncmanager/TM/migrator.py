@@ -1228,11 +1228,14 @@ class Migrator:
                                     pass
 
                         else:
-                            original_choice = images_found[0]
-                            original_name = original_choice.split("/")[-1]
+                            original_name = image_name
                             # Replace current image
-                            print "[%s] - Image to replace was found. Replacing [ %s ] with [ %s ]" %(priref, original_name, ref_to_replace)
-                            #self.add_image(ref_to_replace, path_to_replace, priref, obj, True, True)
+                            if original_name.lower() != ref_to_replace.lower():
+                                print "[%s] - Image to replace was found. Replacing [ %s ] with [ %s ]" %(priref, original_name, ref_to_replace)
+                                #self.add_image(image_name, path_to_replace, priref, obj, True, True)
+                            else:
+                                print "[%s] - Image is correct. Do not replace"
+                                pass
 
                     else:
                         print "[%s] - No images found. Do nothing." %(priref)
