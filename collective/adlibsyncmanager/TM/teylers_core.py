@@ -6,8 +6,9 @@
 CORE = {
     "priref":"priref",
     "Label-label.text":"text",
-    "Content_person-content.person.name-name":"creator-creator",
-
+    #"Content_person-content.person.name-name":"creator-creator",
+    "Content_person-content.person.name-name":"",#FOR KUNST
+    
     "Author-author.name-name": "object_author-creator",
     "Author-author.role-term": "object_author-role",
 
@@ -40,16 +41,17 @@ CORE = {
     #"production.notes":"object_production_period-notes",
 
     "":"production_notes",
-    "":"search_year",
+    "search_year":"search_year",
     "Material-material-term":"object_material-material",
     "material_type-term":"object_material-material",
-    "Technique-technique-term":"technique",
+    "Technique-technique-term":"object_technique-technique",
 
     "Dimension-dimension.type-term":"object_dimension-type",
     "Dimension-dimension.unit-term":"object_dimension-unit",
     "Dimension-dimension.value":"object_dimension-value",
     "Dimension-dimension.part":"object_dimension-part",
     "Dimension-dimension.notes":"object_dimension-notes",
+    "dimensions": "dimension",
 
     "place_of_publication":"location",
     "publisher-name":"publisher",
