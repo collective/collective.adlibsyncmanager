@@ -1185,7 +1185,7 @@ class Migrator:
 
             if reproduction_reference:
                 for reference in reproduction_reference:
-                    reference_image_name = reproduction_reference['reference']
+                    reference_image_name = reference['reference']
                     image_name = reference_image_name.split("\\")[-1]
                     images_found = self.find_images_in_hd(image_name)
                     if len(images_found):
