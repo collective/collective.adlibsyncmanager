@@ -1189,7 +1189,7 @@ class Migrator:
                     image_name = reference_image_name.split("\\")[-1]
                     images_found = self.find_images_in_hd(image_name)
                     if len(images_found):
-                        print "[%s] - Several images found." %(priref)
+                        print "Several images found."
                         # Several images found
                         # replace image with exact same name
                         # check image with exact same name
@@ -1204,7 +1204,7 @@ class Migrator:
                                 break
                         
                         if not path_to_replace:
-                            print "[%s] - Image with exact same name was not found - delete current created image" %(priref)
+                            print "Image with exact same name was not found - delete current created image"
                             # delete current created image
                             current_img_name = image_name
                             dirty_id = current_img_name
@@ -1213,28 +1213,29 @@ class Migrator:
                             if normalized_id in slideshow:
                                 img = slideshow[normalized_id]
                                 # delete image
-                                print "[%s] - Delete current created image - Will delete image %s" %(priref, normalized_id)
+                                print "Delete current created image - Will delete image %s" %(normalized_id)
                             else:
-                                print "[%s] - Original imported image is not found in the slideshow. Delete it's contents." %(priref)
+                                print "Original imported image is not found in the slideshow. Delete it's contents."
                                 # delete wtv is in the slideshow
                                 if len(slideshow) == 1:
                                     img = slideshow[0]
                                     # delete image
-                                    print "[%s] - There's one item in the slideshow. Delete %s" %(priref, img.id)
+                                    print "There's one item in the slideshow. Delete %s" %(img.id)
                                 else:
-                                    print "[%s] - There's several images in the slideshow. We don't know what to do in this case." %(priref)
+                                    print "There's several images in the slideshow. We don't know what to do in this case."
                                     # there's no image in the slideshow
                                     # or we don't know what's in the slideshow 
                                     pass
 
                         else:
-                            original_name = image_name
+                            original_found = images_found[0]
+                            original_name = original_found.split('/')[-1]
                             # Replace current image
                             if original_name.lower() != ref_to_replace.lower():
-                                print "[%s] - Image to replace was found. Replacing [ %s ] with [ %s ]" %(priref, original_name, ref_to_replace)
+                                print "Image to replace was found. Replacing [ %s ] with [ %s ]" %(original_name, ref_to_replace)
                                 #self.add_image(image_name, path_to_replace, priref, obj, True, True)
                             else:
-                                print "[%s] - Image is correct. Do not replace"
+                                print "Image is correct. Do not replace"
                                 pass
 
                     else:
