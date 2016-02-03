@@ -1239,11 +1239,11 @@ class Migrator:
                                 pass
 
                     else:
-                        print "[%s] - No images found. Do nothing." %(priref)
+                        print "No images found. Do nothing."
                         # No images found - do nothing
                         pass
             else:
-                print "[%s] - No reproduction references found. Do nothing." %(priref)
+                print "No reproduction references found. Do nothing."
                 # there's no reproduction references - do nothing
                 pass
 
