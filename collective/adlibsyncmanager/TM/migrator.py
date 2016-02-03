@@ -404,33 +404,46 @@ class Migrator:
             return self.updater.api.trim_white_spaces(xml_element.text)
 
         elif field_type == "rich-text":
+            try:
+                current_val = current_value.raw
+            except:
+                current_val = ""
+
             parent = xml_element.getparent()
             if parent:
                 if parent.find('label.type') != None:
                     if parent.find('label.type').get('option') in WEBSITE_TEXT:
                         text = xml_element.text
+                        text = current_val + "<br>" + text
                         text = text.replace('\n','<br />')
                         value = RichTextValue(text, 'text/html', 'text/html')
                         return value
                     elif parent.find('label.type').find('value') != None:
                         if parent.find('label.type').find('value').text in WEBSITE_TEXT:
                             text = xml_element.text
+                            text = current_val + "<br>" + text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
                     elif parent.find('label.type').find('text') != None:
                         if parent.find('label.type').find('text').text in WEBSITE_TEXT:
                             text = xml_element.text
+                            text = current_val + "<br>" + text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
                     else:
-                        value = RichTextValue('', 'text/html', 'text/html')
+                        text = current_val.replace('\n','<br />')
+                        value = RichTextValue(text, 'text/html', 'text/html')
                 else:
-                    value = RichTextValue('', 'text/html', 'text/html')
-                return RichTextValue('', 'text/html', 'text/html')
+                    text = current_val.replace('\n','<br />')
+                    value = RichTextValue(current_val, 'text/html', 'text/html')
+
+                text = current_val.replace('\n','<br />')
+                return RichTextValue(text, 'text/html', 'text/html')
             else:
-                return RichTextValue('', 'text/html', 'text/html')
+                text = current_val.replace('\n','<br />')
+                return RichTextValue(text, 'text/html', 'text/html')
 
         elif field_type == "datagridfield":
             value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
@@ -1169,9 +1182,6 @@ class Migrator:
             
             #transaction.begin()
             curr += 1
-            if curr >= 100:
-                return True
-
             obj = folder[_id]
             priref = getattr(obj, 'priref', '')
             object_number = getattr(obj, 'object_number', '')
@@ -1233,7 +1243,7 @@ class Migrator:
                             # Replace current image
                             if original_name.lower() != ref_to_replace.lower():
                                 print "Image to replace was found. Replacing [ %s ] with [ %s ]" %(original_name, ref_to_replace)
-                                #self.add_image(image_name, path_to_replace, priref, obj, True, True)
+                                self.add_image(original_name, path_to_replace, priref, obj, True, True)
                             else:
                                 print "Image is correct. Do not replace"
                                 pass
