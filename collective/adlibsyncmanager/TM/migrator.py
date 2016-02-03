@@ -1179,84 +1179,85 @@ class Migrator:
         curr = 0
 
         for _id in folder:
-            
-            #transaction.begin()
-            curr += 1
-            obj = folder[_id]
-            priref = getattr(obj, 'priref', '')
-            object_number = getattr(obj, 'object_number', '')
+            try:
+                #transaction.begin()
+                curr += 1
+                obj = folder[_id]
+                priref = getattr(obj, 'priref', '')
+                object_number = getattr(obj, 'object_number', '')
 
-            print "------ [ %s ] ------ %s / %s" %(object_number, curr, total)
+                print "------ [ %s ] ------ %s / %s" %(object_number, curr, total)
 
-            slideshow = obj['slideshow']
+                slideshow = obj['slideshow']
 
-            # Get object reproduction
-            reproduction_reference = getattr(obj, 'object_reproduction_reference', '')
+                # Get object reproduction
+                reproduction_reference = getattr(obj, 'object_reproduction_reference', '')
 
-            if reproduction_reference:
-                for reference in reproduction_reference:
-                    reference_image_name = reference['reference']
-                    image_name = reference_image_name.split("\\")[-1]
-                    images_found = self.find_images_in_hd(image_name)
-                    if len(images_found):
-                        print "Several images found."
-                        # Several images found
-                        # replace image with exact same name
-                        # check image with exact same name
-                        path_to_replace = None
-                        ref_to_replace = None
-                        for ref in images_found:
-                            ref_name = ref.split("/")[-1]
-                            if ref_name.lower() == image_name.lower():
-                                # Found image
-                                path_to_replace = ref
-                                ref_to_replace = ref_name
-                                break
-                        
-                        if not path_to_replace:
-                            print "Image with exact same name was not found - delete current created image"
-                            # delete current created image
-                            current_img_name = image_name
-                            dirty_id = current_img_name
-                            normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                if reproduction_reference:
+                    for reference in reproduction_reference:
+                        reference_image_name = reference['reference']
+                        image_name = reference_image_name.split("\\")[-1]
+                        images_found = self.find_images_in_hd(image_name)
+                        if len(images_found):
+                            print "Several images found."
+                            # Several images found
+                            # replace image with exact same name
+                            # check image with exact same name
+                            path_to_replace = None
+                            ref_to_replace = None
+                            for ref in images_found:
+                                ref_name = ref.split("/")[-1]
+                                if ref_name.lower() == image_name.lower():
+                                    # Found image
+                                    path_to_replace = ref
+                                    ref_to_replace = ref_name
+                                    break
+                            
+                            if not path_to_replace:
+                                print "Image with exact same name was not found - delete current created image"
+                                # delete current created image
+                                current_img_name = image_name
+                                dirty_id = current_img_name
+                                normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
-                            if normalized_id in slideshow:
-                                img = slideshow[normalized_id]
-                                # delete image
-                                print "Delete current created image - Will delete image %s" %(normalized_id)
-                            else:
-                                print "Original imported image is not found in the slideshow. Delete it's contents."
-                                # delete wtv is in the slideshow
-                                if len(slideshow) == 1:
-                                    img = slideshow[0]
+                                if normalized_id in slideshow:
+                                    img = slideshow[normalized_id]
                                     # delete image
-                                    print "There's one item in the slideshow. Delete %s" %(img.id)
+                                    print "Delete current created image - Will delete image %s" %(normalized_id)
                                 else:
-                                    print "There's several images in the slideshow. We don't know what to do in this case."
-                                    # there's no image in the slideshow
-                                    # or we don't know what's in the slideshow 
+                                    print "Original imported image is not found in the slideshow. Delete it's contents."
+                                    # delete wtv is in the slideshow
+                                    if len(slideshow) == 1:
+                                        img = slideshow[0]
+                                        # delete image
+                                        print "There's one item in the slideshow. Delete %s" %(img.id)
+                                    else:
+                                        print "There's several images in the slideshow. We don't know what to do in this case."
+                                        # there's no image in the slideshow
+                                        # or we don't know what's in the slideshow 
+                                        pass
+
+                            else:
+                                original_found = images_found[0]
+                                original_name = original_found.split('/')[-1]
+                                # Replace current image
+                                if original_name.lower() != ref_to_replace.lower():
+                                    print "Image to replace was found. Replacing [ %s ] with [ %s ]" %(original_name, ref_to_replace)
+                                    self.add_image(image_name, path_to_replace, priref, obj, True, True)
+                                else:
+                                    print "Image is correct. Do not replace"
                                     pass
 
                         else:
-                            original_found = images_found[0]
-                            original_name = original_found.split('/')[-1]
-                            # Replace current image
-                            if original_name.lower() != ref_to_replace.lower():
-                                print "Image to replace was found. Replacing [ %s ] with [ %s ]" %(original_name, ref_to_replace)
-                                self.add_image(original_name, path_to_replace, priref, obj, True, True)
-                            else:
-                                print "Image is correct. Do not replace"
-                                pass
-
-                    else:
-                        print "No images found. Do nothing."
-                        # No images found - do nothing
-                        pass
-            else:
-                print "No reproduction references found. Do nothing."
-                # there's no reproduction references - do nothing
+                            print "No images found. Do nothing."
+                            # No images found - do nothing
+                            pass
+                else:
+                    print "No reproduction references found. Do nothing."
+                    # there's no reproduction references - do nothing
+                    pass
+            except:
                 pass
-
     ## START
     def start(self):
         # Create translation
