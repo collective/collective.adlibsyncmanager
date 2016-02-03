@@ -74,8 +74,8 @@ IMAGES_HD_PATH = {
 			'path':'/Users/AG/Projects/NewTeylersMuseum/Art/*.jpg'
 		},
 		'prod': {
-			#'path':'/var/www/tm-data/Kunst/JPEG/*.jpg'
-			'path':'/var/www/tm-data/Kunst-fix/*.jpg'
+			'path':'/var/www/tm-data/Kunst/JPEG/*.jpg'
+			#'path':'/var/www/tm-data/Kunst-fix/*.jpg'
 		},
 		'sync': {
 			'path':'/var/www/tm-data/Coins/Numis voorwebsite/*.jpg'
