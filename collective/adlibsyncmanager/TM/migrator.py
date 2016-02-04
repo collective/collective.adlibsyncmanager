@@ -1267,11 +1267,11 @@ class Migrator:
 
     def unpublish_kunst(self):
         collection_xml = "/var/www/tm-data/xml/unpublish_kunst.xml"
-        collection, xml_root = self.updater.api.get_tm_collection()
+        collection, xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         total = len(list(collection))
         curr = 0
-        for xml_record in list(collection)[:100]:
+        for xml_record in list(collection):
             transaction.begin()
             curr += 1
             print "Unpublishing %s / %s" %(str(curr), str(total))
@@ -1281,8 +1281,11 @@ class Migrator:
 
                 obj = self.find_object_by_priref(priref)
                 if obj:
-                    api.content.transition(obj=obj, transition='reject', comment='Do not include Kunst object in website.')
-                    print "Unpublished %s" %(obj.absolute_url())
+                    try:
+                        api.content.transition(obj=obj, transition='reject', comment='Do not include Kunst object in website.')
+                        print "Unpublished %s" %(obj.absolute_url())
+                    except:
+                        pass
                 else:
                     print "Object not found - priref: %s" %(priref)
             else:
