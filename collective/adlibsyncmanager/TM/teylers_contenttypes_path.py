@@ -35,7 +35,7 @@ CONTENT_TYPES_PATH = {
 		},
 		"instruments": {
 			"dev":{
-		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-instrument-FK0014.xml",
+		        "single":"/Users/AG/Projects/NewTeylersMuseum/xml/single-instrument-FK-0701.xml",
 		        "total":"/Users/AG/Projects/NewTeylersMuseum/xml/all-instruments-v01.xml"
 		    },
 		    "prod": {
