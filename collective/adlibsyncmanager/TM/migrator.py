@@ -59,7 +59,7 @@ UPDATE_TRANSLATIONS = False
 #if books change shelf_mark in CORE dict
 #if Kunst do not include content.person.name
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "instruments"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -294,10 +294,9 @@ class Migrator:
             brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object") 
             for brain in brains:
                 if brain:
-                    #brain = brains[0]
                     obj = brain.getObject()
                     if getattr(obj, 'priref', None) == priref:
-                        if self.FOLDER_PATHS[OBJECT_TYPE] in obj.absolute_url():
+                        if self.FOLDER_PATHS[OBJECT_TYPE] in obj.absolute_url() or 'tekening' in obj.absolute_url():
                             return obj
                         else:
                             pass
@@ -1163,6 +1162,10 @@ class Migrator:
             if common_name not in NOT_ALLOWED:
                 new_id = "%s %s" %(common_name, new_id)
 
+            if common_name:
+                setattr(obj, 'title', common_name)
+                obj.reindexObject(idxs=['Title'])
+
             dirty_id = new_id.strip()
             normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
@@ -1260,22 +1263,51 @@ class Migrator:
             except:
                 transaction.abort()
                 pass
+
+
+    def unpublish_kunst(self):
+        collection_xml = "/var/www/tm-data/xml/unpublish_kunst.xml"
+        collection, xml_root = self.updater.api.get_tm_collection()
+
+        total = len(list(collection))
+        curr = 0
+        for xml_record in list(collection)[:100]:
+            transaction.begin()
+            curr += 1
+            print "Unpublishing %s / %s" %(str(curr), str(total))
+
+            if xml_record.find('priref') != None:
+                priref = xml_record.find('priref').text
+
+                obj = self.find_object_by_priref(priref)
+                if obj:
+                    api.content.transition(obj=obj, transition='reject', comment='Do not include Kunst object in website.')
+                    print "Unpublished %s" %(obj.absolute_url())
+                else:
+                    print "Object not found - priref: %s" %(priref)
+            else:
+                print "Record %s has invalid priref [None]" %(curr)
+
+            transaction.commit()
+
+        return True
+
     ## START
     def start(self):
         # Create translation
         #self.create_translations()
         #return True
-
-        print "start"
-
         self.init_log_files()
-        self.get_collection()
+        #self.get_collection()
 
         # Fix fossils
         #self.fix_paintings_images()
         #return True
         #self.fix_all_images()
         #return True
+
+        self.unpublish_kunst()
+        return True
 
         curr, limit = 0, 0
         total = len(list(self.collection))
