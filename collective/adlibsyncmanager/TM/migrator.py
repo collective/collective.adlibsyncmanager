@@ -1144,34 +1144,38 @@ class Migrator:
         curr = 0
 
         for _id in folder:
-            transaction.begin()
-            print "Renaming %s / %s" %(str(curr), str(total))
-            curr += 1
-            obj = folder[_id]
+            try:
+                transaction.begin()
+                print "Renaming %s / %s" %(str(curr), str(total))
+                curr += 1
+                obj = folder[_id]
 
-            new_id = ""
-            object_number = getattr(obj, 'object_number', '')
-            if object_number not in NOT_ALLOWED:
-                new_id = "%s" %(object_number)
+                new_id = ""
+                object_number = getattr(obj, 'object_number', '')
+                if object_number not in NOT_ALLOWED:
+                    new_id = "%s" %(object_number)
 
-            scientific_name = getattr(obj, 'scientific_name', '')
-            if scientific_name not in NOT_ALLOWED:
-                new_id = "%s %s" %(scientific_name, new_id)
+                scientific_name = getattr(obj, 'scientific_name', '')
+                if scientific_name not in NOT_ALLOWED:
+                    new_id = "%s %s" %(scientific_name, new_id)
 
-            common_name = getattr(obj, 'common_name', '')
-            if common_name not in NOT_ALLOWED:
-                new_id = "%s %s" %(common_name, new_id)
+                common_name = getattr(obj, 'common_name', '')
+                if common_name not in NOT_ALLOWED:
+                    new_id = "%s %s" %(common_name, new_id)
 
-            if common_name:
-                setattr(obj, 'title', common_name)
-                obj.reindexObject(idxs=['Title'])
+                if common_name:
+                    setattr(obj, 'title', common_name)
+                    obj.reindexObject(idxs=['Title'])
 
-            dirty_id = new_id.strip()
-            normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                dirty_id = new_id.strip()
+                normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
 
-            api.content.rename(obj=obj, new_id=normalized_id, safe_id=True)
-            print "Renamed [ %s ]" %(obj.absolute_url()) 
-            transaction.commit()
+                api.content.rename(obj=obj, new_id=normalized_id, safe_id=True)
+                print "Renamed [ %s ]" %(obj.absolute_url()) 
+                transaction.commit()
+            except:
+                transaction.abort()
+                pass
 
         return True
 
