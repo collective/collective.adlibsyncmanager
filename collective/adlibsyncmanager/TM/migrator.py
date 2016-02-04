@@ -1308,8 +1308,9 @@ class Migrator:
         #return True
         #self.fix_all_images()
         #return True
+        self.rename_all_fossils()
 
-        self.unpublish_kunst()
+        #self.unpublish_kunst()
         return True
 
         curr, limit = 0, 0
