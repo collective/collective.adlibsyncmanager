@@ -51,7 +51,7 @@ KUNST_FIX = ['KT 1990 061', 'KT 2009 034', 'KT 1990 105', 'KT 2689', 'KT 2666', 
 PAINTINGS_FIX = ['KS 001', 'KS 002', 'KS 003', 'KS 004', 'KS 005', 'KS 006', 'KS 007', 'KS 008', 'KS 009', 'KS 010', 'KS 011', 'KS 013', 'KS 014', 'KS 016', 'KS 017', 'KS 019', 'KS 020', 'KS 021', 'KS 022', 'KS 023', 'KS 024', 'KS 025', 'KS 027', 'KS 028', 'KS 029', 'KS 030', 'KS 031', 'KS 032', 'KS 033', 'KS 034', 'KS 035', 'KS 036', 'KS 037', 'KS 038', 'KS 039', 'KS 041', 'KS 043', 'KS 044', 'KS 045', 'KS 046', 'KS 047', 'KS 048', 'KS 049', 'KS 050', 'KS 051', 'KS 052', 'KS 056', 'KS 062', 'KS 063', 'KS 064', 'KS 065', 'KS 066', 'KS 067', 'KS 068', 'KS 069', 'KS 071', 'KS 072', 'KS 073', 'KS 076', 'KS 077', 'KS 078', 'KS 079', 'KS 080', 'KS 081', 'KS 082', 'KS 083', 'KS 085-2', 'KS 087', 'KS 088', 'KS 089', 'KS 090', 'KS 091', 'KS 092', 'KS 093', 'KS 094', 'KS 097', 'KS 098', 'KS 099', 'KS 100', 'KS 101', 'KS 103', 'KS 104', 'KS 105', 'KS 106', 'KS 108', 'KS 109', 'KS 110', 'KS 111', 'KS 112', 'KS 113', 'KS 114', 'KS 115', 'ks-116', 'KS 117', 'KS 118', 'KS 119', 'KS 121', 'KS 124', 'KS 125', 'KS 126', 'KS 127', 'KS 128', 'KS 129', 'KS 130', 'KS 131', 'KS 132', 'KS 133', 'KS 135', 'KS 136', 'KS 137', 'KS 138a', 'KS 139', 'KS 141', 'KS 142', 'KS 144', 'KS 145', 'KS 146', 'KS 148', 'KS 151', 'KS 156', 'KS 157', 'KS 160', 'KS 161', 'KS 165', 'KS 166', 'KS 167', 'KS 168', 'KS 169', 'KS 171', 'KS 174', 'KS 175', 'KS 176', 'KS 178', 'KS 180', 'KS 180a', 'KS 183', 'KS 186', 'KS 187', 'KS 190', 'KS 192', 'KS 194', 'KS 195', 'KS 196', 'KS 1984-001', 'KS 1985-001', 'KS 1985-002', 'KS 1986-002', 'KS 1986-003', 'KS 1987-002', 'KS 1988-001', 'KS 1988-002', 'KS 1989-004', 'KS 1989-005', 'KS 1989-006', 'KS 1989-007', 'KS 1989-008', 'KS 1989-009', 'KS 1989-010', 'KS 1989-010_1', 'KS 1989-011', 'KS 1989-012', 'KS 1989-013', 'KS 1989-014', 'KS 1990-001', 'KS 1990-003', 'KS 1990-003a', 'KS 1990-004', 'KS 1990-005', 'KS 1990-006', 'KS 1990-007', 'KS 1990-008', 'KS 1990-009', 'KS 1990-010', 'KS 1990-011', 'KS 1990-012', 'KS 1990-013', 'KS 1990-014', 'KS 1990-015', 'KS 1990-016', 'KS 1990-023', 'KS 1990-025', 'KS 1991-002', 'KS 1991-003', 'KS 1992-001', 'KS 1992-002', 'KS 1994-001', 'KS 1994-br-001', 'KS 1994-br-004', 'KS 1995-001', 'KS 1995-003-', 'KS 1995-004', 'KS 1996-001', 'KS 1996-002', 'KS 1996-003', 'KS 1996-004', 'KS 1997-01', 'KS 1998-001', 'KS 1998-002', 'KS 1998-003', 'KS 1999-002', 'KS 1999-003', 'KS 1999-004', 'ks-1999-005', 'KS 1999-006', 'KS 1999-007', 'KS 1999-008', 'KS 2000-001', 'KS 2000-002', 'KS 2000-003', 'KS 2000-004', 'KS 2000-005', 'KS 2000-007', 'KS 2000-008', 'KS 2001-001', 'KS 2001-002', 'KS 2001-003', 'KS 2001-004', 'KS 2001-005', 'KS 2003-002', 'KS 2004-001', 'KS 2005-001', 'KS 2006-006', 'KS 2006-br-001', 'KS 2008-001', 'KS 2009-001', 'KS 2010-001', 'KS 2010-002', 'KS 2011-001', 'KS 2012-001', 'KS 2014-003', 'KS 202', 'KS 206', 'KS 207', 'KS 208', 'KS 209', 'KS 210', 'KS 213', 'KS 216', 'KS 221', 'KS 222', 'KS 223', 'KS 224', 'KS 225', 'KS 225a', 'KS 226', 'KS 227', 'KS 228', 'KS 229', 'KS 230', 'KS 237', 'KS 239', 'KS 240', 'KS 241', 'KS 243', 'KS 244', 'KS 245', 'KS 246', 'KS 247', 'KS 248', 'KS 249', 'KS 250', 'KS 252', 'KS 254', 'KS 255', 'KS 256', 'KS 258', 'KS 266', 'KS 276', 'KS 281', 'KS 282', 'KS 283', 'KS 284', 'KS 285', 'KS geen-nummer-02', 'KS geen-nummer', 'KS HesHuizen', 'KS Hulk', 'KS Springer']
 
 
-CREATE_NEW = True
+CREATE_NEW = False
 TIME_LIMIT = False
 UPLOAD_IMAGES = False
 UPDATE_TRANSLATIONS = False
@@ -59,7 +59,7 @@ UPDATE_TRANSLATIONS = False
 #if books change shelf_mark in CORE dict
 #if Kunst do not include content.person.name
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "kunst"
+OBJECT_TYPE = "coins"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -296,7 +296,7 @@ class Migrator:
                 if brain:
                     obj = brain.getObject()
                     if getattr(obj, 'priref', None) == priref:
-                        if self.FOLDER_PATHS[OBJECT_TYPE] in obj.absolute_url() or 'tekening' in obj.absolute_url():
+                        if self.FOLDER_PATHS[OBJECT_TYPE] in obj.absolute_url():
                             return obj
                         else:
                             pass
@@ -841,7 +841,7 @@ class Migrator:
             else:
                 return False
         elif self.ENV in ['prod']:
-            if priref in TEST_EXAMPLES[self.object_type] and self.TYPE_IMPORT_FILE == 'total':
+            if priref not in TEST_EXAMPLES[self.object_type] or self.TYPE_IMPORT_FILE == 'total':
                 return True
             elif self.TYPE_IMPORT_FILE == 'single':
                 return True
@@ -1336,17 +1336,17 @@ class Migrator:
         #self.create_translations()
         #return True
         self.init_log_files()
-        #self.get_collection()
+        self.get_collection()
 
         # Fix fossils
         #self.fix_paintings_images()
         #return True
         #self.fix_all_images()
         #return True
-        self.fix_drawings_view()
+        #self.fix_drawings_view()
 
         #self.unpublish_kunst()
-        return True
+        #return True
 
         curr, limit = 0, 0
         total = len(list(self.collection))
@@ -1369,29 +1369,25 @@ class Migrator:
                 self.updater.object_number = priref
 
                 if self.valid_priref(priref):
-                    if priref in TEST_EXAMPLES[self.object_type]:
-                        plone_object = self.find_object_by_priref(priref)
-                        if plone_object:
-                            self.update_existing(priref, plone_object, xml_record)
-                            self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                            self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
-                            if self.UPDATE_TRANSLATIONS:
-                                self.update_object_translation(priref, plone_object, xml_record)
-                        else:
-                            if self.CREATE_NEW:
-                                created_object = self.create_new_object(priref, plone_object, xml_record)
-                                if created_object:
-                                    self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
-                                    self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
-                                    if self.UPLOAD_IMAGES:
-                                        self.upload_images(priref, created_object, xml_record)
-                                else:
-                                    self.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
-                            else:
-                                self.log_status("! STATUS !__Create new objects is disabled. Object not created. [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                    plone_object = self.find_object_by_priref(priref)
+                    if plone_object:
+                        self.update_existing(priref, plone_object, xml_record)
+                        self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
+                        if self.UPDATE_TRANSLATIONS:
+                            self.update_object_translation(priref, plone_object, xml_record)
                     else:
-                        self.error("%s__ __Cannot find priref in XML record"%(str(curr)))
-
+                        if self.CREATE_NEW:
+                            created_object = self.create_new_object(priref, plone_object, xml_record)
+                            if created_object:
+                                self.log_status("! STATUS !__Created [%s] %s / %s" %(str(priref), str(curr), str(total)))
+                                self.log_status("! STATUS !__URL: %s" %(str(created_object.absolute_url())))
+                                if self.UPLOAD_IMAGES:
+                                    self.upload_images(priref, created_object, xml_record)
+                            else:
+                                self.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                        else:
+                            self.log_status("! STATUS !__Create new objects is disabled. Object not created. [%s] %s / %s" %(str(priref), str(curr), str(total)))
                 #if curr % 100 == 0:
                 transaction.commit()
 
