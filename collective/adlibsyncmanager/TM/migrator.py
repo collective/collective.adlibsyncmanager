@@ -1299,6 +1299,37 @@ class Migrator:
 
         return True
 
+    def fix_drawings_view(self):
+    
+        collection_xml = "/var/www/tm-data/xml/priref_drawings.xml"
+        collection, xml_root = self.updater.api.get_tm_collection(collection_xml)
+
+        total = len(list(collection))
+        curr = 0
+        for xml_record in list(collection):
+            transaction.begin()
+            curr += 1
+            print "Change view %s / %s" %(str(curr), str(total))
+
+            if xml_record.find('priref') != None:
+                priref = xml_record.find('priref').text
+
+                obj = self.find_object_by_priref(priref)
+                if obj:
+                    try:
+                        obj.setLayout('drawing_view')
+                        print "Changed view of %s" %(obj.absolute_url())
+                    except:
+                        pass
+                else:
+                    print "Object not found - priref: %s" %(priref)
+            else:
+                print "Record %s has invalid priref [None]" %(curr)
+
+            transaction.commit()
+
+        return True
+
     ## START
     def start(self):
         # Create translation
@@ -1312,7 +1343,7 @@ class Migrator:
         #return True
         #self.fix_all_images()
         #return True
-        self.rename_all_fossils()
+        self.fix_drawings_view()
 
         #self.unpublish_kunst()
         return True

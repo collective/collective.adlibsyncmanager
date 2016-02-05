@@ -182,6 +182,10 @@ class Updater:
                 setattr(obj, name, [])
             elif field_type == "relation":
                 setattr(obj, name, [])
+            elif field_type == "rich-text":
+                text = ""
+                rich_val = RichTextValue(text, 'text/html', 'text/html')
+                setattr(obj, name, rich_val)
             else:
                 if empty_textline:
                     setattr(obj, name, u"")
