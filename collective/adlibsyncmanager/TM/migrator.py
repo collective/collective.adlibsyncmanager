@@ -59,7 +59,7 @@ UPDATE_TRANSLATIONS = False
 #if books change shelf_mark in CORE dict
 #if Kunst do not include content.person.name
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "coins"
+OBJECT_TYPE = "books"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -1269,8 +1269,8 @@ class Migrator:
                 pass
 
 
-    def unpublish_kunst(self):
-        collection_xml = "/var/www/tm-data/xml/unpublish_kunst.xml"
+    def unpublish_items(self, xml_path):
+        collection_xml = xml_path
         collection, xml_root = self.updater.api.get_tm_collection(collection_xml)
 
         total = len(list(collection))
@@ -1336,7 +1336,10 @@ class Migrator:
         #self.create_translations()
         #return True
         self.init_log_files()
-        self.get_collection()
+        #self.get_collection()
+
+        self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
+        self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
 
         # Fix fossils
         #self.fix_paintings_images()
