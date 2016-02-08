@@ -1381,6 +1381,51 @@ class Migrator:
         
         return True
 
+    def fix_books_categories(self):
+
+        books = self.updater.api.get_folder('nl/collectie/boeken-new')
+
+        print "Name of the image, Object number extracted"
+
+        #self.add_categories('/var/www/tm-data/Books/books-images-20160215/01.Top/*' books, 'topboeken')
+        #self.add_categories('/var/www/tm-data/Books/books-images-20160215/02.Reisboeken/*', books, 'reisboeken')
+        #self.add_categories('/var/www/tm-data/Books/books-images-20160215/03.Toonboeken/*', books, 'toonboeken')
+        #self.add_categories('/var/www/tm-data/Books/books-images-20160215/04.Paddenstoelenboeken/*', books, 'paddenstoelenboeken')
+
+        self.add_categories('/Users/AG/Desktop/books-images-20160215/01.Top/*', books, 'topboeken')
+        self.add_categories('/Users/AG/Desktop/books-images-20160215/02.Reisboeken/*', books, 'reisboeken')
+        self.add_categories('/Users/AG/Desktop/books-images-20160215/03.Toonboeken/*', books, 'toonboeken')
+        self.add_categories('/Users/AG/Desktop/books-images-20160215/04.Paddenstoelenboeken/*', books, 'paddenstoelenboeken')
+
+
+        return True
+
+    def add_categories(self, folder, books, category):
+        images = glob.glob(folder)
+
+        for image in images:
+            transaction.begin()
+            if 'Icon' not in image:
+                image_name = image.split('/')[-1]
+                image_name_fixed = image_name.replace('-', ' ').replace('_', ' ')
+
+                object_number = image_name_fixed.split('.')[0]
+                obj = self.get_book_by_shelfmark(object_number, books)
+
+                if obj:
+                    subjects = list(obj.Subject())
+                    subjects.append(category)
+                    obj.setSubject(subjects)
+                    obj.reindexObject(idxs=['Subject'])
+                    print "Fixed %s" %(obj.absolute_url())
+                else:
+                    print "%s, %s" %(image_name, object_number)
+            else:
+                pass
+            transaction.commit()
+
+        return True
+
     def get_book_by_shelfmark(self, shelf_mark, folder):
 
         for _id in folder:
@@ -1398,7 +1443,7 @@ class Migrator:
         self.init_log_files()
         #self.get_collection()
 
-        self.fix_books_images()
+        self.fix_books_categories()
         return True
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
