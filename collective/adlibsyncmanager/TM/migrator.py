@@ -1338,6 +1338,8 @@ class Migrator:
 
         print "Name of the image, Object number extracted"
 
+        list_to_fix = ["139e-f 52","25c-e 8","75f 213 # lade IXb 213","143f 84","lade 11e f 126","30d 26 # 141e 26 # 140e 26-1 # 140e 26-2 # 140f 26-4 # 140f 26-5","167a-g 26","155c-f 5","lade 13c-e 3","lade 22 a, b, 30 (2)","143b-c 51","135b 125 1-2","135b 125 1%2","134d-e 113","lade 9c 31 # 28c 31","25f 9-1","24b 6-1 140b-c 6","W2b 20 W"]
+
         for image in images:
             transaction.begin()
             if 'Icon' not in image:
@@ -1345,20 +1347,25 @@ class Migrator:
                 #print "Add image %s / %s" %(curr, total)
 
                 image_name = image.split('/')[-1]
-                image_name_fixed = image_name.replace('-', ' ').replace('_', ' ')
+                image_name_no_extension = image_name.split('.')[0]
 
-                object_number = image_name_fixed.split('.')[0]
-     
-                obj = self.get_book_by_shelfmark(object_number, books)
-                if obj:
-                    dirty_id = image_name
-                    normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
-                    priref = getattr(obj, 'priref', '')
-                    self.add_image(normalized_id, image, priref, obj, True)
+                if image_name_no_extension in list_to_fix:
+
+                    object_number = image_name_no_extension.replace('#', '/').replace("%", "-")
+
+                    obj = self.get_book_by_shelfmark(object_number, books)
+                    if obj:
+                        dirty_id = image_name
+                        normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                        priref = getattr(obj, 'priref', '')
+                        self.add_image(normalized_id, image, priref, obj, True)
+                    else:
+                        print "%s, %s" %(image_name, object_number)
                 else:
-                    print "%s, %s" %(image_name, object_number)
+                    pass
             else:
                 pass
+
             transaction.commit()
 
         return True
@@ -1374,7 +1381,7 @@ class Migrator:
 
         print "Name of the image, Object number extracted"
 
-        #self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/01.Top/*')
+        self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/01.Top/*', books)
         self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/02.Reisboeken/*', books)
         self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/03.Toonboeken/*', books)
         self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/04.Paddenstoelenboeken/*', books)
@@ -1443,7 +1450,7 @@ class Migrator:
         self.init_log_files()
         #self.get_collection()
 
-        self.fix_books_categories()
+        self.fix_books_folder()
         return True
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
