@@ -1330,17 +1330,7 @@ class Migrator:
 
         return True
 
-    def fix_books_images(self):
-
-        top = []
-        reisboeken = []
-        toonboeken = []
-        paddenstoekenboeken = []
-
-        books = self.updater.api.get_folder('nl/collectie/boeken-new')
-
-        #folder = "/Users/AG/Desktop/books-images-20160215/01.Top/*"
-        folder = "/var/www/tm-data/Books/books-images-20160215/01.Top/*"
+    def fix_books_folder(self, folder, books):
         images = glob.glob(folder)
 
         curr = 0
@@ -1349,6 +1339,7 @@ class Migrator:
         print "Name of the image, Object number extracted"
 
         for image in images:
+            transaction.begin()
             if 'Icon' not in image:
                 curr += 1
                 #print "Add image %s / %s" %(curr, total)
@@ -1369,7 +1360,26 @@ class Migrator:
                     print "%s, %s" %(image_name, object_number)
             else:
                 pass
+            transaction.commit()
 
+        return True
+
+    def fix_books_images(self):
+
+        top = []
+        reisboeken = []
+        toonboeken = []
+        paddenstoekenboeken = []
+
+        books = self.updater.api.get_folder('nl/collectie/boeken-new')
+
+        print "Name of the image, Object number extracted"
+
+        #self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/01.Top/*')
+        self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/02.Reisboeken/*', books)
+        self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/03.Toonboeken/*', books)
+        self.fix_books_folder('/var/www/tm-data/Books/books-images-20160215/04.Paddenstoelenboeken/*', books)
+        
         return True
 
     def get_book_by_shelfmark(self, shelf_mark, folder):
