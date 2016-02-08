@@ -1330,6 +1330,57 @@ class Migrator:
 
         return True
 
+    def fix_books_images(self):
+
+        top = []
+        reisboeken = []
+        toonboeken = []
+        paddenstoekenboeken = []
+
+        books = self.updater.api.get_folder('nl/collectie/boeken-new')
+
+        #folder = "/Users/AG/Desktop/books-images-20160215/01.Top/*"
+        folder = "/var/www/tm-data/Books/books-images-20160215/01.Top/*"
+        images = glob.glob(folder)
+
+        curr = 0
+        total = len(images)
+
+        print "Name of the image, Object number extracted"
+
+        for image in images:
+            if 'Icon' not in image:
+                curr += 1
+                #print "Add image %s / %s" %(curr, total)
+
+                image_name = image.split('/')[-1]
+                image_name_fixed = image_name.replace('-', ' ').replace('_', ' ')
+
+                object_number = image_name_fixed.split('.')[0]
+                top.append(object_number)
+
+                obj = self.get_book_by_shelfmark(object_number, books)
+                if obj:
+                    dirty_id = image_name
+                    normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
+                    priref = getattr(obj, 'priref', '')
+                    self.add_image(normalized_id, image, priref, obj, True)
+                else:
+                    print "%s, %s" %(image_name, object_number)
+            else:
+                pass
+
+        return True
+
+    def get_book_by_shelfmark(self, shelf_mark, folder):
+
+        for _id in folder:
+            obj = folder[_id]
+            if getattr(obj, 'object_number', '').lower() == shelf_mark.lower():
+                return obj
+
+        return None
+
     ## START
     def start(self):
         # Create translation
@@ -1338,8 +1389,10 @@ class Migrator:
         self.init_log_files()
         #self.get_collection()
 
-        self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
-        self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
+        self.fix_books_images()
+        return True
+        #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
+        #self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
 
         # Fix fossils
         #self.fix_paintings_images()

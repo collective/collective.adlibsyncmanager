@@ -656,7 +656,7 @@ class Updater:
                 final_log = "[%s]__%s" %(str(timestamp), str(text))
             
             list_log = final_log.split('__')
-            print final_log.replace('__', ' ')
+            #print final_log.replace('__', ' ')
             self.status_wr.writerow(list_log)
         else:
             return True
