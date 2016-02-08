@@ -1348,8 +1348,7 @@ class Migrator:
                 image_name_fixed = image_name.replace('-', ' ').replace('_', ' ')
 
                 object_number = image_name_fixed.split('.')[0]
-                top.append(object_number)
-
+     
                 obj = self.get_book_by_shelfmark(object_number, books)
                 if obj:
                     dirty_id = image_name
