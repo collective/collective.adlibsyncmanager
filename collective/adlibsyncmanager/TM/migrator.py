@@ -1442,6 +1442,44 @@ class Migrator:
 
         return None
 
+    def fix_books_titles(self):
+
+    	folder = self.updater.api.get_folder('nl/collectie/boeken-new')
+
+    	total = len(folder)
+    	curr = 0
+
+    	for _id in folder:
+    		curr += 1
+    		transaction.begin()
+    		try:
+
+    			print "Fixing %s / %s" %(str(curr), str(total))
+
+    			obj = folder(_id)
+
+    			title = getattr(obj, 'title', '')
+    			setattr(obj, 'book_title', title)
+
+    			authors = getattr(obj, 'object_author', '')
+    			if authors:
+    				author = authors[0]
+    				name = author['creator']
+    				setattr(obj, 'title', name)
+    				setattr(obj, 'description', title)
+
+    				obj.reindexObject(idxs=['Title'])
+    				obj.reindexObject(idxs=['Description'])
+
+    			transaction.commit()
+    		except:
+    			transaction.abort()
+    			pass
+
+    	return True
+
+    		
+
     ## START
     def start(self):
         # Create translation
@@ -1450,7 +1488,7 @@ class Migrator:
         self.init_log_files()
         #self.get_collection()
 
-        self.fix_books_folder()
+        self.fix_books_titles()
         return True
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
