@@ -6,14 +6,14 @@
 CORE = {
     "priref":"priref",
     "Label-label.text":"text",
-    "Content_person-content.person.name-name":"creator-creator",
+    "Content_person-content.person.name-name":"",
 
-    "Author-author.name": "object_author-creator",
-    "Author-author.role": "object_author-role",
+    "Author-author.name-value": "object_author-creator",
+    "Author-author.role-value": "object_author-role",
 
-    "Production-creator":"creator-creator",
+    "Production-creator-value":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
-    "Production-creator.role":"creator-role",
+    "Production-creator.role-value":"creator-role",
     "Production-creator.date_of_birth":"creator-date_of_birth",
     "Production-creator.date_of_death":"creator-date_of_death",
     
@@ -21,11 +21,11 @@ CORE = {
 
     "administration_name":"administration_name",
     "":"author",
-    "Illustrator-illustrator.name-name":"illustrator",
-    "":"object_category",
+    "Illustrator-illustrator.name-value":"illustrator",
+    "object_category":"object_category",
     "":"book_title",
-    "":"translated_title",
-    "Object_name-object_name":"object_type",
+    "title.translation":"translated_title",
+    "Object_name-object_name-value":"object_type",
 
     "Production_date-production.date.end":"object_dating-end",
     "Production_date-production.date.start":"object_dating-start",
@@ -38,13 +38,13 @@ CORE = {
     "production.period":"object_production_period-period",
 
     "":"production_notes",
-    "":"search_year",
-    "Material-material":"object_material-material",
-    "material_type":"object_material-material",
-    "Technique-technique":"technique",
+    "search_year":"search_year",
+    "Material-material-value":"object_material-material",
+    "material_type-value":"object_material-material",
+    "Technique-technique-value":"technique",
 
-    "Dimension-dimension.type":"object_dimension-type",
-    "Dimension-dimension.unit":"object_dimension-unit",
+    "Dimension-dimension.type-value":"object_dimension-type",
+    "Dimension-dimension.unit-value":"object_dimension-unit",
     "Dimension-dimension.value":"object_dimension-value",
     "Dimension-dimension.part":"object_dimension-part",
     "Dimension-dimension.notes":"object_dimension-notes",
@@ -60,7 +60,7 @@ CORE = {
     "Description-description":"object_descriptions-description",
 
     "Inscription-inscription.content":"object_inscription-content",
-    "Inscription-inscription.type":"object_inscription-type",
+    "Inscription-inscription.type-value":"object_inscription-type",
 
     "Acquisition_source-acquisition.source":"acquisition_source",
     "credit_line":"credit_line",

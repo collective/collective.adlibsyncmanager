@@ -9,7 +9,7 @@ from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
 
 def migrate(self):
-    from collective.adlibsyncmanager.sync_mechanism import SyncMechanism
+    from collective.adlibsyncmanager.TM.sync_mechanism_rev import SyncMechanism
     
     folder = "nl"
 
@@ -41,7 +41,7 @@ def migrate(self):
     #
 
     if last_request_successful:
-        one_minute_ago = datetime.today() - timedelta(minutes = request_period)
+        one_minute_ago = datetime.today() - timedelta(minutes = 30)
         date = one_minute_ago.strftime('%Y-%m-%d %H:%M:%S')
     else:
         date = last_successful_date
@@ -57,6 +57,7 @@ def migrate(self):
     #
     
     log_path = "/Users/AG/Projects/NewTeylersMuseum/adlib_sync.log"
+    log_path_stage = "/var/www/tm-logs/sync/logs/adlib_sync.log"
 
     #Create the migrator
     sync = SyncMechanism(self, date, request_type, folder, log_path)

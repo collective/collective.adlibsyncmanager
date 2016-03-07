@@ -216,6 +216,7 @@ class SyncMechanism:
         self.write_log_details("=== Result ===", timestamp)
 
     def test_api(self):
+        print "TEST API"
         self.object_type = ""
         # Run tests
         #
@@ -347,8 +348,8 @@ class SyncMechanism:
         # # # # # # # # # # # #
 
         self.write_log_details("=== CREATION Sync Results ===")
-        creation_result = self.get_new_created_objects(creation_date)
-        self.creation_success = creation_result
+        #creation_result = self.get_new_created_objects(creation_date)
+        #self.creation_success = creation_result
 
         # # # # # # # # # # # #
         # Sync for modified   #
@@ -378,6 +379,7 @@ class SyncMechanism:
         return
                 
     def start_sync(self):
+        print "start sync"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
         else:

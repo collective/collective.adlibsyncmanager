@@ -8,7 +8,6 @@ CORE = {
     "Label-label.text":"text",
     #"Content_person-content.person.name-name":"creator-creator",
     "Content_person-content.person.name-name":"",#FOR KUNST
-    
     "Author-author.name-name": "object_author-creator",
     "Author-author.role-term": "object_author-role",
 
@@ -25,7 +24,7 @@ CORE = {
     "Illustrator-illustrator.name-name":"illustrator",
     "object_category":"object_category",
     "":"book_title",
-    "":"translated_title",
+    "title.translation":"translated_title",
     "Object_name-object_name-term":"object_type",
 
     "Production_date-production.date.end":"object_dating-end",

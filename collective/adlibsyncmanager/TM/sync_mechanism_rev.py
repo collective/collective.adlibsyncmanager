@@ -143,18 +143,18 @@ class SyncMechanism:
         self.write_log_details("%s__TEST MODIFIED RECORDS" %(collection))
 
         """self.write_log_details("%s__## Test for long period"%(collection), timestamp)
-                                self.date = '2015-12-09'
-                                self.xmldoc = self.build_api_request(self.date, search_query, collection)
-                                records = self.get_records(self.xmldoc)
-                                self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), self.date))
-                        
-                                timestamp = datetime.today().isoformat()
-                                self.write_log_details("%s__## Test for last hour"%(collection), timestamp)
-                                last_hour_time = datetime.today() - timedelta(hours = 1)
-                                last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
-                                self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
-                                records = self.get_records(self.xmldoc)
-                                self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), last_hour_datetime))"""
+        self.date = '2015-12-09'
+        self.xmldoc = self.build_api_request(self.date, search_query, collection)
+        records = self.get_records(self.xmldoc)
+        self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), self.date))
+
+        timestamp = datetime.today().isoformat()
+        self.write_log_details("%s__## Test for last hour"%(collection), timestamp)
+        last_hour_time = datetime.today() - timedelta(hours = 1)
+        last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
+        self.xmldoc = self.build_api_request(last_hour_datetime, search_query, collection)
+        records = self.get_records(self.xmldoc)
+        self.write_log_details("%s__%s records modified since %s" % (collection, str(len(records)), last_hour_datetime))"""
 
         timestamp = datetime.today().isoformat()
         self.write_log_details("%s__## Test for one minute ago"%(collection), timestamp)
@@ -234,59 +234,49 @@ class SyncMechanism:
 
 
     def test_api(self):
+        print "test api"
         self.object_type = ""
         # Run tests
         #
         self.is_test = True
 
-        #self.test_query('ChoiceMunten', "modification greater '%s'")
-        #self.test_query('ChoiceGeologie', "modification greater '%s'")
-        #self.test_query('ChoiceKunst', "creation greater '%s'")
-        #self.test_query('ChoiceInstrumenten', "modification greater '%s'")
-        #self.test_query('ChoiceBooks', "modification greater '%s'")
-
-
-
-        self.test_deleted_records('ChoiceCollect', self.date)
+        self.test_query('ChoiceMunten', "modification greater '%s'")
+        self.test_query('ChoiceGeologie', "modification greater '%s'")
+        self.test_query('ChoiceKunst', "creation greater '%s'")
+        self.test_query('ChoiceInstrumenten', "modification greater '%s'")
+        self.test_query('ChoiceBooks', "modification greater '%s'")
+        #self.test_deleted_records('ChoiceCollect', self.date)
 
         self.creation_success = True
         self.success = True
         return
 
-    def update_sync_records(self, records):
+    def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
         for record in records:
+
             curr += 1
             priref = self.migrator.get_priref(record)
             xml_record = self.get_record_by_priref(priref, self.collection_type)
 
-            if xml_record:
+            if xml_record is not None:
                 if self.migrator.valid_priref(priref):
                     if priref:
                         plone_object = self.migrator.find_object_by_priref(priref)
-                        imported, is_new = self.migrator.import_record(priref, plone_object, xml_record)
-                        if imported:
-                            # Log status
-                            if is_new:
-                                self.migrator.log_status("%s__Created [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
-                                self.migrator.log_status("%s__URL: %s" %(self.collection_type, str(imported.absolute_url())))
-                                if self.migrator.IMPORT_TYPE == "sync":
-                                    self.migrator.log_created("%s__Created [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
-                                    self.migrator.log_created("%s__URL: %s" %(self.collection_type, str(imported.absolute_url())))
-
-                                if self.migrator.UPLOAD_IMAGES:
-                                    self.migrator.upload_images(priref, imported, xml_record)
-                            else:
-                                self.migrator.log_status("%s__Updated [%s] %s / %s" %(self.collection_type, str(priref), str(curr), str(total)))
-                                self.migrator.log_status("%s__URL: %s" %(self.collection_type, str(plone_object.absolute_url())))
+                        if plone_object:
+                            self.migrator.update_existing(priref, plone_object, xml_record)
+                            self.write_log_details("%s__Updated [%s] - %s" %(str(collection), str(priref), plone_object.absolute_url()))
                         else:
-                            pass
+                           pass
                     else:
                         self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
             else:
                 #TODO log error
                 pass
+
+
+        return True
 
     def sync_query_records(self, collection, query):
 
@@ -307,36 +297,45 @@ class SyncMechanism:
 
 
     def run_sync(self):
+
         #
-        # Run tests
+        # Run sync
         #
         
         collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
-        collections = ['ChoiceKunst']
 
-        last_hour_time = datetime.today() - timedelta(minutes = 240)
-        last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
-        self.date = last_hour_datetime
+        #last_hour_time = datetime.today() - timedelta(minutes = 240)
+        #last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
+        #self.date = last_hour_datetime
 
         # Created
         self.migrator.CREATE_NEW = True
-        for collection in collections:
-            self.collection_type = collection
-            records = self.sync_query_records(self.collection_type, "creation greater '%s'")
-            self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
-            self.update_sync_records(records)
+        #for collection in collections:
+        #    self.collection_type = collection
+        #    records = self.sync_query_records(self.collection_type, "creation greater '%s'")
+        #    self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+        #    self.update_sync_records(records)
 
         # Modified
         self.migrator.CREATE_NEW = False
         for collection in collections:
+            transaction.begin()
+            # Exception for books
+            if collection == "ChoiceBooks":
+                CORE["object_number"] = ""
+                CORE["shelf_mark"] = "object_number"
+                self.migrator.CORE = CORE
+                self.migrator.updater.CORE = CORE
+
             self.collection_type = collection
             records = self.sync_query_records(self.collection_type, "modification greater '%s'")
             self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
-            self.update_sync_records(records)
+            self.update_sync_records(records, collection)
+            transaction.commit()
         
         self.creation_success = True
         self.success = True
-        return
+        return True
 
     def get_folder(self, path):
         container = self.portal
@@ -368,7 +367,8 @@ class SyncMechanism:
                 final_log = "[ %s ] - %s" %(timestamp, log)
 
             try:
-                self.log_file.write(final_log)
+                log_to_write = final_log.replace('__', '')
+                self.log_file.write(log_to_write+"\n")
             except:
                 pass
 
@@ -408,7 +408,7 @@ class SyncMechanism:
                 
     def start_sync(self):
         self.migrator.init_log_files()
-        self.type = "test"
+        self.type = "sync_date"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
         else:
