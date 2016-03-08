@@ -79,7 +79,7 @@ def migrate(self):
     #Create the migrator
     migrator = APIMigrator(self, portal, folder, image_folder, type_to_create="art_list", set_limit=0, art_list=[])
     updater = Updater(migrator)
-    sync = SyncMechanism(self, date, creation_date, request_type, folder, log_stage_path)
+    sync = SyncMechanism(self, date, creation_date, request_type, folder, log_path)
     
     print("=== Starting Sync. ===")
 

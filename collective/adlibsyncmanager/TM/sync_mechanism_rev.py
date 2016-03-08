@@ -251,6 +251,40 @@ class SyncMechanism:
         self.success = True
         return
 
+    def update_sync_records_test(self, records, collection):
+        curr = 0
+        total = len(records)
+        for record in records:
+
+            curr += 1
+            #priref = self.migrator.get_priref(record)
+            priref = record
+            xml_record = self.get_record_by_priref(priref, self.collection_type)
+
+            if xml_record is not None:
+                if self.migrator.valid_priref(priref):
+                    if priref:
+                        plone_object = self.migrator.find_object_by_priref(priref)
+                        if plone_object:
+                            self.migrator.update_existing(priref, plone_object, xml_record)
+                            
+                            # Books special case
+                            if collection == 'ChoiceBooks':
+                                self.migrator.fix_book_title(plone_object)
+
+                            # Fossils special case
+                            elif collection == "ChoiceGeologie":
+                                self.migrator.fix_fossil_name(plone_object)
+
+                            self.write_log_details("%s__Updated [%s] - %s" %(str(collection), str(priref), plone_object.absolute_url()))
+                        else:
+                           pass
+                    else:
+                        self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+            else:
+                #TODO log error
+                pass
+
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
@@ -266,6 +300,15 @@ class SyncMechanism:
                         plone_object = self.migrator.find_object_by_priref(priref)
                         if plone_object:
                             self.migrator.update_existing(priref, plone_object, xml_record)
+                            
+                            # Books special case
+                            if collection == 'ChoiceBooks':
+                                self.migrator.fix_book_title(plone_object)
+
+                            # Fossils special case
+                            elif collection == "ChoiceGeologie":
+                                self.migrator.fix_fossil_name(plone_object)
+
                             self.write_log_details("%s__Updated [%s] - %s" %(str(collection), str(priref), plone_object.absolute_url()))
                         else:
                            pass
@@ -297,13 +340,18 @@ class SyncMechanism:
 
 
     def run_sync(self):
+        # Test prirefs
+        records_instruments = ['4000078']
+        records_books = ['8520']
+        records_fossils = ['7040126']
+
 
         #
         # Run sync
         #
         
         collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
-
+        #collections_test = ['ChoiceGeologie']
         #last_hour_time = datetime.today() - timedelta(minutes = 240)
         #last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         #self.date = last_hour_datetime
@@ -329,6 +377,8 @@ class SyncMechanism:
 
             self.collection_type = collection
             records = self.sync_query_records(self.collection_type, "modification greater '%s'")
+            #records = records_fossils
+
             self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
             self.update_sync_records(records, collection)
             transaction.commit()

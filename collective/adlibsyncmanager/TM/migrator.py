@@ -96,6 +96,8 @@ RESTRICTIONS = {
     "books": []
 }
 
+FIELDS_ALLOW_SINGLE_ONLY = ['scientific_name']
+
 VIEW_TYPES = {
     "coins": "double_view",
     "fossils": "view",
@@ -397,6 +399,9 @@ class Migrator:
         return field_value
 
     def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname):
+        if plone_fieldname in FIELDS_ALLOW_SINGLE_ONLY:
+            if current_value not in NOT_ALLOWED:
+                return current_value
 
         # Text
         if field_type == "text":
@@ -1137,6 +1142,16 @@ class Migrator:
 
         return True
 
+    def fix_fossil_name(self, obj):
+
+        common_name = getattr(obj, 'common_name', '')
+
+        if common_name:
+            setattr(obj, 'title', common_name)
+            obj.reindexObject(idxs=['Title'])
+
+        return True
+
     def rename_all_fossils(self):
 
         folder = self.updater.api.get_folder("nl/collectie/fossielen-en-mineralen-new")
@@ -1442,48 +1457,60 @@ class Migrator:
 
         return None
 
+    def fix_book_title(self, obj):
+        title = getattr(obj, 'title', '')
+        setattr(obj, 'book_title', title)
+
+        authors = getattr(obj, 'object_author', '')
+        if authors:
+            author = authors[0]
+            name = author['creator']
+            if name not in NOT_ALLOWED:
+                setattr(obj, 'title', name)
+                setattr(obj, 'description', title)
+
+                obj.reindexObject(idxs=['Title'])
+                obj.reindexObject(idxs=['Description'])
+        
+        return True
+
     def fix_books_titles(self):
 
-    	folder = self.updater.api.get_folder('nl/collectie/boeken-new')
+        folder = self.updater.api.get_folder('nl/collectie/boeken')
 
-    	total = len(folder)
-    	curr = 0
+        total = len(folder)
+        curr = 0
 
-    	for _id in folder:
-    		curr += 1
-    		transaction.begin()
-    		try:
+        for _id in folder:
+            curr += 1
+            transaction.begin()
+            try:
 
-    			print "Fixing %s / %s" %(str(curr), str(total))
+                print "Fixing %s / %s" %(str(curr), str(total))
 
-    			obj = folder(_id)
+                obj = folder(_id)
 
-    			title = getattr(obj, 'title', '')
-    			setattr(obj, 'book_title', title)
+                title = getattr(obj, 'title', '')
+                setattr(obj, 'book_title', title)
 
-    			authors = getattr(obj, 'object_author', '')
-    			if authors:
-    				author = authors[0]
-    				name = author['creator']
-    				if name not in NOT_ALLOWED:
-	    				setattr(obj, 'title', name)
-	    				setattr(obj, 'description', title)
+                authors = getattr(obj, 'object_author', '')
+                if authors:
+                    author = authors[0]
+                    name = author['creator']
+                    if name not in NOT_ALLOWED:
+                        setattr(obj, 'title', name)
+                        setattr(obj, 'description', title)
 
-	    				obj.reindexObject(idxs=['Title'])
-	    				obj.reindexObject(idxs=['Description'])
+                        obj.reindexObject(idxs=['Title'])
+                        obj.reindexObject(idxs=['Description'])
 
-    			transaction.commit()
-    		except:
-    			transaction.abort()
-    			pass
+                transaction.commit()
+            except:
+                transaction.abort()
+                pass
 
-    	return True
-    """
-    //backButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self.navigationController, action:nil)
-        //self.navigationItem.backBarButtonItem = backButton
-        Large 547
-        small 425
-    """
+        return True
+
     ## START
     def start(self):
         # Create translation
