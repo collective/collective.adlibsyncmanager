@@ -341,17 +341,17 @@ class SyncMechanism:
 
     def run_sync(self):
         # Test prirefs
-        records_instruments = ['4000078']
+        records_instruments = ['4000808']
         records_books = ['8520']
         records_fossils = ['7040126']
-
+        records_kunst = ['39585']
 
         #
         # Run sync
         #
         
         collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
-        #collections_test = ['ChoiceGeologie']
+        #collections_test = ['ChoiceKunst']
         #last_hour_time = datetime.today() - timedelta(minutes = 240)
         #last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         #self.date = last_hour_datetime
@@ -377,7 +377,7 @@ class SyncMechanism:
 
             self.collection_type = collection
             records = self.sync_query_records(self.collection_type, "modification greater '%s'")
-            #records = records_fossils
+            #records = records_kunst
 
             self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
             self.update_sync_records(records, collection)
