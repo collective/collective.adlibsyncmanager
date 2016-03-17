@@ -22,7 +22,8 @@ CORE = {
     "administration_name":"administration_name",
     "":"author",
     "Illustrator-illustrator.name-value":"illustrator",
-    "object_category":"object_category",
+    "object_category": "object_category",
+    "object_category-value":"object_category",
     "":"book_title",
     "title.translation":"translated_title",
     "Object_name-object_name-value":"object_type",
@@ -34,8 +35,8 @@ CORE = {
 
     "":"fossil_dating",
 
-    "Production-production.place":"object_production_period-place",
-    "production.period":"object_production_period-period",
+    "Production-production.place-value":"object_production_period-place",
+    "production.period-value":"object_production_period-period",
 
     "production.date.notes":"production_notes",
     "search_year":"search_year",
