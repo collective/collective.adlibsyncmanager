@@ -39,7 +39,7 @@ CORE = {
     #"production.reason-term":"object_production_period-reason",
     #"production.notes":"object_production_period-notes",
 
-    "":"production_notes",
+    "production.date.notes":"production_notes",
     "search_year":"search_year",
     "Material-material-term":"object_material-material",
     "material_type-term":"object_material-material",

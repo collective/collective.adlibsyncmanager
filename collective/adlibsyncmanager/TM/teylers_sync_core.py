@@ -37,11 +37,11 @@ CORE = {
     "Production-production.place":"object_production_period-place",
     "production.period":"object_production_period-period",
 
-    "":"production_notes",
+    "production.date.notes":"production_notes",
     "search_year":"search_year",
     "Material-material-value":"object_material-material",
     "material_type-value":"object_material-material",
-    "Technique-technique-value":"technique",
+    "Technique-technique-value":"object_technique-technique",
 
     "Dimension-dimension.type-value":"object_dimension-type",
     "Dimension-dimension.unit-value":"object_dimension-unit",
@@ -72,6 +72,7 @@ CORE = {
     "Digital_reference-digital_reference.description-value":"object_digital_reference-description",
     
     "year_of_publication": "object_dating-start",
+    "Copyrights":"copyrights-copyrights",
 
     #Ignored tags
 

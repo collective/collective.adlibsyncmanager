@@ -288,7 +288,7 @@ class SyncMechanism:
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
-        for record in records:
+        for record in list(records)[:100]:
 
             curr += 1
             priref = self.migrator.get_priref(record)
@@ -344,7 +344,7 @@ class SyncMechanism:
         records_instruments = ['4000808']
         records_books = ['8520']
         records_fossils = ['7040126']
-        records_kunst = ['39585']
+        records_kunst = ['39585', '4579']
 
         #
         # Run sync
@@ -376,6 +376,7 @@ class SyncMechanism:
                 self.migrator.updater.CORE = CORE
 
             self.collection_type = collection
+            self.date = '2016-03-13 00:00:01'
             records = self.sync_query_records(self.collection_type, "modification greater '%s'")
             #records = records_kunst
 
