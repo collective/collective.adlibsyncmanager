@@ -288,7 +288,8 @@ class SyncMechanism:
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
-        for record in list(records)[:100]:
+        for record in list(records):
+            transaction.begin()
 
             curr += 1
             priref = self.migrator.get_priref(record)
@@ -309,7 +310,7 @@ class SyncMechanism:
                             elif collection == "ChoiceGeologie":
                                 self.migrator.fix_fossil_name(plone_object)
 
-                            self.write_log_details("%s__Updated [%s] - %s" %(str(collection), str(priref), plone_object.absolute_url()))
+                            self.write_log_details("%s__Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
                         else:
                            pass
                     else:
@@ -317,6 +318,8 @@ class SyncMechanism:
             else:
                 #TODO log error
                 pass
+
+            transaction.commit()
 
 
         return True
@@ -367,7 +370,7 @@ class SyncMechanism:
         # Modified
         self.migrator.CREATE_NEW = False
         for collection in collections:
-            transaction.begin()
+            #transaction.begin()
             # Exception for books
             if collection == "ChoiceBooks":
                 CORE["object_number"] = ""
@@ -382,7 +385,7 @@ class SyncMechanism:
 
             self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
             self.update_sync_records(records, collection)
-            transaction.commit()
+            #transaction.commit()
         
         self.creation_success = True
         self.success = True
