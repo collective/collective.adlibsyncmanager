@@ -288,7 +288,7 @@ class SyncMechanism:
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
-        for record in list(records):
+        for record in list(records)[:100]:
             transaction.begin()
 
             curr += 1
