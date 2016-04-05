@@ -278,7 +278,14 @@ class SyncMechanism:
 
                             self.write_log_details("%s__Updated [%s] - %s" %(str(collection), str(priref), plone_object.absolute_url()))
                         else:
-                           pass
+                            if self.migrator.CREATE_NEW:
+                                created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
+                                if created_object:
+                                    self.write_log_details("%s__Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
+                                else:
+                                    self.migrator.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                            else:
+                                pass
                     else:
                         self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
             else:
@@ -288,7 +295,7 @@ class SyncMechanism:
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
-        for record in list(records)[:100]:
+        for record in list(records):
             transaction.begin()
 
             curr += 1
@@ -312,7 +319,15 @@ class SyncMechanism:
 
                             self.write_log_details("%s__Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
                         else:
-                           pass
+                            if self.migrator.CREATE_NEW:
+                                created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
+                                if created_object:
+                                    self.write_log_details("%s__Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
+                                else:
+                                    self.migrator.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                            else:
+                                pass
+
                     else:
                         self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
             else:
@@ -348,44 +363,54 @@ class SyncMechanism:
         records_books = ['8520']
         records_fossils = ['7040126']
         records_kunst = ['39585', '4579']
-
-        #
-        # Run sync
-        #
-        
-        collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
         #collections_test = ['ChoiceKunst']
         #last_hour_time = datetime.today() - timedelta(minutes = 240)
         #last_hour_datetime = last_hour_time.strftime('%Y-%m-%d %H:%M:%S')
         #self.date = last_hour_datetime
 
+        #
+        # Run sync
+        #
+        collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
+        
         # Created
         self.migrator.CREATE_NEW = True
-        #for collection in collections:
-        #    self.collection_type = collection
-        #    records = self.sync_query_records(self.collection_type, "creation greater '%s'")
-        #    self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
-        #    self.update_sync_records(records)
+        for collection in collections:
+            try:
+                self.collection_type = collection
+                records = self.sync_query_records(self.collection_type, "creation greater '%s'")
+                if collection == "ChoiceBooks":
+                    CORE["object_number"] = ""
+                    CORE["shelf_mark"] = "object_number"
+                    self.migrator.CORE = CORE
+                    self.migrator.updater.CORE = CORE
+
+                self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+                self.update_sync_records(records, collection)
+            except Exception, e:
+                exception_text = str(e)
+                self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, self.date, exception_text))
+                self.send_fail_email(exception_text, self.collection_type, self.date)
 
         # Modified
         self.migrator.CREATE_NEW = False
         for collection in collections:
-            #transaction.begin()
-            # Exception for books
-            if collection == "ChoiceBooks":
-                CORE["object_number"] = ""
-                CORE["shelf_mark"] = "object_number"
-                self.migrator.CORE = CORE
-                self.migrator.updater.CORE = CORE
+            try:
+                if collection == "ChoiceBooks":
+                    CORE["object_number"] = ""
+                    CORE["shelf_mark"] = "object_number"
+                    self.migrator.CORE = CORE
+                    self.migrator.updater.CORE = CORE
 
-            self.collection_type = collection
-            self.date = '2016-03-13 00:00:01'
-            records = self.sync_query_records(self.collection_type, "modification greater '%s'")
-            #records = records_kunst
+                self.collection_type = collection
+                records = self.sync_query_records(self.collection_type, "modification greater '%s'")
 
-            self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
-            self.update_sync_records(records, collection)
-            #transaction.commit()
+                self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+                self.update_sync_records(records, collection)
+            except Exception, e:
+                exception_text = str(e)
+                self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, self.date, exception_text))
+                self.send_fail_email(exception_text, self.collection_type, self.date)
         
         self.creation_success = True
         self.success = True
@@ -426,7 +451,7 @@ class SyncMechanism:
             except:
                 pass
 
-    def send_fail_email(self, error_text, object_number):
+    def send_fail_email(self, error_text, collection, date):
         """
         Send email if sync fails
         """
@@ -435,7 +460,7 @@ class SyncMechanism:
         receivers = ['andre@goncalves.me', 'andre@itsnotthatkind.org']
 
         subject = "Sync mechanism - FAIL"        
-        msg = "Subject: %s\n\nObject number: %s failed to sync with Adlib.\nError details: %s" %(subject, object_number, error_text)
+        msg = "Subject: %s\n\nCollection: %s failed to sync with Adlib.\nSync date: %s\nError details: %s" %(subject, collection, date, error_text)
 
         try:
             smtpObj = smtplib.SMTP('localhost')
