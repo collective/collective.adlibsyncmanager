@@ -384,6 +384,10 @@ class SyncMechanism:
                     CORE["shelf_mark"] = "object_number"
                     self.migrator.CORE = CORE
                     self.migrator.updater.CORE = CORE
+                else:
+                    CORE["object_number"] = "object_number"
+                    self.migrator.CORE = CORE
+                    self.migrator.updater.CORE = CORE
 
                 self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
                 self.update_sync_records(records, collection)
@@ -392,6 +396,11 @@ class SyncMechanism:
                 self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, self.date, exception_text))
                 self.send_fail_email(exception_text, self.collection_type, self.date)
 
+
+        CORE["object_number"] = "object_number"
+        self.migrator.CORE = CORE
+        self.migrator.updater.CORE = CORE
+
         # Modified
         self.migrator.CREATE_NEW = False
         for collection in collections:
@@ -399,6 +408,10 @@ class SyncMechanism:
                 if collection == "ChoiceBooks":
                     CORE["object_number"] = ""
                     CORE["shelf_mark"] = "object_number"
+                    self.migrator.CORE = CORE
+                    self.migrator.updater.CORE = CORE
+                else:
+                    CORE["object_number"] = "object_number"
                     self.migrator.CORE = CORE
                     self.migrator.updater.CORE = CORE
 
