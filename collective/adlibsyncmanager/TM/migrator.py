@@ -95,7 +95,7 @@ RESTRICTIONS = {
     "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension', 'object_category', 'object_descriptions'],
     "kunst": ['acquisition_source', 'object_inscription', 'object_descriptions'],
     "instruments":['object_descriptions'],
-    "books": []
+    "books": ['search_year']
 }
 
 FIELDS_ALLOW_SINGLE_ONLY = ['scientific_name']
