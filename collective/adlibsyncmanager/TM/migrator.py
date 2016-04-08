@@ -418,10 +418,10 @@ class Migrator:
             parent = xml_element.getparent()
             if parent is not None:
 
-            	if parent.find('label.source') != None:
-            		source = parent.find('label.source').text
-            		if source not in ALLOWED_SOURCES:
-            			return current_value
+                if parent.find('label.source') != None:
+                    source = parent.find('label.source').text
+                    if source not in ALLOWED_SOURCES:
+                        return current_value
 
                 if parent.find('label.type') != None:
                     if parent.find('label.type').get('option') in WEBSITE_TEXT:
@@ -726,17 +726,17 @@ class Migrator:
                         setattr(plone_object, 'title', new_title)
 
         elif self.object_type == "fossils":
-        	scientific_name = getattr(plone_object, 'scientific_name', None)
-        	common_name = getattr(plone_object, 'common_name', None)
+            scientific_name = getattr(plone_object, 'scientific_name', None)
+            common_name = getattr(plone_object, 'common_name', None)
             title = self.updater.get_title_by_type(xml_record)
             object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
             
             if not title and common_name:
-            	#fallback to common name
-            	title = common_name
+                #fallback to common name
+                title = common_name
             if not title and scientific_name:
-            	#fallback to scientific_name
-            	title = scientific_name
+                #fallback to scientific_name
+                title = scientific_name
             elif not title and object_number:
                 #fallback object number
                 title = object_number
