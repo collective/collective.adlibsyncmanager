@@ -10,6 +10,8 @@ CORE = {
 
     "Author-author.name-value": "object_author-creator",
     "Author-author.role-value": "object_author-role",
+    "Corporate_author-corporate_author-value":"object_author-creator",
+    "Corporate_author-corporate_author.role-value":"object_author-role",
 
     "Production-creator-value":"creator-creator",
     "Production-creator.qualifier":"creator-qualifier",
