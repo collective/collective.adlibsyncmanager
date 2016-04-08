@@ -92,7 +92,7 @@ TEST_EXAMPLES = {
 
 RESTRICTIONS = {
     "coins": [],
-    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension'],
+    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension', 'object_category', 'object_descriptions'],
     "kunst": ['acquisition_source', 'object_inscription', 'object_descriptions'],
     "instruments":['object_descriptions'],
     "books": []
@@ -726,9 +726,18 @@ class Migrator:
                         setattr(plone_object, 'title', new_title)
 
         elif self.object_type == "fossils":
+        	scientific_name = getattr(plone_object, 'scientific_name', None)
+        	common_name = getattr(plone_object, 'common_name', None)
             title = self.updater.get_title_by_type(xml_record)
             object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
-            if not title and object_number:
+            
+            if not title and common_name:
+            	#fallback to common name
+            	title = common_name
+            if not title and scientific_name:
+            	#fallback to scientific_name
+            	title = scientific_name
+            elif not title and object_number:
                 #fallback object number
                 title = object_number
             elif not title and not object_number:

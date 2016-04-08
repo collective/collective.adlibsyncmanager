@@ -37,6 +37,7 @@ CORE = {
 
     "Production-production.place-value":"object_production_period-place",
     "production.period-value":"object_production_period-period",
+    "production.reason": "object_production_period-reason",
 
     "production.date.notes":"production_notes",
     "search_year":"search_year",
