@@ -59,7 +59,7 @@ CORE = {
     "Taxonomy-taxonomy.common_name":"common_name",
     "Taxonomy-taxonomy.scientific_name":"scientific_name",
     "":"chemical_composition",
-    "field_coll.place":"field_coll_place",
+    "field_coll.place-value":"field_coll_place",
 
     "object_number":"object_number",
     "Description-description":"object_descriptions-description",
