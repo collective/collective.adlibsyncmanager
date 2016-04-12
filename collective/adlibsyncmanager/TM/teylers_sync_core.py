@@ -77,6 +77,7 @@ CORE = {
     
     "year_of_publication": "object_dating-start",
     "Copyrights":"copyrights-copyrights",
+    "physical_description": "chemical_composition",
 
     #Ignored tags
 
