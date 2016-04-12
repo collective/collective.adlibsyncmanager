@@ -67,7 +67,7 @@ CORE = {
     "Inscription-inscription.content":"object_inscription-content",
     "Inscription-inscription.type-value":"object_inscription-type",
 
-    "Acquisition_source-acquisition.source":"acquisition_source",
+    "Acquisition_source-acquisition.source-value":"acquisition_source",
     "credit_line":"credit_line",
     "Reproduction-reproduction.reference":"object_reproduction_reference-reference",
     "reproduction-reproduction.reference":"object_reproduction_reference-reference",
