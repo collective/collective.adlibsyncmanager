@@ -99,7 +99,7 @@ RESTRICTIONS = {
     "books": ['search_year']
 }
 
-FIELDS_ALLOW_SINGLE_ONLY = ['scientific_name']
+FIELDS_ALLOW_SINGLE_ONLY = ['scientific_name', 'common_name']
 
 VIEW_TYPES = {
     "coins": "double_view",
