@@ -984,7 +984,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection)[10000:10100]:
+        for xml_record in list(self.collection):
             try:
                 transaction.begin()
                 curr += 1
@@ -1536,7 +1536,7 @@ class Migrator:
         #return True
         self.init_log_files()
         #self.get_collection()
-        self.create_translations()
+        #self.create_translations()
         #self.fix_books_titles()
         return True
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
