@@ -885,13 +885,13 @@ class Migrator:
                 parent = label
                 if parent.find('label.type') != None:
                     if parent.find('label.type').find('text') != None:
-                        if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG']:
+                        if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG', 'WEBTEXT ENG']:
                             text = field.text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             setattr(obj, 'text', value)
                     elif parent.find('label.type').find('value') != None:
-                        if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG']:
+                        if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG', 'WEBTEXT ENG']:
                             text = field.text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
