@@ -807,10 +807,11 @@ class Migrator:
             self.update_existing(priref, object_translated, xml_record)
             self.log_status("! STATUS !__Updated translation")
             self.log_status("! STATUS !__URL: %s" %(object_translated.absolute_url()))
+            return object_translated
         else:
             pass
 
-        return True
+        return None
 
 
     def create_new_object(self, priref, plone_object, xml_record):
