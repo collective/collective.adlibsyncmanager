@@ -62,7 +62,7 @@ UPDATE_TRANSLATIONS = False
 #if books change shelf_mark in CORE dict
 #if Kunst do not include content.person.name
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "books"
+OBJECT_TYPE = "kunst"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
@@ -984,7 +984,7 @@ class Migrator:
         curr, limit = 0, 0
         total = len(list(self.collection))
         
-        for xml_record in list(self.collection):
+        for xml_record in list(self.collection)[10000:10100]:
             try:
                 transaction.begin()
                 curr += 1
@@ -1536,8 +1536,8 @@ class Migrator:
         #return True
         self.init_log_files()
         #self.get_collection()
-
-        self.fix_books_titles()
+        self.create_translations()
+        #self.fix_books_titles()
         return True
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books1.xml")
         #self.unpublish_items("/var/www/tm-data/xml/unpublish_books2.xml")
