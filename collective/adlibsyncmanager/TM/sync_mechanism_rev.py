@@ -317,10 +317,8 @@ class SyncMechanism:
                             elif collection == "ChoiceGeologie":
                                 self.migrator.fix_fossil_name(plone_object)
 
-                            print "Update translation"
                             obj_translated = self.migrator.update_object_translation(priref, plone_object, xml_record)
                             if obj_translated:
-                                print "Generate special fields for translated object"
                                 self.migrator.generate_special_translated_fields(obj_translated, xml_record)
 
                             self.write_log_details("%s__Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))

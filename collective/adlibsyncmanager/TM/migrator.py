@@ -879,6 +879,9 @@ class Migrator:
     def generate_special_translated_fields(self, obj, xml_record):
 
         # Check body text - label.text
+        default_value = RichTextValue('', 'text/html', 'text/html')
+        setattr(obj, 'text', default_value)
+        
         for label in xml_record.findall('Label'):
             if label.find('label.text') != None:
                 field = label.find('label.text')
@@ -903,7 +906,6 @@ class Migrator:
             if translation:
                 setattr(obj, 'title', translation)
                 setattr(obj, 'object_title', translation)
-
                 obj.reindexObject(idxs=['Title'])
 
         return True
