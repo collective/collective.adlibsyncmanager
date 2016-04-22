@@ -732,6 +732,9 @@ class Migrator:
             title = self.updater.get_title_by_type(xml_record)
             object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
             
+            print title
+            print common_name
+            
             if not title and common_name:
                 #fallback to common name
                 title = common_name
@@ -1167,7 +1170,7 @@ class Migrator:
 
         common_name = getattr(obj, 'common_name', '')
         title = getattr(obj, 'title', '')
-        
+
         if not title and common_name:
             setattr(obj, 'title', common_name)
             obj.reindexObject(idxs=['Title'])
