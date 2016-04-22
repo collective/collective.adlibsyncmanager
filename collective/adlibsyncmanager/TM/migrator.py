@@ -731,10 +731,7 @@ class Migrator:
             common_name = getattr(plone_object, 'common_name', None)
             title = self.updater.get_title_by_type(xml_record)
             object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
-            
-            print title
-            print common_name
-            
+
             if not title and common_name:
                 #fallback to common name
                 title = common_name
