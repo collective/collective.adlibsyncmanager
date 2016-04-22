@@ -1166,8 +1166,9 @@ class Migrator:
     def fix_fossil_name(self, obj):
 
         common_name = getattr(obj, 'common_name', '')
-
-        if common_name:
+        title = getattr(obj, 'title', '')
+        
+        if not title and common_name:
             setattr(obj, 'title', common_name)
             obj.reindexObject(idxs=['Title'])
 
