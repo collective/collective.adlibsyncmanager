@@ -1557,6 +1557,10 @@ class Migrator:
 
                 print curr
                 transaction.commit()
+            except:
+                transaction.abort()
+                print "Failed"
+                pass
 
         return True
 
