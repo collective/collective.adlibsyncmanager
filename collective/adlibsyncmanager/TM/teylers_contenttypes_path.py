@@ -30,7 +30,7 @@ CONTENT_TYPES_PATH = {
 		    },
 		    "prod": {
 		        "single":"/var/www/tm-data/xml/single-kunst-1.xml",
-		        "total":"/var/www/tm-data/xml/kunst.xml"
+		        "total":"/var/www/tm-data/xml/kunst-new.xml"
 		    }
 		},
 		"instruments": {

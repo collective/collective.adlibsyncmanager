@@ -1533,12 +1533,40 @@ class Migrator:
 
         return True
 
+    def add_copyrights(self):
+        self.get_collection()
+
+        curr = 0
+        total = len(list(self.collection))
+        total_updated = 0
+
+        for xml_record in list(self.collection):
+            try:
+                transaction.begin()
+                curr += 1
+                priref = self.get_priref(xml_record)
+                if xml_record.find("Copyrights") != None:
+                    copyrights = xml_record.find("Copyrights").text
+                    if copyrights not in NOT_ALLOWED:
+                        plone_object = self.find_object_by_priref(priref)
+                        if plone_object:
+                            new_field = [{"copyrights": copyrights}]
+                            setattr(plone_object, 'copyrights', new_field)
+                            total_updated += 1
+                            print "Copyright updated %s" %(total_updated)
+
+                print curr
+                transaction.commit()
+
+        return True
+
     ## START
     def start(self):
         # Create translation
         #self.create_translations()
         #return True
         self.init_log_files()
+        self.add_copyrights()
         #self.get_collection()
         #self.create_translations()
         #self.fix_books_titles()

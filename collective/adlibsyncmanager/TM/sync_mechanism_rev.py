@@ -485,7 +485,6 @@ class SyncMechanism:
         except:
             self.write_log_details("=== ! Send email failed ===\nEmail msg: %s" %(msg))
 
-
     def sync_date(self):
         date = self.date
         creation_date = self.creation_date
