@@ -1564,13 +1564,14 @@ class Migrator:
 
         return True
 
+
     ## START
     def start(self):
         # Create translation
         #self.create_translations()
         #return True
-        self.init_log_files()
-        self.add_copyrights()
+        #self.init_log_files()
+        self.create_translations()
         #self.get_collection()
         #self.create_translations()
         #self.fix_books_titles()
