@@ -62,7 +62,7 @@ UPDATE_TRANSLATIONS = False
 #if books change shelf_mark in CORE dict
 #if Kunst do not include content.person.name
 PORTAL_TYPE = "Object"
-OBJECT_TYPE = "fossils"
+OBJECT_TYPE = "instruments"
 IMPORT_TYPE = "import"
 TYPE_IMPORT_FILE = "total"
 
