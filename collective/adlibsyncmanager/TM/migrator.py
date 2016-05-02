@@ -1007,6 +1007,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
+                        plone.api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
@@ -1049,6 +1050,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
+                        plone.api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
