@@ -34,7 +34,7 @@ from plone.event.interfaces import IEventAccessor
 from z3c.relationfield import RelationValue
 import glob
 from plone.multilingual.interfaces import ITranslationManager
-
+from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from collective.leadmedia.utils import autoCropImage
 
 from .teylers_contenttypes_path import CONTENT_TYPES_PATH
@@ -925,7 +925,8 @@ class Migrator:
                     if self.object_type == "instruments":
                         img_translated.reindexObject()
                     if curr == 1:
-                        addCropToTranslation(obj, img_translated)
+                    	imageObjectCreated(obj, None)
+                        #addCropToTranslation(obj, img_translated)
                 else:
                     # has translation - do not translate
                     pass
@@ -977,6 +978,95 @@ class Migrator:
 
         layout = plone_object.getLayout()
         translated_object.setLayout(layout)
+
+        return True
+
+    def art_translations(self):
+    	self.init_log_files()
+        #self.get_collection()
+
+        curr = 0
+        art = plone.api.content.get(path='/nl/collectie/kunst')
+        total = len(art)
+
+        for _id in art:
+        	transaction.begin()
+        	curr += 1
+        	print 'ART: %s / %s' %(str(curr), str(total))
+
+        	obj = art[_id]
+        	if obj.Subject() or "Michelangelo" in obj.description or "Raffaello" in obj.description:
+        		if not ITranslationManager(obj).has_translation('en'):
+        			try:
+                        ITranslationManager(obj).add_translation('en')
+                        translated_object = ITranslationManager(obj).get_translation('en')
+
+                        # Copy fields from original object
+                        self.copy_original_to_translated(obj, translated_object)
+                        self.generate_contents_translation(obj)
+                        #self.generate_special_translated_fields(translated_object, xml_record)
+                        translated_object.setSubject(obj.Subject())
+                        translated_object.reindexObject()
+
+                        self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
+                    except Exception, e:
+                        self.error("%s__ __Translation for object failed - %s"%(str(""), str(e))) 
+                        raise
+                else:
+                    translated_object = ITranslationManager(obj).get_translation('en')
+                    translated_object.setSubject(obj.Subject())
+                    uid = translated_object.UID()
+                    brain = uuidToCatalogBrain(uid)
+                    lead_media = brain.leadMedia
+                    if lead_media:
+                    	img = uuidToObject(lead_media)
+                    	imageObjectCreated(img, None)
+                    translated_object.reindexObject()
+
+            transaction.commit()
+
+        print "FOSSILS"
+        fossils = plone.api.content.get(path='/nl/collectie/fossielen-en-mineralen')
+        curr = 0
+        total = len(fossils)
+        for _id in fossils:
+        	transaction.begin()
+        	curr += 1
+        	print 'Fossils: %s / %s' %(str(curr), str(total))
+
+        	obj = fossils[_id]
+        	brain = uuidToCatalogBrain(obj.UID())
+        	if brain.leadMedia:
+        		if not ITranslationManager(obj).has_translation('en'):
+        			try:
+                        ITranslationManager(obj).add_translation('en')
+                        translated_object = ITranslationManager(obj).get_translation('en')
+
+                        # Copy fields from original object
+                        self.copy_original_to_translated(obj, translated_object)
+                        self.generate_contents_translation(obj)
+                        #self.generate_special_translated_fields(translated_object, xml_record)
+                        translated_object.setSubject(obj.Subject())
+                        translated_object.reindexObject()
+
+                        self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
+                        self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
+                    except Exception, e:
+                        self.error("%s__ __Translation for object failed - %s"%(str(""), str(e))) 
+                        raise
+                else:
+                    translated_object = ITranslationManager(obj).get_translation('en')
+                    translated_object.setSubject(obj.Subject())
+                    uid = translated_object.UID()
+                    brain = uuidToCatalogBrain(uid)
+                    lead_media = brain.leadMedia
+                    if lead_media:
+                    	img = uuidToObject(lead_media)
+                    	imageObjectCreated(img, None)
+                    translated_object.reindexObject()
+
+            transaction.commit()
 
         return True
 
@@ -1571,7 +1661,7 @@ class Migrator:
         #self.create_translations()
         #return True
         #self.init_log_files()
-        self.create_translations()
+        self.art_translations()
         #self.get_collection()
         #self.create_translations()
         #self.fix_books_titles()
