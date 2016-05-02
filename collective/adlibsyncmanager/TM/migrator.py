@@ -1022,6 +1022,7 @@ class Migrator:
                     lead_media = brain.leadMedia
                     if lead_media:
                         img = uuidToObject(lead_media)
+                        print "Fix crop"
                         imageObjectCreated(img, None)
                     translated_object.reindexObject()
 
@@ -1066,6 +1067,7 @@ class Migrator:
                     if lead_media:
                         img = uuidToObject(lead_media)
                         imageObjectCreated(img, None)
+                        print "Fix crop"
                     translated_object.reindexObject()
 
             transaction.commit()
