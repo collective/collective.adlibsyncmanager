@@ -986,7 +986,7 @@ class Migrator:
         #self.get_collection()
 
         curr = 0
-        art = plone.api.content.get(path='/nl/collectie/kunst')
+        art = api.content.get(path='/nl/collectie/kunst')
         total = len(art)
 
         for _id in art:
@@ -1007,7 +1007,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
-                        plone.api.content.transition(obj=translated_object, to_state='published')
+                        api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
@@ -1028,7 +1028,7 @@ class Migrator:
             transaction.commit()
 
         print "FOSSILS"
-        fossils = plone.api.content.get(path='/nl/collectie/fossielen-en-mineralen')
+        fossils = api.content.get(path='/nl/collectie/fossielen-en-mineralen')
         curr = 0
         total = len(fossils)
         for _id in fossils:
@@ -1050,7 +1050,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
-                        plone.api.content.transition(obj=translated_object, to_state='published')
+                        api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
