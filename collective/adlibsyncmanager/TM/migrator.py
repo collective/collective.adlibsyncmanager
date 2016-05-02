@@ -925,7 +925,7 @@ class Migrator:
                     if self.object_type == "instruments":
                         img_translated.reindexObject()
                     if curr == 1:
-                    	imageObjectCreated(obj, None)
+                        imageObjectCreated(obj, None)
                         #addCropToTranslation(obj, img_translated)
                 else:
                     # has translation - do not translate
@@ -982,7 +982,7 @@ class Migrator:
         return True
 
     def art_translations(self):
-    	self.init_log_files()
+        self.init_log_files()
         #self.get_collection()
 
         curr = 0
@@ -990,14 +990,14 @@ class Migrator:
         total = len(art)
 
         for _id in art:
-        	transaction.begin()
-        	curr += 1
-        	print 'ART: %s / %s' %(str(curr), str(total))
+            transaction.begin()
+            curr += 1
+            print 'ART: %s / %s' %(str(curr), str(total))
 
-        	obj = art[_id]
-        	if obj.Subject() or "Michelangelo" in obj.description or "Raffaello" in obj.description:
-        		if not ITranslationManager(obj).has_translation('en'):
-        			try:
+            obj = art[_id]
+            if obj.Subject() or "Michelangelo" in obj.description or "Raffaello" in obj.description:
+                if not ITranslationManager(obj).has_translation('en'):
+                    try:
                         ITranslationManager(obj).add_translation('en')
                         translated_object = ITranslationManager(obj).get_translation('en')
 
@@ -1021,8 +1021,8 @@ class Migrator:
                     brain = uuidToCatalogBrain(uid)
                     lead_media = brain.leadMedia
                     if lead_media:
-                    	img = uuidToObject(lead_media)
-                    	imageObjectCreated(img, None)
+                        img = uuidToObject(lead_media)
+                        imageObjectCreated(img, None)
                     translated_object.reindexObject()
 
             transaction.commit()
@@ -1032,15 +1032,15 @@ class Migrator:
         curr = 0
         total = len(fossils)
         for _id in fossils:
-        	transaction.begin()
-        	curr += 1
-        	print 'Fossils: %s / %s' %(str(curr), str(total))
+            transaction.begin()
+            curr += 1
+            print 'Fossils: %s / %s' %(str(curr), str(total))
 
-        	obj = fossils[_id]
-        	brain = uuidToCatalogBrain(obj.UID())
-        	if brain.leadMedia:
-        		if not ITranslationManager(obj).has_translation('en'):
-        			try:
+            obj = fossils[_id]
+            brain = uuidToCatalogBrain(obj.UID())
+            if brain.leadMedia:
+                if not ITranslationManager(obj).has_translation('en'):
+                    try:
                         ITranslationManager(obj).add_translation('en')
                         translated_object = ITranslationManager(obj).get_translation('en')
 
@@ -1064,8 +1064,8 @@ class Migrator:
                     brain = uuidToCatalogBrain(uid)
                     lead_media = brain.leadMedia
                     if lead_media:
-                    	img = uuidToObject(lead_media)
-                    	imageObjectCreated(img, None)
+                        img = uuidToObject(lead_media)
+                        imageObjectCreated(img, None)
                     translated_object.reindexObject()
 
             transaction.commit()
