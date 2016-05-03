@@ -305,7 +305,9 @@ class SyncMechanism:
         self.migrator.CREATE_NEW = False
         self.collection_type = "ChoiceInstrumenten"
         self.update_sync_records_extra(records, "ChoiceInstrumenten")
-        
+        self.success = True
+        self.creation_success = True
+
         return True
 
     def update_sync_records_extra(self, records, collection):
@@ -531,7 +533,9 @@ class SyncMechanism:
                 final_log = "[ %s ] - %s" %(timestamp, log)
 
             try:
+
                 log_to_write = final_log.replace('__', '')
+                print log_to_write
                 self.log_file.write(log_to_write+"\n")
             except:
                 pass
