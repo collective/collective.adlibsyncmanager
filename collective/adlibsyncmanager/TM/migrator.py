@@ -448,7 +448,7 @@ class Migrator:
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
-                            
+
                     elif parent.find('label.type').get('option') in WEBSITE_TEXT:
                         text = xml_element.text
                         text = current_val + "<br>" + text
@@ -1638,6 +1638,31 @@ class Migrator:
 
         return True
 
+
+    def fix_books_crops(self):
+        folder = api.content.get(path='/nl/collectie/boeken')
+
+        total = len(folder)
+        curr = 0
+
+        for _id in folder:
+            transaction.begin()
+
+            curr += 1
+            print "%s / %s" %(str(curr), str(total))
+
+            book = folder[_id]
+            if book.Subject():
+                if ITranslationManager(book).has_translation('en'):
+                    translated_object = ITranslationManager(book).get_translation('en')
+                    addCropToTranslation(book, translated_object)
+                    print "Added crops to %s" %(book.absolute_url())
+
+            transaction.commit()
+
+        return True
+
+
     def add_copyrights(self):
         self.get_collection()
 
@@ -1677,6 +1702,7 @@ class Migrator:
         #return True
         #self.init_log_files()
         self.art_translations()
+        self.fix_books_crops()
         #self.get_collection()
         #self.create_translations()
         #self.fix_books_titles()
