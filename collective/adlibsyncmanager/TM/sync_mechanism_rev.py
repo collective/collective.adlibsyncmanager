@@ -292,6 +292,74 @@ class SyncMechanism:
                 #TODO log error
                 pass
 
+    def sync_all_instruments(self):
+
+        #print "Build request for: %s" % (quoted_query)
+        self.api_request = "http://teylers.adlibhosting.com/wwwopacx/wwwopac.ashx?database=ChoiceInstrumenten&search=all&limit=0"
+        req = urllib2.Request(self.api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+        records = self.get_records(doc)
+
+        self.migrator.CREATE_NEW = False
+        self.collection_type = "ChoiceInstrumenten"
+        self.update_sync_records_extra(records, "ChoiceInstrumenten")
+        
+        return True
+
+    def update_sync_records_extra(self, records, collection):
+        curr = 0
+        total = len(records)
+        for record in list(records):
+            transaction.begin()
+
+            curr += 1
+            priref = self.migrator.get_priref(record)
+            xml_record = self.get_record_by_priref(priref, self.collection_type)
+
+            if xml_record is not None:
+                if self.migrator.valid_priref(priref):
+                    if priref:
+                        plone_object = self.migrator.find_object_by_priref(priref)
+                        if plone_object:
+                            self.migrator.update_existing(priref, plone_object, xml_record)
+                            
+                            # Books special case
+                            if collection == 'ChoiceBooks':
+                                self.migrator.fix_book_title(plone_object)
+
+                            # Fossils special case
+                            elif collection == "ChoiceGeologie":
+                                self.migrator.fix_fossil_name(plone_object)
+
+                            #obj_translated = self.migrator.update_object_translation(priref, plone_object, xml_record)
+                            #if obj_translated:
+                            #    self.migrator.generate_special_translated_fields(obj_translated, xml_record)
+
+                            self.write_log_details("%s__Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
+                        else:
+                            if self.migrator.CREATE_NEW:
+                                created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
+                                if created_object:
+                                    self.write_log_details("%s__Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
+                                else:
+                                    self.migrator.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                            else:
+                                pass
+
+                    else:
+                        self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+            else:
+                #TODO log error
+                pass
+
+            transaction.commit()
+
+
+        return True
+
+
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
@@ -503,6 +571,9 @@ class SyncMechanism:
                 
     def start_sync(self):
         self.migrator.init_log_files()
+        self.sync_all_instruments()
+        return True
+
         self.type = "sync_date"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
