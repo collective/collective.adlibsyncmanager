@@ -257,12 +257,12 @@ class SyncMechanism:
         for record in records:
 
             curr += 1
-            #priref = self.migrator.get_priref(record)
-            priref = record
+            priref = self.migrator.get_priref(record)
             xml_record = self.get_record_by_priref(priref, self.collection_type)
-
+            
+            print priref
             if xml_record is not None:
-                if self.migrator.valid_priref(priref):
+                if priref:
                     if priref:
                         plone_object = self.migrator.find_object_by_priref(priref)
                         if plone_object:
@@ -293,17 +293,22 @@ class SyncMechanism:
                 pass
 
     def sync_all_instruments(self):
+        print "Sync all instruments"
 
         #print "Build request for: %s" % (quoted_query)
         self.api_request = "http://teylers.adlibhosting.com/wwwopacx/wwwopac.ashx?database=ChoiceInstrumenten&search=all&limit=0"
+        print "Request"
         req = urllib2.Request(self.api_request)
+        print "Got collection"
         req.add_header('User-Agent', 'Mozilla/5.0')
         response = urllib2.urlopen(req)
         doc = etree.parse(response)
         records = self.get_records(doc)
+        print "Got records"
 
         self.migrator.CREATE_NEW = False
         self.collection_type = "ChoiceInstrumenten"
+        print "Update list of records"
         self.update_sync_records_extra(records, "ChoiceInstrumenten")
         self.success = True
         self.creation_success = True
@@ -318,13 +323,15 @@ class SyncMechanism:
 
             curr += 1
             priref = self.migrator.get_priref(record)
+            print priref
             xml_record = self.get_record_by_priref(priref, self.collection_type)
 
             if xml_record is not None:
-                if self.migrator.valid_priref(priref):
+                if priref:
                     if priref:
                         plone_object = self.migrator.find_object_by_priref(priref)
                         if plone_object:
+                            print "Update existing"
                             self.migrator.update_existing(priref, plone_object, xml_record)
                             
                             # Books special case

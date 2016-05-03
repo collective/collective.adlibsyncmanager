@@ -432,6 +432,7 @@ class Migrator:
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
+
                     elif parent.find('label.type').find('value') != None:
                         if parent.find('label.type').find('value').text in WEBSITE_TEXT:
                             text = xml_element.text
@@ -439,6 +440,7 @@ class Migrator:
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
+
                     elif parent.find('label.type').find('text') != None:
                         if parent.find('label.type').find('text').text in WEBSITE_TEXT:
                             text = xml_element.text
@@ -446,6 +448,7 @@ class Migrator:
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             return value
+                            
                     elif parent.find('label.type').get('option') in WEBSITE_TEXT:
                         text = xml_element.text
                         text = current_val + "<br>" + text
