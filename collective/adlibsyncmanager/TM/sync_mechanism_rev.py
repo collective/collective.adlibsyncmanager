@@ -309,6 +309,8 @@ class SyncMechanism:
         self.migrator.CREATE_NEW = False
         self.collection_type = "ChoiceInstrumenten"
         print "Update list of records"
+        self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+
         self.update_sync_records_extra(records, "ChoiceInstrumenten")
         self.success = True
         self.creation_success = True
@@ -323,7 +325,7 @@ class SyncMechanism:
 
             curr += 1
             priref = self.migrator.get_priref(record)
-            print priref
+            
             xml_record = self.get_record_by_priref(priref, self.collection_type)
 
             if xml_record is not None:
