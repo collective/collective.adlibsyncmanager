@@ -1655,8 +1655,16 @@ class Migrator:
             if book.Subject():
                 if ITranslationManager(book).has_translation('en'):
                     translated_object = ITranslationManager(book).get_translation('en')
-                    addCropToTranslation(book, translated_object)
-                    print "Added crops to %s" %(book.absolute_url())
+
+                    uid = book.UID()
+                    brain = uuidToCatalogBrain(uid)
+                    lead_media = brain.leadMedia
+                    image = uuidToObject(lead_media)
+
+                    if ITranslationManager(image).has_translation('en'):
+                        trans_image = ITranslationManager(image).get_translation('en')
+                        addCropToTranslation(image, trans_image)
+                        print "Added crops to %s" %(translated_object.absolute_url())
 
             transaction.commit()
 
@@ -1701,7 +1709,7 @@ class Migrator:
         #self.create_translations()
         #return True
         #self.init_log_files()
-        self.art_translations()
+        #self.art_translations()
         self.fix_books_crops()
         #self.get_collection()
         #self.create_translations()
