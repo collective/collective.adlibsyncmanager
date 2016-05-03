@@ -259,12 +259,13 @@ class SyncMechanism:
             curr += 1
             priref = self.migrator.get_priref(record)
             xml_record = self.get_record_by_priref(priref, self.collection_type)
-            
-            print priref
+            print xml_record
+
             if xml_record is not None:
                 if priref:
                     if priref:
                         plone_object = self.migrator.find_object_by_priref(priref)
+
                         if plone_object:
                             self.migrator.update_existing(priref, plone_object, xml_record)
                             
@@ -310,7 +311,7 @@ class SyncMechanism:
         self.collection_type = "ChoiceInstrumenten"
         print "Update list of records"
         self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
-
+        print self.migrator.object_type
         self.update_sync_records_extra(records, "ChoiceInstrumenten")
         self.success = True
         self.creation_success = True
@@ -318,6 +319,7 @@ class SyncMechanism:
         return True
 
     def update_sync_records_extra(self, records, collection):
+        print "Update records"
         curr = 0
         total = len(records)
         for record in list(records):
@@ -327,11 +329,15 @@ class SyncMechanism:
             priref = self.migrator.get_priref(record)
             
             xml_record = self.get_record_by_priref(priref, self.collection_type)
+            print xml_record
+            print curr
 
             if xml_record is not None:
                 if priref:
                     if priref:
                         plone_object = self.migrator.find_object_by_priref(priref)
+                        print "Plone object:"
+                        print plone_object
                         if plone_object:
                             print "Update existing"
                             self.migrator.update_existing(priref, plone_object, xml_record)
