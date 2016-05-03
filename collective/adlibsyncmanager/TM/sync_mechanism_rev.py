@@ -590,9 +590,6 @@ class SyncMechanism:
                 
     def start_sync(self):
         self.migrator.init_log_files()
-        self.sync_all_instruments()
-        return True
-
         self.type = "sync_date"
         if self.type in VALID_TYPES:
             self.METHODS[self.type]()
