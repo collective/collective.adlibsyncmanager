@@ -656,7 +656,7 @@ class Updater:
                 final_log = "[%s]__%s" %(str(timestamp), str(text))
             
             list_log = final_log.split('__')
-            print final_log.replace('__', ' ')
+            """print final_log.replace('__', ' ')"""
             self.status_wr.writerow(list_log)
         else:
             return True
@@ -1312,6 +1312,9 @@ class Updater:
                             self.log_status("! STATUS !__Updating [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                             self.empty_fields(plone_object)
                             self.update(xml_record, plone_object, object_number)
+                            if self.portal_type == "Object":
+                                fixed_title = self.get_title_by_type(xml_record)
+                                setattr(plone_object, 'title', fixed_title)
                             self.log_status("! STATUS !__Updated [%s] %s / %s" %(str(object_number), str(curr), str(total)))
                             self.log_status("! STATUS !__URL: %s" %(str(plone_object.absolute_url())))
                             self.fix_all_choices(plone_object)

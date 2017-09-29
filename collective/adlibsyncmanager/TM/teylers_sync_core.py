@@ -34,9 +34,6 @@ CORE = {
     "Production_date-production.date.start":"object_dating-start",
     "Production_date-production.date.start.prec":"object_dating-start_precision",
     "Production_date-production.date.end.prec":"object_dating-end_precision",
-
-    "":"fossil_dating",
-
     "Production-production.place-value":"object_production_period-place",
     "production.period-value":"object_production_period-period",
     "production.reason": "object_production_period-reason",

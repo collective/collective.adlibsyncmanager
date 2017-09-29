@@ -24,8 +24,8 @@ CORE = {
     "Illustrator-illustrator.name-name":"illustrator",
     "object_category":"object_category",
     "":"book_title",
-    "title.translation":"translated_title",
-    "Object_name-object_name-term":"object_type",
+    "titme.translation":"translated_title",
+    "Object_name-object_name-value":"object_type",
 
     "Production_date-production.date.end":"object_dating-end",
     "Production_date-production.date.start":"object_dating-start",
@@ -60,6 +60,7 @@ CORE = {
     "field_coll.place-term":"field_coll_place",
 
     "object_number":"object_number",
+    "Object-object.object_number":"",
     #"shelf_mark":"object_number",# BOOKS 
     "Description-description":"object_descriptions-description",
 

@@ -59,11 +59,13 @@ collective/adlibsyncmanager/utils.py
 collective/adlibsyncmanager/Extensions/__init__.py
 collective/adlibsyncmanager/Extensions/adlib_migration.py
 collective/adlibsyncmanager/Extensions/adlib_sync_manager.py
+collective/adlibsyncmanager/Extensions/adlib_sync_manager_rev.py
 collective/adlibsyncmanager/TM/__init__.py
 collective/adlibsyncmanager/TM/adlib_sync_manager.py
 collective/adlibsyncmanager/TM/log_files_path.py
 collective/adlibsyncmanager/TM/migrator.py
 collective/adlibsyncmanager/TM/sync_mechanism_rev.py
+collective/adlibsyncmanager/TM/sync_mechanism_rev_v2.py
 collective/adlibsyncmanager/TM/teylers_contenttypes_path.py
 collective/adlibsyncmanager/TM/teylers_core.py
 collective/adlibsyncmanager/TM/teylers_sync_core.py

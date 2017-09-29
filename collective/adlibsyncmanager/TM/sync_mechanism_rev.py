@@ -461,7 +461,9 @@ class SyncMechanism:
         # Run sync
         #
         collections = ['ChoiceMunten', 'ChoiceGeologie', 'ChoiceKunst', 'ChoiceInstrumenten', 'ChoiceBooks']
-        
+        self.creation_success = False
+        self.success = False
+
         # Created
         self.migrator.CREATE_NEW = True
         for collection in collections:
@@ -480,6 +482,7 @@ class SyncMechanism:
 
                 self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
                 self.update_sync_records(records, collection)
+                self.creation_success = True
             except Exception, e:
                 exception_text = str(e)
                 self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, self.date, exception_text))
@@ -509,13 +512,12 @@ class SyncMechanism:
 
                 self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
                 self.update_sync_records(records, collection)
+                self.success = True
             except Exception, e:
                 exception_text = str(e)
                 self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, self.date, exception_text))
                 self.send_fail_email(exception_text, self.collection_type, self.date)
-        
-        self.creation_success = True
-        self.success = True
+
         return True
 
     def get_folder(self, path):
@@ -578,14 +580,13 @@ class SyncMechanism:
         
         self.is_book = False
         self.is_test = False
+        self.success = False
         self.creation_success = False
 
         # # # # # # # # # # # #
         # Sync for modified   #
         # # # # # # # # # # # #
         
-        self.success = True
-        self.creation_success = True
         return
                 
     def start_sync(self):

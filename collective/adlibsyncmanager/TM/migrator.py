@@ -762,6 +762,10 @@ class Migrator:
 
             setattr(plone_object, 'title', title)
 
+        if self.updater.portal_type == "Object":
+        	new_title = self.updater.get_title_by_type(xml_record)
+        	setattr(plone_object, 'title', new_title)
+        	
         object_title = getattr(plone_object, 'title', '')
         setattr(plone_object, 'object_title', object_title)
         description = self.create_description_field(plone_object)
@@ -834,6 +838,17 @@ class Migrator:
                 object_created.setLayout(obj_layout)
 
             self.update_existing(priref, object_created, xml_record)
+            
+            # Check object number does not contain HBNK
+            obj_number = getattr(object_created, "object_number", None)
+            if "hbnk" not in obj_number.lower():
+	            try:
+	                object_created.portal_workflow.doActionFor(object_created, "publish", comment="Item published")
+	            except:
+	                pass
+	            else:
+	        	pass
+	        	
             return object_created
         else:
             return None
