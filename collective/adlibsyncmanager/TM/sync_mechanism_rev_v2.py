@@ -34,6 +34,7 @@ COLLECTION_OBJ_TYPE = {
     'ChoiceBooks':"books"
 }
 
+TOTAL_TIMES = 0
 
 class SyncMechanism:
     def __init__(self, portal, options):
@@ -67,9 +68,8 @@ class SyncMechanism:
                 final_log = "[ %s ] - %s" %(timestamp, log)
 
             try:
-
                 log_to_write = final_log.replace('__', '')
-                #print log_to_write
+                print log_to_write
                 self.log_file.write(log_to_write+"\n")
             except:
                 pass
@@ -94,7 +94,7 @@ class SyncMechanism:
     def get_record_by_priref(self, priref, collection):
         query = "priref='%s'"
 
-        self.xmldoc = self.build_api_request(priref, query, collection)
+        self.xmldoc = self.build_api_request(priref, query, collection, True)
         self.migrator.updater.xml_root = self.xmldoc
         records = self.get_records(self.xmldoc)
 
@@ -104,10 +104,14 @@ class SyncMechanism:
             return None
 
 
-    def build_api_request(self, request_date, search_query, collection):
+    def build_api_request(self, request_date, search_query, collection, getpriref=False):
         search = search_query
-        search = search % (request_date)
 
+        if not getpriref:
+            request_date = "2018-01-31 9:00:00"
+        #request_date = "2018-01-07 00:00:00"
+
+        search = search % (request_date)
         quoted_query = urllib.quote(search)
         
         #print "Build request for: %s" % (quoted_query)
@@ -236,9 +240,9 @@ class SyncMechanism:
         records_modified = len(records)
 
         if self.migrator.CREATE_NEW:
-            self.write_log_details("%s__%s records created since %s" % (collection, str(records_modified), date))
+            self.write_log_details("%s__ %s records created since %s" % (collection, str(records_modified), date))
         else:
-            self.write_log_details("%s__%s records modified since %s" % (collection, str(records_modified), date))
+            self.write_log_details("%s__ %s records modified since %s" % (collection, str(records_modified), date))
 
         return records
 
@@ -292,6 +296,7 @@ class SyncMechanism:
             self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, today_one_minute_ago_date, exception_text))
             self.send_fail_email(exception_text, self.collection_type, today_one_minute_ago_date)
             success = False
+            pass
 
         # Update sync details
         if success:
@@ -306,48 +311,53 @@ class SyncMechanism:
     def update_sync_records(self, records, collection):
         curr = 0
         total = len(records)
+
         for record in list(records):
             transaction.begin()
-
+    
             curr += 1
             priref = self.migrator.get_priref(record)
             xml_record = self.get_record_by_priref(priref, self.collection_type)
 
             if xml_record is not None:
                 if self.migrator.valid_priref(priref):
-                    if priref:
-                        plone_object = self.migrator.find_object_by_priref(priref)
-                        if plone_object:
-                            self.migrator.update_existing(priref, plone_object, xml_record)
-                            
-                            # Books special case
-                            if collection == 'ChoiceBooks':
-                                self.migrator.fix_book_title(plone_object)
+                    try:
+                        if priref:
+                            plone_object = self.migrator.find_object_by_priref(priref)
+                            if plone_object:
+                                self.migrator.update_existing(priref, plone_object, xml_record)
 
-                            # Fossils special case
-                            elif collection == "ChoiceGeologie":
-                                self.migrator.fix_fossil_name(plone_object)
+                                # Books special case
+                                if collection == 'ChoiceBooks':
+                                    self.migrator.fix_book_title(plone_object)
 
-                            obj_translated = self.migrator.update_object_translation(priref, plone_object, xml_record)
-                            if obj_translated:
-                                self.migrator.generate_special_translated_fields(obj_translated, xml_record)
+                                # Fossils special case
+                                elif collection == "ChoiceGeologie":
+                                    self.migrator.fix_fossil_name(plone_object)
 
-                            self.write_log_details("%s__Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
-                        else:
-                            if self.migrator.CREATE_NEW:
-                                created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
-                                if created_object:
-                                    self.write_log_details("%s__Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
-                                else:
-                                    self.migrator.error("%s__ __Created object is None. Something went wrong."%(str(priref)))
+                                obj_translated = self.migrator.update_object_translation(priref, plone_object, xml_record)
+                                if obj_translated:
+                                    self.migrator.generate_special_translated_fields(obj_translated, xml_record)
+                                self.write_log_details("%s__ Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
                             else:
-                                pass
-
-                    else:
-                        self.migrator.error("%s__ __Cannot find priref in XML record"%(str(curr)))
+                                if self.migrator.CREATE_NEW:
+                                    created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
+                                    if created_object:
+                                        self.write_log_details("%s__ Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
+                                    else:
+                                        self.migrator.error("%s__ __ Created object is None. Something went wrong."%(str(priref)))
+                                else:
+                                    pass
+                        else:
+                            self.migrator.error("%s__ __ Cannot find priref in XML record"%(str(curr)))
+                    except Exception, e:
+                        exception_text = str(e)
+                        self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
+                        pass
             else:
                 #TODO log error
                 pass
+            
 
             transaction.commit()
         return True
@@ -355,7 +365,7 @@ class SyncMechanism:
 
     def run_created(self):
         """
-            print "\n#### RUN CREATED ####"
+        print "\n#### RUN CREATED ####"
         """
         self.migrator.CREATE_NEW = True
 

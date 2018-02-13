@@ -497,7 +497,6 @@ class Migrator:
         else:
             title = title
 
-
         dirty_id = "%s %s"%(str(object_number.encode('ascii', 'ignore')), str(title.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
         if normalized_id not in container:
@@ -722,6 +721,12 @@ class Migrator:
     def generate_special_fields(self, plone_object, xml_record):
         object_title = getattr(plone_object, 'title', '')
         
+        ## Check if more than one title
+        object_titles = getattr(plone_object, 'object_titles', '')
+        
+        ## User the first
+        if len(object_titles) > 1:
+            object_title = object_titles[0]['title']
 
         if self.object_type == 'books':
             if xml_record.find('Title') != None:
@@ -736,11 +741,19 @@ class Migrator:
                     if lead_word:
                         new_title = "%s %s" %(lead_word, object_title)
                         setattr(plone_object, 'title', new_title)
+                        setattr(plone_object, 'object_title', new_title)
 
         elif self.object_type == "fossils":
             scientific_name = getattr(plone_object, 'scientific_name', None)
             common_name = getattr(plone_object, 'common_name', None)
             title = self.updater.get_title_by_type(xml_record)
+
+            ## Check if more than one title
+            object_titles = getattr(plone_object, 'object_titles', '')        
+            ## User the first
+            if len(object_titles) > 1:
+                title = object_titles[0]['title']
+
             object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
 
             if not title and common_name:
@@ -761,12 +774,13 @@ class Migrator:
                 title = title
 
             setattr(plone_object, 'title', title)
+            setattr(plone_object, 'object_title', title)
 
         if self.updater.portal_type == "Object":
-        	new_title = self.updater.get_title_by_type(xml_record)
-        	setattr(plone_object, 'title', new_title)
-        	
-        object_title = getattr(plone_object, 'title', '')
+            new_title = self.updater.get_title_by_type(xml_record)
+            setattr(plone_object, 'title', new_title)
+            setattr(plone_object, 'object_title', new_title)
+
         setattr(plone_object, 'object_title', object_title)
         description = self.create_description_field(plone_object)
         setattr(plone_object, 'description', description)
@@ -1286,10 +1300,15 @@ class Migrator:
     def fix_fossil_name(self, obj):
 
         common_name = getattr(obj, 'common_name', '')
+        scientific_name = getattr(obj, 'scientific_name', '')
         title = getattr(obj, 'title', '')
 
         if not title and common_name:
             setattr(obj, 'title', common_name)
+            obj.reindexObject(idxs=['Title'])
+
+        if not title and not common_name and scientific_name:
+            setattr(obj, 'title', scientific_name)
             obj.reindexObject(idxs=['Title'])
 
         return True

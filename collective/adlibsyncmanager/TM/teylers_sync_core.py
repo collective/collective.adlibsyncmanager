@@ -7,7 +7,8 @@ CORE = {
     "priref":"priref",
     "Label-label.text":"text",
     "Content_person-content.person.name-name":"",
-
+    "Author-author.role":"",
+    "Author-author.name":"",
     "Author-author.name-value": "object_author-creator",
     "Author-author.role-value": "object_author-role",
     "Corporate_author-corporate_author-value":"object_author-creator",
@@ -19,7 +20,7 @@ CORE = {
     "Production-creator.date_of_birth":"creator-date_of_birth",
     "Production-creator.date_of_death":"creator-date_of_death",
     
-    "Title-title-value":"title",
+    "Title-title-value":"object_titles-title",
 
     "administration_name":"administration_name",
     "":"author",
@@ -137,7 +138,32 @@ CORE = {
     "illustrations-value":"",
     "Illustrator-illustrator.name":"",
     "place_of_publication":"",
-    "Object_name-object_name":""
+    "Object_name-object_name":"",
+    "field_coll.place": "",
+    "Taxonomy": "",
+    "Technique-technique": "",
+    "Production-production.place": "",
+    "Inscription-inscription.type": "",
+    "Documentation-documentation.title": "",
+    "Documentation-documentation.title-value": "",
+    "Documentation": "",
+    "Dimension-dimension.type":"",
+    "Dimension-dimension.unit":"",
+    "Dimension":"",
+    "Content_subject": "",
+    "Content_subject-content.subject.tax": "",
+    "Content_subject-content.subject.tax.rank": "",
+    "Content_subject-content.subject": "",
+    "Content_subject-content.subject-value": "",
+    "Acquisition_source": "",
+    "Acquisition_source-acquisition.source": "",
+    "pagination":"",
+    "series.ISSN":"",
+    "series.number":"",
+    "series.title":"",
+    "Keyword":"",
+    "Keyword-keyword.contents":"",
+    "Keyword-keyword.contents-value":""
 } 
 
 

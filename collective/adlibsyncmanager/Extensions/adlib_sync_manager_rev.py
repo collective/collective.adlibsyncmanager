@@ -124,7 +124,6 @@ def sync(self):
             sync.sync_request_details['sync_complete'] = True
             registry.records['sync_request_details'] = Record(field.Dict(title=u"sync_request_details"), sync.sync_request_details)
             send_fail_email()
-
     else:
         """
         print "\n\nPREVIOUS SYNC IS NOT COMPLETE - SKIP\n\n"
