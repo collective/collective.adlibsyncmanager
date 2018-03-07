@@ -1,4 +1,5 @@
 .DS_Store
+.gitignore
 KG 12563.jpg
 MANIFEST.in
 README.rst

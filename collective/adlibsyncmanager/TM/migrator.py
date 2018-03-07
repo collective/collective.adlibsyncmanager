@@ -33,7 +33,7 @@ from plone.app.textfield.value import RichTextValue
 from plone.event.interfaces import IEventAccessor
 from z3c.relationfield import RelationValue
 import glob
-from plone.multilingual.interfaces import ITranslationManager
+from plone.app.multilingual.interfaces import ITranslationManager
 from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from collective.leadmedia.utils import autoCropImage
 
@@ -44,6 +44,7 @@ from .teylers_core import CORE
 from .teylers_utils import subfields_types, relation_types
 from .log_files_path import LOG_FILES_PATH
 
+import plone.api
 
 NOT_ALLOWED = ['', ' ', None]
 ALLOWED_SOURCES = [None, 'Instrumentenwebsite']
@@ -71,42 +72,82 @@ TYPE_IMPORT_FILE = "total"
 # Utils - Options - Validations
 #
 SUPPORTED_ENV = ['dev', 'prod', 'sync']
-WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site web', 'Website-Text']
+WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site web', 'Website-Text', 'Publiekstekst NL']
 
 FOLDER_PATHS = {
-    "coins": "nl/collectie/munten-en-penningen",
-    "fossils": "nl/collectie/fossielen-en-mineralen",
-    "kunst": "nl/collectie/kunst",
-    "instruments": "nl/collectie/instrumenten",
-    "books": "nl/collectie/boeken"
+    "intk": "nl/intk",
+    "stadsgeschiedenis": "nl/ontdek/collectie/stadsgeschiedenis",
+    "beeldende kunst 1850 - heden": "nl/ontdek/collectie/beeldende-kunst-1850-heden",
+    "kostuums": "nl/ontdek/collectie/mode",
+    "beeldende kunst": "nl/ontdek/collectie/oude-kunst",
+    "prenten en tekeningen": "nl/ontdek/collectie/werken-op-papier-tot-1850",
+    "onedele metalen": "nl/ontdek/collectie/edele-en-onedele-metalen",
+    "edele metalen": "nl/ontdek/collectie/edele-en-onedele-metalen",
+    "beeldhouwkunst tot 1850": "nl/ontdek/collectie/beeldhouwkunst-tot-1850",
+    "schilderkunst tot 1850": "nl/ontdek/collectie/schilderkunst-tot-1850",
+    'meubelen tot 1900': "nl/ontdek/collectie/meubelen-tot-1900",
+    'van baaren': "nl/ontdek/collectie/van-baarencollectie",
+    'kunstnijverheid': "nl/ontdek/collectie/vormgeving",
+    'bruna': "nl/ontdek/collectie/dick-bruna",
+    'rsa': "nl/ontdek/collectie/rietveld-schroderarchief"
 }
 
 IMAGE_FIX = ['8011975', '8011976', '8011977', '8011978', '8011979', '8011980', '8011981', '8011982', '8011983', '8011984', '8011985', '8011986', '8011987', '8011988', '8011989', '8011990', '8011991', '8011992', '8011993', '8011994', '8011995', '8011996', '8011997', '8011998', '8011999', '8012000', '8012001', '8012002', '8012003', '8012004', '8012005', '8012006', '8012007', '8012008', '8012009', '8012010', '8012011', '8012012', '8012013', '8012014', '8012015', '8012016', '8012017', '8012018', '8012019', '8012020', '8012021', '8012022', '8012023', '8012024', '8012025', '8012026', '8012028', '8012029', '8012030', '8012032', '8012033', '8012034', '8012035', '8012036', '8012037', '8012038', '8012039', '8012040', '8012041', '8012042', '8012043', '8012044', '8012045', '8012046', '8012047', '8012048', '8012050', '8012051', '8012052', '8012053', '8012054', '8012055', '8012057', '8012058', '8012059', '8012060', '8012061', '8012062', '8012063', '8012064', '8012066', '8012067', '8012068', '8012069', '8012070', '8012071', '8012072', '8012073', '8012074', '8012075', '8012077', '8012078', '8012080', '8012081', '8012082', '8012083', '8012084', '8012085', '8012086', '8012087', '8012089', '8012090', '8012095', '8012096', '8012097', '8012099', '8012100', '8012101', '8012102', '8012104', '8012105', '8012106', '8012113', '8012115', '8012116', '8012117', '8012118', '8012119', '8012122', '8012123', '8012124', '8012125', '8012126', '8012127', '8012128', '8012129', '8012130', '8012132', '8012133', '8012134', '8012135', '8012136', '8012137', '8012139', '8012140', '8012141', '8012142', '8012143', '8012144', '8012145', '8012146', '8012147', '8012148', '8012149', '8012150', '8012151', '8012152', '8012153', '8012154', '8012155', '8012156', '8012157', '8012159', '8012160', '8012161', '8012163', '8012164', '8012165', '8012166', '8012167', '8012168', '8012169', '8012170', '8012171', '8012172', '8012173', '8012174', '8012175', '8012176', '8012177', '8012178', '8012179', '8012180', '8012181', '8012182', '8012183', '8012184', '8012185', '8012186', '8012187', '8012188', '8012189', '8012190', '8012193', '8012194', '8012195', '8012196', '8012197', '8012198', '8012199', '8012200', '8012202', '8012203', '8012204', '8012205', '8012206', '8012207', '8012208', '8012209', '8012210', '8012212', '8012213', '8012214', '8012215', '8012216', '8012217', '8012218', '8012219', '8012220', '8012221', '8012222', '8012223', '8012224', '8012226', '8012227', '8012228', '8012229', '8012230', '8012231', '8012232', '8012233', '8012234', '8012235', '8012236', '8012237', '8012238', '8012239', '8012240', '8012241', '8012242', '8012243', '8012244', '8012245', '8012246', '8012247', '8012248', '8012249', '8012250', '8012252', '8012253', '8012254', '8012255', '8012257', '8012258', '8012259', '8012260', '8012261', '8012262', '8012263', '8012264', '8012265', '8012267', '8012268', '8012269', '8012270', '8012271', '8012272', '8012273', '8012274', '8012275', '8012276', '8012277', '8012278', '8012279', '8012280', '8012281', '8012282', '8012283', '8012284', '8012285', '8012286', '8012287', '8012288', '8012289', '8012290', '8012291', '8012292', '8012293', '8012294', '8012295', '8012296', '8012297', '8012298', '8012299', '8012300', '8012301', '8012302', '8012303', '8012304', '8012305', '8012306', '8012307', '8012308', '8012309', '8012310', '8012311', '8012312', '8012313', '8012314', '8012315', '8012316', '8012317', '8012318', '8012319', '8012320', '8012322', '8012323', '8012324', '8012325', '8012326', '8012327', '8012328', '8012329', '8012330', '8012331', '8012332', '8012333', '8012334', '8012335', '8012336', '8012338', '8012339', '8012340', '8012341', '8012342', '8012343', '8012344', '8012345', '8012346', '8012348', '8012349', '8012350', '8012351', '8012352', '8012353', '8012354', '8012355', '8012356', '8012357', '8012358', '8012359', '8012360', '8012361', '8012362', '8012363', '8012364', '8012365', '8012366', '8012367', '8012368', '8012369', '8012370', '8012371', '8012372', '8012373', '8012374', '8012376', '8012377', '8012378', '8012379', '8012380', '8012381', '8012382', '8012383', '8012384', '8012385', '8012386', '8012387', '8012388', '8012389', '8012390', '8012391', '8012392', '8012393', '8012394', '8012395', '8012396', '8012397', '8012398', '8012399', '8012400', '8012401', '8012402', '8012403', '8012404', '8012405', '8012406', '8012407', '8012408', '8012409', '8012410', '8012411', '8012412', '8012413', '8012414', '8012415', '8012416', '8012417', '8012418', '8012419', '8012420', '8012421', '8012422', '8012423', '8012424', '8012425', '8012426', '8012427', '8012428', '8012429', '8012430', '8012431', '8012432', '8012433', '8012434', '8012435', '8012436', '8012437', '8012438', '8012439', '8012440', '8012441', '8012443', '8012444', '8012445', '8012446', '8012447', '8012448', '8012449', '8012450', '8012451', '8012452', '8012453', '8012454', '8012455', '8012456', '8012457', '8012458', '8012460', '8012461', '8012462', '8012463', '8012464', '8012465', '8012466', '8012467', '8012468', '8012469', '8012470', '8012471', '8012472', '8012473', '8012474', '8012475', '8012476', '8012477', '8012478', '8012479', '8012480', '8012481', '8012482', '8012483', '8012484', '8012485', '8012486', '8012487', '8012488', '8012489', '8012490', '8012491', '8012492', '8012493', '8012494', '8012495', '8012496', '8012497', '8012498', '8012499', '8012500', '8012501', '8012502', '8012503', '8012504', '8012506', '8012507', '8012508', '8012509', '8012510', '8012512', '8012513', '8012515', '8012516', '8012518', '8012519', '8012520', '8012521', '8012522', '8012524', '8012525', '8012526', '8012527', '8012528', '8012529', '8012530', '8012531', '8012532', '8012533', '8012534', '8012535', '8012536', '8012537', '8012538', '8012539', '8012540', '8012541', '8012542', '8012543', '8012544', '8012545', '8012546', '8012547', '8012548', '8012549', '8012550', '8012551', '8012552', '8012553', '8012554', '8012555', '8012556', '8012557', '8012559', '8012560', '8012561', '8012562', '8012563', '8012564', '8012565', '8012566', '8012567', '8012568', '8012569', '8012570', '8012571', '8012572', '8012573', '8012574', '8012575', '8012576', '8012577', '8012578', '8012579', '8012580', '8012581', '8012582', '8012583', '8012584', '8012585', '8012586', '8012587', '8012588', '8012589', '8012590', '8012591', '8012592', '8012593', '8012594', '8012595', '8012596', '8012597', '8012598', '8012599', '8012600', '8012601', '8012602', '8012603', '8012604', '8012605', '8012606', '8012607', '8012608', '8012609', '8012610', '8012611', '8012612', '8012613', '8012614', '8012615', '8012616', '8012617', '8012618', '8012619', '8012620', '8012621', '8012622', '8012623', '8012624', '8012625', '8012626', '8012627', '8012628', '8012629', '8012630', '8012631', '8012632', '8012633', '8012634', '8012635', '8012636', '8012637', '8012638', '8012639', '8012640', '8012641', '8012643', '8012644', '8012645', '8012646', '8012647', '8012648', '8012649', '8012650', '8012651', '8012652', '8012653', '8012654', '8012655', '8012656', '8012657', '8012658', '8012659', '8012660', '8012661', '8012662', '8012663', '8012664', '8012665', '8012666', '8012667', '8012668', '8012669', '8012670', '8012671', '8012672', '8012673', '8012674', '8012675', '8012676', '8012677', '8012678', '8012679', '8012680', '8012681', '8012682', '8012683', '8012684', '8012685', '8012686', '8012687', '8012688', '8012689', '8012690', '8012691', '8012692', '8012693', '8012694', '8012695', '8012696', '8012697', '8012698', '8012699', '8012700', '8012701', '8012702', '8012703', '8012704', '8012705', '8012706', '8012707', '8012708', '8012709', '8012710', '8012711', '8012712', '8012713', '8012714', '8012715', '8012716', '8012717', '8012718', '8012719', '8012720', '8012721', '8012722', '8012723', '8012724', '8012725', '8012726', '8012727', '8012728', '8012729', '8012730', '8012731', '8012732', '8012733', '8012734', '8012735', '8012736', '8012737', '8012738', '8012739', '8012740', '8012741', '8012742', '8012743', '8012744', '8012745', '8012746', '8012747', '8012748', '8012749', '8012750', '8012751', '8012752', '8012753', '8012754', '8012755', '8012756', '8012757', '8012758', '8012759', '8012760', '8012761', '8012762', '8012763', '8012764', '8012765', '8012766', '8012767', '8012768', '8012769', '8012770', '8012771', '8012772', '8012773', '8012774', '8012775', '8012776', '8012777', '8012778', '8012779', '8012780', '8012781', '8012782', '8012783', '8012784', '8012785', '8012786', '8012787', '8012788', '8012789', '8012790', '8012791', '8012792', '8012793', '8012794', '8012796', '8012797', '8012799', '8012801', '8012802', '8012803', '8012804', '8012806', '8012807', '8012809', '8012810', '8012812', '8012814', '8012815', '8012816', '8012818', '8012819', '8012820', '8012822', '8012823', '8012824', '8012826', '8012827', '8012828', '8012829', '8012830', '8012831', '8012832', '8012833', '8012834', '8012835', '8012836', '8012837', '8012838', '8012839', '8012840', '8012841', '8012842', '8012843', '8012844', '8012845', '8012846', '8012847', '8012848', '8012849', '8012850', '8012851', '8012852', '8012853', '8012854', '8012855', '8012856', '8012857', '8012858', '8012859', '8012860', '8012861', '8012862', '8012863', '8012864', '8012865', '8012866', '8012867', '8012868', '8012869', '8012870', '8012871', '8012873', '8012874', '8012875', '8012877', '8012878', '8012879', '8012881', '8012884', '8012886', '8012887', '8012889', '8012890', '8012891', '8012892', '8012893', '8012894', '8012895', '8012896', '8012897', '8012898', '8012899', '8012900', '8012901', '8012902', '8012903', '8012904', '8012905', '8012907', '8012908', '8012909', '8012910', '8012911', '8012912', '8012913', '8012914', '8012915', '8012916', '8012917', '8012918', '8012919', '8012920', '8012921', '8012922', '8012923', '8012924', '8012925', '8012926', '8012927', '8012929', '8012930', '8012931', '8012933', '8012934', '8012935', '8012936', '8012937', '8012938', '8012939', '8012940', '8012941', '8012942', '8012943', '8012944', '8012946', '8012947', '8012948', '8012949', '8012950', '8012951', '8012954', '8012955', '8012956', '8012957', '8012958', '8012959', '8012960', '8012961', '8012962', '8012963', '8012964', '8012965', '8012966', '8012967', '8012968', '8012969', '8012970', '8012971', '8012972', '8012973', '8012974', '8012975', '8012976', '8012977', '8012978', '8012979', '8012980', '8012981', '8012982', '8012983', '8012984', '8012985', '8012986', '8012987', '8012988', '8012989', '8012990', '8012991', '8012994', '8012995', '8012996', '8012997', '8012998', '8012999', '8013000', '8013001', '8013002', '8013003', '8013004', '8013006', '8013007', '8013008', '8013009', '8013010', '8013011', '8013013', '8013014', '8013015', '8013016', '8013017', '8013018', '8013020', '8013021', '8013022', '8013023', '8013024', '8013025', '8013026', '8013027', '8013028', '8013029', '8013030', '8013032', '8013033', '8013034', '8013035', '8013036', '8013037', '8013038', '8013039', '8013040', '8013041', '8013042', '8013045', '8013046', '8013047', '8013048', '8013049', '8013050', '8013051', '8013052', '8013053', '8013054', '8013055', '8013057', '8013058', '8013060', '8013061', '8013062', '8013063', '8013064', '8013065', '8013066', '8013067', '8013068', '8013069', '8013070', '8013071', '8013072', '8013073', '8013074', '8013075', '8013076', '8013077', '8013078', '8013079', '8013080', '8013081', '8013082', '8013083', '8013084', '8013085', '8013086', '8013087', '8013088', '8013089', '8013090', '8013091', '8013092', '8013093', '8013094', '8013095', '8013096', '8013097', '8013098', '8013099', '8013100', '8013101', '8013102', '8013103', '8013104', '8013105', '8013106', '8013107', '8013108', '8013109', '8013110', '8013111', '8013112', '8013113', '8013114', '8013115', '8013116', '8013117', '8013118', '8013119', '8013120', '8013121', '8013123', '8013124', '8013125', '8013128', '8013129', '8013131', '8013132', '8013133', '8013134', '8013135', '8013136', '8013137', '8013138', '8013139', '8013140', '8013141', '8013142', '8013143', '8013145', '8013146', '8013147', '8013148', '8013149', '8013150', '8013151', '8013152', '8013153', '8013154', '8013155', '8013156', '8013157', '8013158', '8013159', '8013160', '8013161', '8013162', '8013163', '8013164', '8013165', '8013166', '8013167', '8013168', '8013169', '8013170', '8013171', '8013172', '8013173', '8013174', '8013175', '8013176', '8013177', '8013178', '8013179', '8013180', '8013181', '8013182', '8013183', '8013184', '8013185', '8013186', '8013187', '8013188', '8013189', '8013190', '8013191', '8013192', '8013193', '8013194', '8013195', '8013196', '8013197', '8013199', '8013200', '8013201', '8013202', '8013203', '8013204', '8013205', '8013206', '8013208', '8013209', '8013210', '8013211', '8013212', '8013213', '8013215', '8013216', '8013217', '8013218', '8013219', '8013220', '8013221', '8013222', '8013223', '8013224', '8013225', '8013226', '8013227', '8013228', '8013229', '8013230', '8013231', '8013232', '8013233', '8013234', '8013235', '8013236', '8013237', '8013238', '8013239', '8013240', '8013241', '8013242', '8013243', '8013244', '8013245', '8013246', '8013247', '8013248', '8013249', '8013250', '8013251', '8013252', '8013253', '8013254', '8013255', '8013256', '8013257', '8013258', '8013259', '8013260', '8013261', '8013262', '8013263', '8013264', '8013265', '8013266', '8013267', '8013268', '8013269', '8013270', '8013271', '8013272', '8013273', '8013274', '8013275', '8013276', '8013277', '8013278', '8013279', '8013280', '8013281', '8013282', '8013283', '8013284', '8013285', '8013286', '8013287', '8013288', '8013289', '8013290', '8013291', '8013292', '8013293', '8013294', '8013296', '8013298', '8013299', '8013300', '8013301', '8013302', '8013303', '8013304', '8013306', '8013307', '8013308', '8013309', '8013310', '8013311', '8013312', '8013313', '8013314', '8013315', '8013316', '8013317', '8013318', '8013319', '8013320', '8013321', '8013322', '8013323', '8013324', '8013325', '8013326', '8013327', '8013328', '8013329', '8013330', '8013331', '8013332', '8013333', '8013334', '8013335', '8013336', '8013337', '8013338', '8013339', '8013340', '8013341', '8013342', '8013343', '8013344', '8013345', '8013346', '8013347', '8013348', '8013349', '8013350', '8013351', '8013352', '8013353', '8013354', '8013355', '8013356', '8013357', '8013358', '8013359', '8013360', '8013361', '8013362', '8013363', '8013364', '8013365', '8013366', '8013367', '8013368', '8013369', '8013370', '8013371', '8013372', '8013373', '8013374', '8013375', '8013376', '8013377', '8013378', '8013379', '8013380', '8013381', '8013382', '8013383', '8013447', '8013461', '8013508']
 
 TEST_EXAMPLES = {
-    "coins": ['8015607', '8006953', '8000670'],
-    "fossils": ['7008516'],
-    "kunst": ['336', '37213', '16434'],
-    "instruments": ['4000808', '4000678', '4000217', '4000180', '4000383', '4000136'],
-    "books": ['12908']
+    "stadsgeschiedenis": [],
+    "beeldende kunst 1850 - heden": [],
+    "kostuums": [],
+    "beeldende kunst": [],
+    "prenten en tekeningen": [],
+    "onedele metalen": [],
+    "edele metalen": [],
+    "beeldhouwkunst tot 1850": [],
+    "schilderkunst tot 1850": [],
+    'meubelen tot 1900': [],
+    'van baaren': [],
+    'kunstnijverheid': [],
+    'bruna': [],
+    'rsa': [],
+    'intk':[]
 }
 
 RESTRICTIONS = {
-    "coins": [],
-    "fossils": ['object_type', 'object_production_period', 'object_dating', 'object_dimension', 'object_category', 'object_descriptions'],
-    "kunst": ['acquisition_source', 'object_inscription', 'object_descriptions'],
-    "instruments":['object_descriptions'],
-    "books": ['search_year']
+    "intk":[],
+    "stadsgeschiedenis": [],
+    "beeldende kunst 1850 - heden": [],
+    "kostuums":[],
+    "beeldende kunst": [],
+    "prenten en tekeningen": [],
+    "onedele metalen": [],
+    "edele metalen": [],
+    "beeldhouwkunst tot 1850": [],
+    "schilderkunst tot 1850": [],
+    'meubelen tot 1900': [],
+    'van baaren': [],
+    'kunstnijverheid': [],
+    'bruna': [],
+    'rsa': [],
 }
 
-FIELDS_ALLOW_SINGLE_ONLY = ['scientific_name', 'common_name']
+FIELDS_ALLOW_SINGLE_ONLY = []
 
 VIEW_TYPES = {
-    "coins": "double_view",
-    "fossils": "view",
-    "kunst": "view",
-    "instruments":"instruments_view",
-    "books":"view"
+    "stadsgeschiedenis": "view",
+    "beeldende kunst 1850 - heden": "view",
+    "kostuums":"view",
+    "beeldende kunst":"view",
+    "prenten en tekeningen": "view",
+    "onedele metalen": "view",
+    "edele metalen": "view",
+    "beeldhouwkunst tot 1850": "view",
+    "schilderkunst tot 1850": "view",
+    'meubelen tot 1900': "view",
+    'van baaren': "view",
+    'kunstnijverheid': "view",
+    'bruna': "view",
+    'rsa': "view",
+    'intk': "view"
 }
 
 #
@@ -225,7 +266,7 @@ class Migrator:
     def init_log_files(self):
 
         self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.object_type][self.ENV]['path'])        
-        self.error_path = self.get_log_path('error', self.ENV)
+        self.error_path = self.get_log_path('error_import', self.ENV)
         self.warning_path = self.get_log_path('warning', self.ENV)
         self.status_path = self.get_log_path('status', self.ENV)
         self.log_images_path = self.get_log_path('images', self.ENV)
@@ -277,7 +318,10 @@ class Migrator:
             if self.IMPORT_TYPE != 'sync':
                 path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV] % (self.portal_type, timestamp, self.object_type)
             else:
-                path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV]
+                if log_type == "error_import":
+                    path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV] % (self.portal_type, timestamp)
+                else:
+                    path = self.log_files_path[self.IMPORT_TYPE][log_type][self.ENV]
 
         else:
             print "#### Environment '%s' for log file is unsupported. ####" %(str(server))
@@ -301,10 +345,11 @@ class Migrator:
                 if brain:
                     obj = brain.getObject()
                     if getattr(obj, 'priref', None) == priref:
-                        if self.FOLDER_PATHS[self.object_type] in obj.absolute_url():
-                            return obj
-                        else:
-                            pass
+                        #if self.FOLDER_PATHS[self.object_type] in obj.absolute_url():
+                        #    return obj
+                        #else:
+                        #    pass
+                        return obj
                     else:
                         return None
             return None
@@ -411,6 +456,7 @@ class Migrator:
             return self.updater.api.trim_white_spaces(xml_element.text)
 
         elif field_type == "rich-text":
+
             try:
                 current_val = current_value.raw
             except:
@@ -419,13 +465,21 @@ class Migrator:
             parent = xml_element.getparent()
             if parent is not None:
 
-                if parent.find('label.source') != None:
+                """if parent.find('label.source') != None:
                     source = parent.find('label.source').text
                     if source not in ALLOWED_SOURCES:
-                        return current_value
+                        return current_value"""
 
                 if parent.find('label.type') != None:
-                    if parent.find('label.type').find('value') != None:
+                    if parent.find('label.type').find('value') == None:
+                        if parent.find('label.type').text in WEBSITE_TEXT:
+                            text = xml_element.text
+                            text = current_val + "<p>" + text + "</p>"
+                            text = text.replace('\n','<br />')
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            return value
+
+                    elif parent.find('label.type').find('value') != None:
                         if parent.find('label.type').find('value').text in WEBSITE_TEXT:
                             text = xml_element.text
                             text = current_val + "<br>" + text
@@ -478,6 +532,22 @@ class Migrator:
 
         return value
 
+    def get_creator(self, xml_record):
+        if xml_record.find('Production') != None:
+            if xml_record.find('Production').find('creator') != None:
+                if xml_record.find('Production').find('creator').find('name') != None:
+                    if xml_record.find('Production').find('creator').find('name').find('value') != None:
+                        creator = xml_record.find('Production').find('creator').find('name').find('value').text
+                        creator_split = creator.split(',')
+                        if len(creator_split) > 1:
+                            first_name = creator_split[1].strip()
+                            last_name = creator_split[0].strip()
+                            name = "%s %s" %(first_name, last_name)
+                            return name
+                        else:
+                            return "%s" %(creator)
+        return None
+
     def create_object(self, priref, xml_record, folder_path='nl/'):
         created_object = None
 
@@ -486,6 +556,8 @@ class Migrator:
 
         title = self.updater.get_title_by_type(xml_record)
         object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
+        creator = self.get_creator(xml_record)
+
         if not title and object_number:
             #fallback object number
             title = object_number
@@ -497,16 +569,13 @@ class Migrator:
         else:
             title = title
 
-        dirty_id = "%s %s"%(str(object_number.encode('ascii', 'ignore')), str(title.encode('ascii', 'ignore')))
+        if not creator:
+            creator = ""   
+
+        dirty_id = "%s %s %s" %(str(object_number.encode('ascii', 'ignore')), str(title.encode('ascii', 'ignore')), str(creator.encode('ascii', 'ignore')))
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
         if normalized_id not in container:
-            container.invokeFactory(
-                type_name=self.portal_type,
-                id=normalized_id,
-                title=title
-            )
-
-            created_object = container[str(normalized_id)]
+            created_object = plone.api.content.create(container=container, type=self.portal_type, id=normalized_id, safe_id=True, title=title)
             setattr(created_object, 'priref', priref)
         else:
             created_object = container[normalized_id]
@@ -586,7 +655,7 @@ class Migrator:
                 images.append(image)
         return images
 
-    def add_image(self, image_name, path, priref, plone_object, crop=False, replace=False):
+    def add_image(self, image_name, path, priref, plone_object, crop=False, replace=False, file_included=False):
         if path:
             if 'slideshow' in plone_object:
                 container = plone_object['slideshow']
@@ -595,44 +664,59 @@ class Migrator:
 
                 if normalized_id not in container:
                     try:
-                        image_file = open(path, "r")
-                        image_data = image_file.read()
+                        if file_included:
+                            image_data = path
+                            image_file = None
+                            path = image_name
+                        else:
+                            image_file = open(path, "r")
+                            image_data = image_file.read()
+
                         try:
                             img = NamedBlobImage(
                                 data=image_data
                             )
-                            image_file.close()
+                            if image_file:
+                                image_file.close()
                             container.invokeFactory(type_name="Image", id=normalized_id, title=image_name, image=img)
 
+                            img_obj = container[normalized_id]
                             if crop:
-                                img_obj = container[normalized_id]
                                 autoCropImage(img_obj)
 
-                            self.log_status("! STATUS !__Created image [%s] for priref: %s" %(image_name, priref))
+                            self.log_status("! STATUS !__Created image [%s] for priref: %s, %s" %(image_name, priref, img_obj.absolute_url()))
+                            return img_obj
                         except:
                             self.log_images("%s__%s__%s"%(priref, image_name, "Error while creating Image content type."))
-                            pass
+                            raise
                     except:
-                        self.log_images("%s__%s__%s"%(priref, path, "Cannot open image file from HD."))
-                        pass
+                        self.log_images("%s__%s__%s"%(priref, normalized_id, "Cannot open image file from HD."))
+                        raise
                 else:
                     if replace:
-                        image_file = open(path, "r")
-                        image_data = image_file.read()
+                        if file_included:
+                            image_data = path
+                            image_file = None
+                            path = image_name
+                        else:
+                            image_file = open(path, "r")
+                            image_data = image_file.read()
 
                         obj_image = container[normalized_id]
                         img = NamedBlobImage(
                             data=image_data
                         )
-                        image_file.close()
+                        if image_file:
+                            image_file.close()
                         setattr(obj_image, 'image', img)
 
                         if crop:
                             autoCropImage(obj_image)
 
                         self.log_status("! STATUS !__Image [%s] got replaced for priref: %s" %(image_name, priref))
+                        return obj_image
                     else:
-                        self.log_images("%s__%s__%s"%(priref, path, "Image already exists in website."))
+                        self.log_images("%s__%s__%s"%(priref, normalized_id, "Image already exists in website."))
 
             else:
                 self.log_images("%s__%s__%s"%(priref, image_name, "Cannot create image in Object. Slideshow folder is not found."))
@@ -695,7 +779,7 @@ class Migrator:
     def create_description_field(self, plone_object):
         description = ""
         authors = getattr(plone_object,'creator', None)
-        periods = getattr(plone_object,'object_dating', None)
+        periods = getattr(plone_object,'production', None)
         
         if authors:
             field = authors[0]
@@ -774,14 +858,15 @@ class Migrator:
                 title = title
 
             setattr(plone_object, 'title', title)
-            setattr(plone_object, 'object_title', title)
+            #setattr(plone_object, 'object_title', title)
 
         if self.updater.portal_type == "Object":
             new_title = self.updater.get_title_by_type(xml_record)
             setattr(plone_object, 'title', new_title)
-            setattr(plone_object, 'object_title', new_title)
+            #setattr(plone_object, 'object_title', new_title)
 
-        setattr(plone_object, 'object_title', object_title)
+        #setattr(plone_object, 'object_title', object_title)
+        
         description = self.create_description_field(plone_object)
         setattr(plone_object, 'description', description)
 
@@ -831,16 +916,23 @@ class Migrator:
 
     def update_object_translation(self, priref, plone_object, xml_record):
         # get translation
-        if ITranslationManager(plone_object).has_translation('en'):
-            object_translated = ITranslationManager(plone_object).get_translation('en')
-            self.update_existing(priref, object_translated, xml_record)
-            self.log_status("! STATUS !__Updated translation")
-            self.log_status("! STATUS !__URL: %s" %(object_translated.absolute_url()))
-            return object_translated
-        else:
+        try:
+            if ITranslationManager(plone_object).has_translation('en'):
+                object_translated = ITranslationManager(plone_object).get_translation('en')
+                self.update_existing(priref, object_translated, xml_record)
+                self.generate_special_translated_fields(object_translated, xml_record)
+
+                self.log_status("! STATUS !__Updated translation")
+                self.log_status("! STATUS !__URL: %s" %(object_translated.absolute_url()))
+                return object_translated, False
+            else:
+                object_translated = self.create_translation(priref, xml_record, plone_object)
+                return object_translated, True
+        except:
+            self.error("%s__ __Object translation cannot be created"%(str(priref))) 
             pass
 
-        return None
+        return None, None
 
 
     def create_new_object(self, priref, plone_object, xml_record):
@@ -853,15 +945,10 @@ class Migrator:
 
             self.update_existing(priref, object_created, xml_record)
             
-            # Check object number does not contain HBNK
-            obj_number = getattr(object_created, "object_number", None)
-            if "hbnk" not in obj_number.lower():
-	            try:
-	                object_created.portal_workflow.doActionFor(object_created, "publish", comment="Item published")
-	            except:
-	                pass
-	            else:
-	        	pass
+            try:
+            	plone.api.content.transition(obj=object_created, to_state="published")
+            except:
+                pass
 	        	
             return object_created
         else:
@@ -927,14 +1014,26 @@ class Migrator:
                 field = label.find('label.text')
                 parent = label
                 if parent.find('label.type') != None:
-                    if parent.find('label.type').find('text') != None:
-                        if parent.find('label.type').find('text').text in ['website text ENG', 'website-tekst ENG', 'WEBTEXT ENG']:
+                    if parent.find('label.type').find('value') == None:
+                        if parent.find('label.type').text in ['Publiekstekst ENG']:
+                            current_val = getattr(obj, 'text', '')
+                            try:
+                                current_val = current_val.raw
+                            except:
+                                current_val = ''
+                            text = field.text
+                            text = current_val + "<p>" + text + "</p>"
+                            text = text.replace('\n','<br />')
+                            value = RichTextValue(text, 'text/html', 'text/html')
+                            setattr(obj, 'text', value)
+                    elif parent.find('label.type').find('text') != None:
+                        if parent.find('label.type').find('text').text in ['Publiekstekst ENG']:
                             text = field.text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
                             setattr(obj, 'text', value)
                     elif parent.find('label.type').find('value') != None:
-                        if parent.find('label.type').find('value').text in ['website text ENG', 'website-tekst ENG', 'WEBTEXT ENG']:
+                        if parent.find('label.type').find('value').text in ['Publiekstekst ENG']:
                             text = field.text
                             text = text.replace('\n','<br />')
                             value = RichTextValue(text, 'text/html', 'text/html')
@@ -945,7 +1044,6 @@ class Migrator:
             translation = xml_record.find('title.translation').text
             if translation:
                 setattr(obj, 'title', translation)
-                setattr(obj, 'object_title', translation)
                 obj.reindexObject(idxs=['Title'])
 
         return True
@@ -1047,7 +1145,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
-                        api.content.transition(obj=translated_object, to_state='published')
+                        plone.api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
                         self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
@@ -1091,6 +1189,7 @@ class Migrator:
                         #self.generate_special_translated_fields(translated_object, xml_record)
                         translated_object.setSubject(obj.Subject())
                         translated_object.reindexObject()
+                        
                         api.content.transition(obj=translated_object, to_state='published')
 
                         self.log_status("! STATUS !__Translation created [%s] %s / %s" %(str(""), str(curr), str(total)))
@@ -1113,6 +1212,36 @@ class Migrator:
             transaction.commit()
 
         return True
+
+    def create_translation(self, priref, xml_record, plone_object):
+        
+        if plone_object:
+            # Check translation
+            if not ITranslationManager(plone_object).has_translation('en'):
+                try:
+                    ITranslationManager(plone_object).add_translation('en')
+                    translated_object = ITranslationManager(plone_object).get_translation('en')
+
+                    # Copy fields from original object
+                    self.copy_original_to_translated(plone_object, translated_object)
+                    self.generate_contents_translation(plone_object)
+                    self.generate_special_translated_fields(translated_object, xml_record)
+                    translated_object.reindexObject()
+
+                    self.log_status("! STATUS !__Translation created [%s]" %(str(priref)))
+                    self.log_status("! STATUS !__URL: %s" %(str(translated_object.absolute_url())))
+                    plone.api.content.transition(obj=translated_object, to_state="published")
+                    return translated_object
+
+                except Exception, e:
+                    self.error("%s__ __Translation for object failed - %s"%(str(priref), str(e))) 
+                    raise
+            else:
+                self.log_status("! STATUS !__Translation for object already created. %s"%(str(priref))) 
+        else:
+            self.error("%s__ __Object is not found on Plone with priref."%(str(priref))) 
+
+        return None
 
     def create_translations(self):
         self.init_log_files()

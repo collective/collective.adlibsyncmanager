@@ -9,6 +9,7 @@
 import transaction
 from datetime import datetime, timedelta
 import urllib2, urllib
+import requests
 from plone.i18n.normalizer import idnormalizer
 from lxml import etree
 from plone.app.textfield.value import RichTextValue
@@ -16,22 +17,38 @@ from Products.CMFCore.utils import getToolByName
 import re
 import sys
 import smtplib
+import plone.api
 
 from .teylers_sync_core import CORE
 
+
 # SET ORGANIZATION
-ORGANIZATION = "teylers"
+ORGANIZATION = "cmu"
 
 VALID_TYPES = ['test', 'sync_date']
-API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=%s&search=%s&limit=0"
-API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacx/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
+API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=300"
+API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=300"
+
+API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
+API_IMAGES_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&command=getcontent&server=images&value=%s"
+
 
 COLLECTION_OBJ_TYPE = {
-    'ChoiceMunten': "coins",
-    'ChoiceGeologie': "fossils",
-    'ChoiceKunst':"kunst",
-    'ChoiceInstrumenten':"instruments",
-    'ChoiceBooks':"books"
+    #'beeldende kunst 1850 - heden': "database=collect&search=collection='"+urllib.quote('beeldende kunst 1850 - heden')+"'",
+    'stadsgeschiedenis': "database=collect&search=collection='"+urllib.quote('stadsgeschiedenis')+"'",
+    #'kostuums':"database=collect&search=collection='"+urllib.quote('kostuums')+"'",
+    #'intk':"database=collect&search=all",
+    #'beeldende kunst':"database=collect&search=collection='"+urllib.quote('beeldende kunst')+"'",
+    #"prenten en tekeningen": "database=collect&search=collection='"+urllib.quote("prenten en tekeningen")+"'-'"+urllib.quote("beeldende kunst 1850 - heden")+"'",
+    #'onedele metalen':"database=collect&search=collection='"+urllib.quote('onedele metalen')+"'",
+    #'edele metalen': "database=collect&search=collection='"+urllib.quote('edele metalen')+"'",
+    #'beeldhouwkunst tot 1850': "database=collect&search=collection='"+urllib.quote('beeldhouwkunst tot 1850')+"'",
+    #'schilderkunst tot 1850': "database=collect&search=collection='"+urllib.quote('schilderkunst tot 1850')+"'",
+    #'meubelen tot 1900': "database=collect&search=collection='"+urllib.quote('meubelen tot 1900')+"'",
+    #'van baaren': "database=collect&search=acquisition.source='"+urllib.quote('Stichting van Baaren Museum')+"'",
+    #'kunstnijverheid': "database=collect&search=collection='"+urllib.quote('kunstnijverheid')+"'",
+    #'bruna': "database=bruna&search=all",
+    #'rsa': "database=rsa&search=all",
 }
 
 TOTAL_TIMES = 0
@@ -42,6 +59,7 @@ class SyncMechanism:
         self.request_type = options['request_type']
         self.collections = options['collections']
         self.collection_type = ""
+        self.sync_images = False
 
         self.migrator = options['teylers_migrator']
         self.migrator.IMPORT_TYPE = "sync"
@@ -60,6 +78,7 @@ class SyncMechanism:
     ###### UTILS ######
     def write_log_details(self, log, timestamp=datetime.today().isoformat()):
         if log:
+            timestamp = datetime.today().isoformat()
             self.migrator.log_status(log)
 
             if 'TEST MODIFIED' in log:
@@ -69,7 +88,7 @@ class SyncMechanism:
 
             try:
                 log_to_write = final_log.replace('__', '')
-                print log_to_write
+                #print log_to_write
                 self.log_file.write(log_to_write+"\n")
             except:
                 pass
@@ -105,18 +124,31 @@ class SyncMechanism:
 
 
     def build_api_request(self, request_date, search_query, collection, getpriref=False):
+        # collection = database=etc
+        # query = all
+        # date = test_collection
         search = search_query
 
         if not getpriref:
-            request_date = "2018-01-31 9:00:00"
-        #request_date = "2018-01-07 00:00:00"
+            request_date = request_date
 
-        search = search % (request_date)
+        if request_date != "test_collection" or (getpriref == True):
+            search = search % (request_date)
         quoted_query = urllib.quote(search)
-        
-        #print "Build request for: %s" % (quoted_query)
-        self.api_request = API_COLLECTION_REQUEST % (collection, quoted_query)
 
+        if request_date == "test_collection" or (getpriref == True):
+            collection = COLLECTION_OBJ_TYPE[collection]
+        
+        if not getpriref:
+            self.api_request = API_COLLECTION_REQUEST % (collection)
+        else:
+            if collection in ['database=bruna&search=all']:
+                self.api_request = API_COLLECTION_REQUEST_PRIREF % ('bruna', quoted_query)
+            elif collection in ['database=rsa&search=all']:
+                self.api_request = API_COLLECTION_REQUEST_PRIREF % ('rsa', quoted_query)
+            else:
+                self.api_request = API_COLLECTION_REQUEST_PRIREF % ('collect', quoted_query)
+        
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
         response = urllib2.urlopen(req)
@@ -231,6 +263,10 @@ class SyncMechanism:
 
     def get_query_records(self, collection, query, date):
 
+        # collection = database=etc
+        # query = all
+        # date = test_collection
+
         self.write_log_details("%s__SYNC RECORDS" %(collection))
         search_query = query
 
@@ -239,76 +275,212 @@ class SyncMechanism:
         records = self.get_records(self.xmldoc)
         records_modified = len(records)
 
-        if self.migrator.CREATE_NEW:
-            self.write_log_details("%s__ %s records created since %s" % (collection, str(records_modified), date))
+        if date == "test_collection":
+            self.write_log_details("%s__ %s records to be tested for the collection" % (collection, str(records_modified)))
         else:
-            self.write_log_details("%s__ %s records modified since %s" % (collection, str(records_modified), date))
+            if self.migrator.CREATE_NEW:
+                self.write_log_details("%s__ %s records created since %s" % (collection, str(records_modified), date))
+            else:
+                self.write_log_details("%s__ %s records modified since %s" % (collection, str(records_modified), date))
 
         return records
 
     def sync_records(self, collection, query, run_type):
-        details = self.sync_request_details[collection][run_type]
-        last_request_success = details['last_request_success']
-        last_successful_date = details['last_successful_date']
-        last_successful_date_datetime = datetime.strptime(last_successful_date, "%Y-%m-%d %H:%M:%S")
-        today_datetime = datetime.today()
-        today_datetime_one_minute_ago = today_datetime - timedelta(minutes=1)
-        today_one_minute_ago_date = today_datetime_one_minute_ago.strftime('%Y-%m-%d %H:%M:%S')
 
-        success = False
-        try:
-            if last_request_success:
-                if today_datetime > (last_successful_date_datetime + timedelta(minutes=2)):
-                    # if last request took more than 2 min but succeeded
-                    # SYNC: 
-                    #   last sync date + 1min until now 
-                    #   since now-1min
-                    last_successful_date_datetime_one_minute_after = last_successful_date_datetime + timedelta(minutes=1)
-                    records = self.get_query_records(collection, query, last_successful_date_datetime_one_minute_after.strftime('%Y-%m-%d %H:%M:%S'))
-                    self.update_sync_records(records, collection)
-                    records = self.get_query_records(collection, query, today_one_minute_ago_date)
-                    self.update_sync_records(records, collection)
-                else:
-                    # SYNC: since now-1min
-                    records = self.get_query_records(collection, query, today_one_minute_ago_date)
-                    self.update_sync_records(records, collection)
-            else:
-                if today_datetime > (last_successful_date_datetime + timedelta(minutes=120)):
-                    # if is stuck in the same date without succeeding for more than 1h30min
-                    # SYNC: 
-                    #   last sync date + 1min until now
-                    #   since now-1min
-                    last_successful_date_datetime_one_minute_after = last_successful_date_datetime + timedelta(minutes=1)
-                    records = self.get_query_records(collection, query, last_successful_date_datetime_one_minute_after.strftime('%Y-%m-%d %H:%M:%S'))
-                    self.update_sync_records(records, collection)
-                    records = self.get_query_records(collection, query, today_one_minute_ago_date)
-                    self.update_sync_records(records, collection)
-                else:
-                    # Sync failed. Try again:
-                    # SYNC: 
-                    #   since same date as the previous request
-                    records = self.get_query_records(collection, query, last_successful_date)
-                    self.update_sync_records(records, collection)
+        if run_type == "test_collection":
+            records = self.get_query_records(collection, query, 'test_collection')
+            self.update_sync_records(records, collection)
+            return True
+        else: 
+            details = self.sync_request_details[collection][run_type]
+            last_request_success = details['last_request_success']
+            last_successful_date = details['last_successful_date']
+            last_successful_date_datetime = datetime.strptime(last_successful_date, "%Y-%m-%d %H:%M:%S")
+            today_datetime = datetime.today()
+            today_datetime_one_minute_ago = today_datetime - timedelta(minutes=1)
+            today_one_minute_ago_date = today_datetime_one_minute_ago.strftime('%Y-%m-%d %H:%M:%S')
 
-            success = True
-        except Exception, e:
-            exception_text = str(e)
-            self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, today_one_minute_ago_date, exception_text))
-            self.send_fail_email(exception_text, self.collection_type, today_one_minute_ago_date)
             success = False
-            pass
+            try:
+                if last_request_success:
+                    if today_datetime > (last_successful_date_datetime + timedelta(minutes=2)):
+                        # if last request took more than 2 min but succeeded
+                        # SYNC: 
+                        #   last sync date + 1min until now 
+                        #   since now-1min
+                        last_successful_date_datetime_one_minute_after = last_successful_date_datetime + timedelta(minutes=1)
+                        records = self.get_query_records(collection, query, last_successful_date_datetime_one_minute_after.strftime('%Y-%m-%d %H:%M:%S'))
+                        self.update_sync_records(records, collection)
+                        records = self.get_query_records(collection, query, today_one_minute_ago_date)
+                        self.update_sync_records(records, collection)
+                    else:
+                        # SYNC: since now-1min
+                        records = self.get_query_records(collection, query, today_one_minute_ago_date)
+                        self.update_sync_records(records, collection)
+                else:
+                    if today_datetime > (last_successful_date_datetime + timedelta(minutes=120)):
+                        # if is stuck in the same date without succeeding for more than 1h30min
+                        # SYNC: 
+                        #   last sync date + 1min until now
+                        #   since now-1min
+                        last_successful_date_datetime_one_minute_after = last_successful_date_datetime + timedelta(minutes=1)
+                        records = self.get_query_records(collection, query, last_successful_date_datetime_one_minute_after.strftime('%Y-%m-%d %H:%M:%S'))
+                        self.update_sync_records(records, collection)
+                        records = self.get_query_records(collection, query, today_one_minute_ago_date)
+                        self.update_sync_records(records, collection)
+                    else:
+                        # Sync failed. Try again:
+                        # SYNC: 
+                        #   since same date as the previous request
+                        records = self.get_query_records(collection, query, last_successful_date)
+                        self.update_sync_records(records, collection)
 
-        # Update sync details
-        if success:
-            self.sync_request_details[collection][run_type]['last_request_success'] = True
-            self.sync_request_details[collection][run_type]['last_successful_date'] = today_one_minute_ago_date
-        else:
-            self.sync_request_details[collection][run_type]['last_request_success'] = False
-            self.sync_request_details[collection][run_type]['last_successful_date'] = last_successful_date 
+                success = True
+            except Exception, e:
+                exception_text = str(e)
+                self.migrator.error("%s__ __Sync unexcepted exception on date: %s. Exception: %s" %(self.collection_type, today_one_minute_ago_date, exception_text))
+                self.send_fail_email(exception_text, self.collection_type, today_one_minute_ago_date)
+                success = False
+
+            # Update sync details
+            if success:
+                self.sync_request_details[collection][run_type]['last_request_success'] = True
+                self.sync_request_details[collection][run_type]['last_successful_date'] = today_one_minute_ago_date
+            else:
+                self.sync_request_details[collection][run_type]['last_request_success'] = False
+                self.sync_request_details[collection][run_type]['last_successful_date'] = last_successful_date 
 
         return True
 
-    def update_sync_records(self, records, collection):
+    def get_object_images(self, plone_object):
+
+        images = []
+        slideshow = None
+
+        if 'slideshow' in plone_object:
+            slideshow = plone_object.get('slideshow', None)
+            if slideshow:
+                for sitem in slideshow:
+                    item = slideshow[sitem]
+                    if item.portal_type == 'Image':
+                        images.append(item)
+            else:
+                return images
+
+        return images, slideshow
+
+    def get_reproduction_references(self, xml_record):
+
+        references = []
+
+        if xml_record.findall('Reproduction') != None:
+            for reference in xml_record.findall('Reproduction'):
+                if reference.find('reproduction.reference') != None:
+                    reference_path = reference.find('reproduction.reference').text
+
+                    reference_split = reference_path.split('\\')
+                    if reference_split:
+                        image_name = reference_split[-1]
+                    else:
+                        image_name = reference_path
+
+                    new_reference = {"path": reference_path, "name": image_name}
+                    references.append(new_reference)
+
+        return references
+
+    def download_image(self, url, priref, image_name):
+        img_date = None
+        try:
+            img_request = requests.get(url)
+            if img_request:
+                img_data = img_request.content
+                return img_data
+            else:
+                self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Download image from API request invalid"))
+                return None
+        except:
+            self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Error while downloading image from API URL"))
+            return None
+
+        return img_data
+
+    def sync_record_images(self, priref, plone_object, xml_record):
+
+        # get reproduction images
+        adlib_references = self.get_reproduction_references(xml_record)
+        adlib_references_names = [ref['name'] for ref in adlib_references]
+        adlib_references_names_reversed = adlib_references_names[::-1]
+
+        # get list of images in objects slideshow
+        object_images, slideshow = self.get_object_images(plone_object)
+
+        slideshow_content = {}
+        for img in object_images:
+            img_title = getattr(img, 'title', None)
+            if img_title:
+                slideshow_content[img_title] = img
+            else:
+                self.migrator.log_images("%s__%s__%s"%(priref, getattr(img, 'title', 'None'), "Error while getting Image content type title."))
+                pass
+
+        # Download image if not in objects slideshpw
+        images_to_create = []
+        images_to_update = []
+        for ref in adlib_references:
+            name = ref['name']
+            if name not in slideshow_content.keys():
+                images_to_create.append(ref)
+            else:
+                images_to_update.append(ref)
+
+        # Create/update new image
+        for create_image in images_to_create:
+            try:
+                path = create_image['path']
+                image_name = create_image['name']
+                image_download_url = API_IMAGES_REQUEST %(path)
+                image_file = self.download_image(image_download_url, priref, image_name)
+                img_obj_created = self.migrator.add_image(image_name, image_file, priref, plone_object, True, False, True)
+                slideshow_content[image_name] = img_obj_created
+                
+                self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Image content type created."))
+               
+            except:
+                self.migrator.log_images("%s__%s__%s"%(priref, create_image.get('name', 'None'), "Error while creating Image content type."))
+                pass
+
+        # Delete images
+        to_delete = []
+        for simg in slideshow_content:
+            try:
+                if simg not in adlib_references_names:
+                    img_obj = slideshow_content[simg]
+                    plone.api.content.delete(obj=img_obj)
+                    self.migrator.log_images("%s__%s__%s"%(priref, simg, "Image content type deleted."))
+                    to_delete.append(simg)
+            except:
+                self.migrator.log_images("%s__%s__%s"%(priref, simg, "Error while deleting Image content type."))
+                pass
+
+        for item_to_delete in to_delete:
+            del slideshow_content[item_to_delete]
+
+        # Fix order
+        for ref_image in adlib_references_names_reversed:
+            try:
+                ref_img_obj = slideshow_content.get(ref_image, None)
+                if ref_img_obj:
+                    slideshow.moveObjectsToTop([getattr(ref_img_obj, 'id', None)])
+                else:
+                    self.migrator.log_images("%s__%s__%s"%(priref, ref_image, "Error while fixing the order of the images. Image not in slideshow."))
+            except:
+                self.migrator.log_images("%s__%s__%s"%(priref, ref_image, "Error while fixing the order of the images"))
+                pass
+
+        return True
+
+    def update_sync_records(self, records, collection, test=False):
         curr = 0
         total = len(records)
 
@@ -317,7 +489,11 @@ class SyncMechanism:
     
             curr += 1
             priref = self.migrator.get_priref(record)
-            xml_record = self.get_record_by_priref(priref, self.collection_type)
+
+            if not test:
+                xml_record = self.get_record_by_priref(priref, self.collection_type)
+            else:
+                xml_record = record
 
             if xml_record is not None:
                 if self.migrator.valid_priref(priref):
@@ -327,23 +503,25 @@ class SyncMechanism:
                             if plone_object:
                                 self.migrator.update_existing(priref, plone_object, xml_record)
 
-                                # Books special case
-                                if collection == 'ChoiceBooks':
-                                    self.migrator.fix_book_title(plone_object)
+                                if self.sync_images:
+                                    self.sync_record_images(priref, plone_object, xml_record)
 
-                                # Fossils special case
-                                elif collection == "ChoiceGeologie":
-                                    self.migrator.fix_fossil_name(plone_object)
-
-                                obj_translated = self.migrator.update_object_translation(priref, plone_object, xml_record)
-                                if obj_translated:
-                                    self.migrator.generate_special_translated_fields(obj_translated, xml_record)
                                 self.write_log_details("%s__ Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
+                                obj_translated, is_translation_new = self.migrator.update_object_translation(priref, plone_object, xml_record)
+                                if not is_translation_new and self.sync_images and obj_translated:
+                                    self.sync_record_images(priref, obj_translated, xml_record)
                             else:
                                 if self.migrator.CREATE_NEW:
                                     created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
                                     if created_object:
+                                        if self.sync_images:
+                                            self.sync_record_images(priref, created_object, xml_record)
+
                                         self.write_log_details("%s__ Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
+
+                                        obj_translated, is_translation_new = self.migrator.update_object_translation(priref, created_object, xml_record)
+                                        if not is_translation_new and self.sync_images and obj_translated:
+                                            self.sync_record_images(priref, obj_translated, xml_record)
                                     else:
                                         self.migrator.error("%s__ __ Created object is None. Something went wrong."%(str(priref)))
                                 else:
@@ -351,9 +529,9 @@ class SyncMechanism:
                         else:
                             self.migrator.error("%s__ __ Cannot find priref in XML record"%(str(curr)))
                     except Exception, e:
-                        exception_text = str(e)
-                        self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
-                        pass
+                        #exception_text = str(e)
+                        #self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
+                        raise
             else:
                 #TODO log error
                 pass
@@ -385,7 +563,7 @@ class SyncMechanism:
                 
                 query = "creation greater '%s'"
 
-                self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+                self.migrator.object_type = self.collection_type
                 self.sync_records(collection, query, 'creation')
             except Exception, e:
                 exception_text = "\nUnexpected failure.\n" + str(e)
@@ -417,7 +595,7 @@ class SyncMechanism:
                 
                 query = "modification greater '%s'"
 
-                self.migrator.object_type = COLLECTION_OBJ_TYPE[self.collection_type]
+                self.migrator.object_type = self.collection_type
                 self.sync_records(collection, query, 'modification')
             except Exception, e:
                 exception_text = "\nUnexpected failure.\n" + str(e)
@@ -427,8 +605,82 @@ class SyncMechanism:
 
         return True
 
+    def sync_test_collection(self):
+        
+        print "\n#### TEST RUN COLLECTION ####"
+    
+        self.migrator.CREATE_NEW = True
+
+        for collection in self.collections:
+            try:
+                CORE["object_number"] = "object_number"
+                self.migrator.CORE = CORE
+                self.migrator.updater.CORE = CORE
+                self.collection_type = collection
+
+                self.migrator.object_type = self.collection_type
+                
+                query = ""
+                self.sync_records(collection, query, 'test_collection')
+
+            except Exception, e:
+                exception_text = "\nUnexpected failure.\n" + str(e)
+                #self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
+                #self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                #self.sync_request_details[collection]['modification']['last_request_success'] = False
+                raise
+
+        return True
+
+    def sync_test_record(self):
+        
+        print "\n#### TEST RUN ####"
+    
+        self.migrator.CREATE_NEW = True
+        self.sync_images = True
+
+        for collection in self.collections:
+            try:
+                CORE["object_number"] = "object_number"
+                self.migrator.CORE = CORE
+                self.migrator.updater.CORE = CORE
+                self.collection_type = collection
+
+                self.migrator.object_type = "stadsgeschiedenis"
+                
+                TEST_PRIREF_MEISJE = "24409"
+                TEST_PRIREF = "40923"
+
+                #test records = 24409, 4687, 13303
+                record = self.get_record_by_priref("40923", collection)
+                self.update_sync_records([record], collection, True)
+
+            except Exception, e:
+                #exception_text = "\nUnexpected failure.\n" + str(e)
+                #self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
+                #self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                #self.sync_request_details[collection]['modification']['last_request_success'] = False
+                raise
+                
+        return True
+
 
     ###### INIT ######
+    def test_run_collection(self):
+        self.migrator.init_log_files()
+        if self.request_type == "test":
+            self.sync_test_collection()
+        else:
+            self.sync_test_collection()
+        return True
+
+    def test_run(self):
+        self.migrator.init_log_files()
+        if self.request_type == "test":
+            self.sync_test_record()
+        else:
+            self.sync_test_record()
+        return True
 
     def sync_created(self):
         self.migrator.init_log_files()

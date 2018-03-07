@@ -204,10 +204,10 @@ class SyncUtils:
     def create_prod_dating_field(self, field):
         NOT_ALLOWED = ['', ' ', None, []]
         period = None
-        start_date = field['start']
-        start_date_precision = field['start_precision']
-        end_date = field['end']
-        end_date_precision = field['end_precision']
+        start_date = field['date_start']
+        start_date_precision = field['date_start_precision']
+        end_date = field['date_end']
+        end_date_precision = field['date_end_precision']
 
         if end_date == start_date:
             end_date = ""
@@ -253,11 +253,16 @@ class SyncUtils:
 
         NOT_ALLOWED = ['', None, ' ']
         
-        maker = author['creator']
+        maker = author['name']
         qualifier = author['qualifier']
         role = author['role']
-        date_of_birth = author['date_of_birth']
-        date_of_death = author['date_of_death']
+        date_of_birth = author['birth_date_start']
+        if date_of_birth.split("-") > 1:
+        	date_of_birth = date_of_birth.split("-")[0]
+
+        date_of_death = author['death_date_start']
+        if date_of_death.split("-") > 1:
+        	date_of_death = date_of_death.split("-")[0]
 
         production = self.create_author_name(maker)
 

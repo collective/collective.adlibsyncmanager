@@ -190,6 +190,10 @@ class Updater:
                 if empty_textline:
                     setattr(obj, name, u"")
 
+        text = ""
+        rich_val = RichTextValue(text, 'text/html', 'text/html')
+        setattr(obj, 'text', rich_val)
+
         return True
 
     def fix_all_choices(self, obj):
@@ -331,7 +335,8 @@ class Updater:
 
         self.field_types['title'] = "text"
         self.field_types['description'] = 'text'
-
+        self.field_types['text'] = 'rich-text'
+        
 
     def create_relation(self, current_value, objecttype_relatedto, priref, grid=False, by_name=False):
         intids = component.getUtility(IIntIds)
@@ -656,7 +661,8 @@ class Updater:
                 final_log = "[%s]__%s" %(str(timestamp), str(text))
             
             list_log = final_log.split('__')
-            """print final_log.replace('__', ' ')"""
+            
+            print final_log.replace('__', ' ')
             self.status_wr.writerow(list_log)
         else:
             return True
@@ -1206,14 +1212,14 @@ class Updater:
     def init_log_files(self):
         timestamp = datetime.datetime.today().isoformat()
 
-        self.error_path = "/var/www/zm-collectie-v3/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.error_path = "/var/www/centraalmuseum-dev/logs/sync/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.error_path_dev = "/Users/AG/Projects/collectie-zm/logs/error_%s_%s.csv" %(self.portal_type, str(timestamp))
         
-        self.warning_path = "/var/www/zm-collectie-v3/logs/warning_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.warning_path = "/var/www/centraalmuseum-dev/logs/sync/warning_%s_%s.csv" %(self.portal_type, str(timestamp))
         self.warning_path_dev = "/Users/AG/Projects/collectie-zm/logs/warning_%s_%s.csv" %(self.portal_type, str(timestamp))
         
         self.status_path_dev = "/Users/AG/Projects/collectie-zm/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
-        self.status_path = "/var/www/zm-collectie-v3/logs/status_%s_%s.csv" %(self.portal_type, str(timestamp))
+        self.status_path = "/var/www/centraalmuseum-dev/logs/sync/status_%s_%s.csv" %(self.portal_type, str(timestamp))
 
         if self.dev:
             self.error_log_file = open(self.error_path_dev, "w+")
