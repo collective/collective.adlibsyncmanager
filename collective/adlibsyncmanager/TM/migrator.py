@@ -76,8 +76,9 @@ WEBSITE_TEXT = ['WEBTEXT', 'website text Dutch', 'website-tekst', 'texte site we
 
 FOLDER_PATHS = {
     "intk": "nl/intk",
+    "collect":"nl/intk",
     "stadsgeschiedenis": "nl/ontdek/collectie/stadsgeschiedenis",
-    "beeldende kunst 1850 - heden": "nl/ontdek/collectie/beeldende-kunst-1850-heden",
+    "beeldende kunst 1850 - heden": "nl/ontdek/collectie/moderne-en-hedendaagse-kunst",
     "kostuums": "nl/ontdek/collectie/mode",
     "beeldende kunst": "nl/ontdek/collectie/oude-kunst",
     "prenten en tekeningen": "nl/ontdek/collectie/werken-op-papier-tot-1850",
@@ -109,7 +110,8 @@ TEST_EXAMPLES = {
     'kunstnijverheid': [],
     'bruna': [],
     'rsa': [],
-    'intk':[]
+    'intk':[],
+    'collect': []
 }
 
 RESTRICTIONS = {
@@ -128,6 +130,7 @@ RESTRICTIONS = {
     'kunstnijverheid': [],
     'bruna': [],
     'rsa': [],
+    'collect': []
 }
 
 FIELDS_ALLOW_SINGLE_ONLY = []
@@ -147,7 +150,8 @@ VIEW_TYPES = {
     'kunstnijverheid': "view",
     'bruna': "view",
     'rsa': "view",
-    'intk': "view"
+    'intk': "view",
+    'collect': "view"
 }
 
 #
@@ -266,7 +270,7 @@ class Migrator:
     def init_log_files(self):
 
         self.list_images_in_hd = glob.glob(IMAGES_HD_PATH[self.object_type][self.ENV]['path'])        
-        self.error_path = self.get_log_path('error_import', self.ENV)
+        self.error_path = self.get_log_path('error', self.ENV)
         self.warning_path = self.get_log_path('warning', self.ENV)
         self.status_path = self.get_log_path('status', self.ENV)
         self.log_images_path = self.get_log_path('images', self.ENV)
@@ -340,7 +344,7 @@ class Migrator:
         #return api.content.get(path='/nl/collectie/instrumenten-new/fk-0014-projectile-trolley')
         
         if priref:
-            brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object") 
+            brains = self.updater.api.portal_catalog(object_priref=priref, portal_type="Object", Language='nl') 
             for brain in brains:
                 if brain:
                     obj = brain.getObject()
@@ -914,7 +918,7 @@ class Migrator:
 
         return plone_object
 
-    def update_object_translation(self, priref, plone_object, xml_record):
+    def update_object_translation(self, priref, plone_object, xml_record, create_new=True):
         # get translation
         try:
             if ITranslationManager(plone_object).has_translation('en'):
@@ -925,9 +929,11 @@ class Migrator:
                 self.log_status("! STATUS !__Updated translation")
                 self.log_status("! STATUS !__URL: %s" %(object_translated.absolute_url()))
                 return object_translated, False
-            else:
+            elif create_new:
                 object_translated = self.create_translation(priref, xml_record, plone_object)
                 return object_translated, True
+            else:
+                return None, False
         except:
             self.error("%s__ __Object translation cannot be created"%(str(priref))) 
             pass

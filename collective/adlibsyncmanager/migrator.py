@@ -255,7 +255,6 @@ class APIMigrator:
         dirty_id = folder_name.decode('utf8')
         normalized_id = idnormalizer.normalize(dirty_id, max_length=len(dirty_id))
         
-        print "try folder %s" % (dirty_id)
         try:
             if hasattr(object_item, 'slideshow'):
                 slideshow = object_item['slideshow']

@@ -26,16 +26,18 @@ from .teylers_sync_core import CORE
 ORGANIZATION = "cmu"
 
 VALID_TYPES = ['test', 'sync_date']
-API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=300"
-API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=300"
+API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=0"
+API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=0"
+API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
 
 API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
 API_IMAGES_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&command=getcontent&server=images&value=%s"
 
 
 COLLECTION_OBJ_TYPE = {
-    #'beeldende kunst 1850 - heden': "database=collect&search=collection='"+urllib.quote('beeldende kunst 1850 - heden')+"'",
-    'stadsgeschiedenis': "database=collect&search=collection='"+urllib.quote('stadsgeschiedenis')+"'",
+    'beeldende kunst 1850 - heden': "database=collect&search=collection='"+urllib.quote('beeldende kunst 1850 - heden')+"'",
+    'collect': "collect",
+    #'stadsgeschiedenis': "database=collect&search=collection='"+urllib.quote('stadsgeschiedenis')+"'",
     #'kostuums':"database=collect&search=collection='"+urllib.quote('kostuums')+"'",
     #'intk':"database=collect&search=all",
     #'beeldende kunst':"database=collect&search=collection='"+urllib.quote('beeldende kunst')+"'",
@@ -60,6 +62,7 @@ class SyncMechanism:
         self.collections = options['collections']
         self.collection_type = ""
         self.sync_images = False
+        self.translate_objects = True
 
         self.migrator = options['teylers_migrator']
         self.migrator.IMPORT_TYPE = "sync"
@@ -122,10 +125,20 @@ class SyncMechanism:
         else:
             return None
 
+    def build_api_request_prod(self, date):
+        search = date
+        quoted_query = urllib.quote(search)
+
+        self.api_request = API_COLLECTION_REQUEST_COLLECT % (quoted_query)
+        req = urllib2.Request(self.api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+        return doc
 
     def build_api_request(self, request_date, search_query, collection, getpriref=False):
         # collection = database=etc
-        # query = all
+        # query = all, modification
         # date = test_collection
         search = search_query
 
@@ -261,7 +274,7 @@ class SyncMechanism:
 
     ###### SYNC ######
 
-    def get_query_records(self, collection, query, date):
+    def get_query_records(self, collection, query, date, prod=False):
 
         # collection = database=etc
         # query = all
@@ -270,13 +283,20 @@ class SyncMechanism:
         self.write_log_details("%s__SYNC RECORDS" %(collection))
         search_query = query
 
-        self.xmldoc = self.build_api_request(date, search_query, collection)
+        if not prod:
+            self.xmldoc = self.build_api_request(date, search_query, collection)
+        else:
+            search_date = "modification greater '%s'" %(date)
+            self.xmldoc = self.build_api_request_prod(search_date)
+
         self.migrator.updater.xml_root = self.xmldoc
         records = self.get_records(self.xmldoc)
         records_modified = len(records)
 
         if date == "test_collection":
             self.write_log_details("%s__ %s records to be tested for the collection" % (collection, str(records_modified)))
+        elif prod:
+            self.write_log_details("%s__ %s records modified since '%s'" % (collection, str(records_modified), date))
         else:
             if self.migrator.CREATE_NEW:
                 self.write_log_details("%s__ %s records created since %s" % (collection, str(records_modified), date))
@@ -286,9 +306,14 @@ class SyncMechanism:
         return records
 
     def sync_records(self, collection, query, run_type):
-
-        if run_type == "test_collection":
-            records = self.get_query_records(collection, query, 'test_collection')
+        if run_type in ["test_collection", "test_collection_prod"]:
+            if run_type == "test_collection_prod":
+                today_datetime = datetime.today()
+                today_datetime_one_minute_ago = today_datetime - timedelta(minutes=1)
+                today_one_minute_ago_date = today_datetime_one_minute_ago.strftime('%Y-%m-%d %H:%M:%S')
+                records = self.get_query_records(collection, query, today_one_minute_ago_date, True)
+            else:
+                records = self.get_query_records(collection, query, "test_collection")
             self.update_sync_records(records, collection)
             return True
         else: 
@@ -376,16 +401,18 @@ class SyncMechanism:
         if xml_record.findall('Reproduction') != None:
             for reference in xml_record.findall('Reproduction'):
                 if reference.find('reproduction.reference') != None:
-                    reference_path = reference.find('reproduction.reference').text
+                    if reference.find('reproduction.reference').find('reference_number') != None:
+                        reference_path = reference.find('reproduction.reference').find('reference_number').text
 
-                    reference_split = reference_path.split('\\')
-                    if reference_split:
-                        image_name = reference_split[-1]
-                    else:
-                        image_name = reference_path
+                        if reference_path:
+                            reference_split = reference_path.split('\\')
+                            if reference_split:
+                                image_name = reference_split[-1]
+                            else:
+                                image_name = reference_path
 
-                    new_reference = {"path": reference_path, "name": image_name}
-                    references.append(new_reference)
+                            new_reference = {"path": reference_path, "name": image_name}
+                            references.append(new_reference)
 
         return references
 
@@ -480,6 +507,63 @@ class SyncMechanism:
 
         return True
 
+    def generate_special_fields(self, priref, plone_object, xml_record):
+        #title
+        #lead_word
+        #author
+        #statement_of_responsibility
+        #place_of_publication
+        #year_of_publication
+
+        documentation = []
+
+        for doc in xml_record.findall('Documentation'):
+            title = ""
+            lead_word = ""
+            statement_of_responsibility = ""
+            place_of_publication = ""
+            year_of_publication = ""
+            authors = []
+
+            if doc.find('documentation.title') != None:
+
+                docxml = doc.find('documentation.title')
+                if docxml.find('title') != None:
+                    title = docxml.find('title').text
+
+                if docxml.find('lead_word') != None:
+                    if docxml.find('lead_word').find('value') != None:
+                        lead_word = docxml.find('lead_word').find('value').text
+
+                if docxml.find('year_of_publication') != None:
+                    year_of_publication = docxml.find('year_of_publication').text
+
+                if docxml.find('place_of_publication') != None:
+                    if docxml.find('place_of_publication').find('value') != None:
+                        place_of_publication = docxml.find('place_of_publication').find('value').text
+
+                if docxml.find('statement_of_responsibility') != None:
+                    if docxml.find('statement_of_responsibility').find('value') != None:
+                        statement_of_responsibility = docxml.find('statement_of_responsibility').find('value').text
+
+                for author in docxml.findall('author.name'):
+                    if author.find('value') != None:
+                        authors.append(author.find('value').text)
+
+                new_author = {
+                    "title":title,
+                    "lead_word":lead_word,
+                    "statement_of_responsibility":statement_of_responsibility,
+                    "place_of_publication":place_of_publication,
+                    "year_of_publication":year_of_publication,
+                    "author":authors
+                }
+
+                documentation.append(new_author)
+
+        setattr(plone_object, "documentation", documentation)
+        return True
+
     def update_sync_records(self, records, collection, test=False):
         curr = 0
         total = len(records)
@@ -490,10 +574,27 @@ class SyncMechanism:
             curr += 1
             priref = self.migrator.get_priref(record)
 
-            if not test:
-                xml_record = self.get_record_by_priref(priref, self.collection_type)
-            else:
-                xml_record = record
+            failed_to_get = False
+
+            try:
+                if not test:
+                    xml_record = self.get_record_by_priref(priref, self.collection_type)
+                else:
+                    xml_record = record
+            except:
+                failed_to_get = True
+                pass
+
+            if failed_to_get:
+                try:
+                    if not test:
+                        xml_record = self.get_record_by_priref(priref, self.collection_type)
+                    else:
+                        xml_record = record
+                except:
+                    failed_to_get = True
+                    self.migrator.error("%s__ __ Failed to get object from API after 2 requests."%(str(priref)))
+                    pass
 
             if xml_record is not None:
                 if self.migrator.valid_priref(priref):
@@ -507,9 +608,14 @@ class SyncMechanism:
                                     self.sync_record_images(priref, plone_object, xml_record)
 
                                 self.write_log_details("%s__ Updated %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), plone_object.absolute_url()))
-                                obj_translated, is_translation_new = self.migrator.update_object_translation(priref, plone_object, xml_record)
-                                if not is_translation_new and self.sync_images and obj_translated:
-                                    self.sync_record_images(priref, obj_translated, xml_record)
+                                
+                                if self.translate_objects:
+                                    obj_translated, is_translation_new = self.migrator.update_object_translation(priref, plone_object, xml_record, False)
+                                    if not is_translation_new and self.sync_images and obj_translated:
+                                        self.sync_record_images(priref, obj_translated, xml_record)
+
+                                self.generate_special_fields(priref, plone_object, xml_record)
+                                self.generate_special_fields(priref, obj_translated, xml_record)
                             else:
                                 if self.migrator.CREATE_NEW:
                                     created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
@@ -519,9 +625,13 @@ class SyncMechanism:
 
                                         self.write_log_details("%s__ Created %s / %s - [%s] - %s" %(str(collection), str(curr), str(total), str(priref), created_object.absolute_url()))
 
-                                        obj_translated, is_translation_new = self.migrator.update_object_translation(priref, created_object, xml_record)
-                                        if not is_translation_new and self.sync_images and obj_translated:
-                                            self.sync_record_images(priref, obj_translated, xml_record)
+                                        if self.translate_objects:
+                                            obj_translated, is_translation_new = self.migrator.update_object_translation(priref, created_object, xml_record)
+                                            if not is_translation_new and self.sync_images and obj_translated:
+                                                self.sync_record_images(priref, obj_translated, xml_record)
+
+                                        self.generate_special_fields(priref, created_object, xml_record)
+                                        self.generate_special_fields(priref, obj_translated, xml_record)
                                     else:
                                         self.migrator.error("%s__ __ Created object is None. Something went wrong."%(str(priref)))
                                 else:
@@ -529,9 +639,9 @@ class SyncMechanism:
                         else:
                             self.migrator.error("%s__ __ Cannot find priref in XML record"%(str(curr)))
                     except Exception, e:
-                        #exception_text = str(e)
-                        #self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
-                        raise
+                        exception_text = str(e)
+                        self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
+                        pass
             else:
                 #TODO log error
                 pass
@@ -610,6 +720,8 @@ class SyncMechanism:
         print "\n#### TEST RUN COLLECTION ####"
     
         self.migrator.CREATE_NEW = True
+        self.sync_images = False
+        self.translate_objects = True
 
         for collection in self.collections:
             try:
@@ -625,10 +737,39 @@ class SyncMechanism:
 
             except Exception, e:
                 exception_text = "\nUnexpected failure.\n" + str(e)
-                #self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
-                #self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
+                self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
                 #self.sync_request_details[collection]['modification']['last_request_success'] = False
                 raise
+
+        return True
+
+    def sync_test_prod(self):
+        
+        print "\n#### TEST PROD COLLECTION ####"
+    
+        self.migrator.CREATE_NEW = False
+        self.sync_images = True
+        self.translate_objects = True
+
+        for collection in self.collections:
+            try:
+                CORE["object_number"] = "object_number"
+                self.migrator.CORE = CORE
+                self.migrator.updater.CORE = CORE
+                self.collection_type = collection
+
+                self.migrator.object_type = self.collection_type
+                
+                query = ""
+                self.sync_records(collection, query, 'test_collection_prod')
+
+            except Exception, e:
+                exception_text = "\nUnexpected failure.\n" + str(e)
+                self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
+                self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                #self.sync_request_details[collection]['modification']['last_request_success'] = False
+                pass
 
         return True
 
@@ -646,13 +787,25 @@ class SyncMechanism:
                 self.migrator.updater.CORE = CORE
                 self.collection_type = collection
 
-                self.migrator.object_type = "stadsgeschiedenis"
+                self.migrator.object_type = "beeldende kunst 1850 - heden"
                 
                 TEST_PRIREF_MEISJE = "24409"
                 TEST_PRIREF = "40923"
 
                 #test records = 24409, 4687, 13303
+                """record = self.get_record_by_priref("24409", collection)
+                self.update_sync_records([record], collection, True)
+
+                record = self.get_record_by_priref("4687", collection)
+                self.update_sync_records([record], collection, True)
+
+                record = self.get_record_by_priref("13303", collection)
+                self.update_sync_records([record], collection, True)
+
                 record = self.get_record_by_priref("40923", collection)
+                self.update_sync_records([record], collection, True)"""
+
+                record = self.get_record_by_priref("21", collection)
                 self.update_sync_records([record], collection, True)
 
             except Exception, e:
@@ -666,6 +819,14 @@ class SyncMechanism:
 
 
     ###### INIT ######
+    def test_run_prod(self):
+        self.migrator.init_log_files()
+        if self.request_type == "test":
+            self.sync_test_prod()
+        else:
+            self.sync_test_prod()
+        return True
+
     def test_run_collection(self):
         self.migrator.init_log_files()
         if self.request_type == "test":
