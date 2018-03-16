@@ -26,8 +26,9 @@ from .teylers_sync_core import CORE
 ORGANIZATION = "cmu"
 
 VALID_TYPES = ['test', 'sync_date']
-API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=0"
-API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=0"
+API_ALL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
+API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=1000"
+API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=200"
 API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
 
 API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
@@ -130,6 +131,14 @@ class SyncMechanism:
         quoted_query = urllib.quote(search)
 
         self.api_request = API_COLLECTION_REQUEST_COLLECT % (quoted_query)
+        req = urllib2.Request(self.api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+        return doc
+
+    def get_all_records(self, collection, priref="all&fields=reproduction.reference"):
+        self.api_request = API_ALL % (collection, priref)
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
         response = urllib2.urlopen(req)
@@ -393,6 +402,27 @@ class SyncMechanism:
                 return images
 
         return images, slideshow
+    
+    def get_reproduction_references_all(self, xml_record):
+
+        references = []
+
+        if xml_record.findall('Reproduction') != None:
+            for reference in xml_record.findall('Reproduction'):
+                if reference.find('reproduction.reference') != None:
+                    reference_path = reference.find('reproduction.reference').text
+
+                    if reference_path:
+                        reference_split = reference_path.split('\\')
+                        if reference_split:
+                            image_name = reference_split[-1]
+                        else:
+                            image_name = reference_path
+
+                        new_reference = {"path": reference_path, "name": image_name}
+                        references.append(new_reference)
+
+        return references
 
     def get_reproduction_references(self, xml_record):
 
@@ -568,8 +598,7 @@ class SyncMechanism:
         curr = 0
         total = len(records)
 
-        for record in list(records):
-            transaction.begin()
+        for record in list(records)[:100]:
     
             curr += 1
             priref = self.migrator.get_priref(record)
@@ -643,11 +672,11 @@ class SyncMechanism:
                         self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
                         pass
             else:
-                #TODO log error
+                self.migrator.error("%s__ __ XML record is None"%(str(curr)))
                 pass
             
+            transaction.get().commit()
 
-            transaction.commit()
         return True
 
 
@@ -720,7 +749,7 @@ class SyncMechanism:
         print "\n#### TEST RUN COLLECTION ####"
     
         self.migrator.CREATE_NEW = True
-        self.sync_images = False
+        self.sync_images = True
         self.translate_objects = True
 
         for collection in self.collections:
@@ -738,7 +767,7 @@ class SyncMechanism:
             except Exception, e:
                 exception_text = "\nUnexpected failure.\n" + str(e)
                 self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
-                self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                #self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
                 #self.sync_request_details[collection]['modification']['last_request_success'] = False
                 raise
 
@@ -772,6 +801,71 @@ class SyncMechanism:
                 pass
 
         return True
+
+
+    def find_reproductions(self):
+
+        print "Find multiple reproductions"
+
+        records_collect = self.get_records(self.get_all_records("collect"))
+        records_rsa = self.get_records(self.get_all_records("rsa"))
+        records_bruna = self.get_records(self.get_all_records("bruna"))
+        print "Got records from all collections"
+
+        reproductions = {}
+
+        collections = {"collect": records_collect, "rsa": records_rsa, "bruna": records_bruna}
+        total_records = 0
+
+        for collection in collections.keys():
+            total = len(collections[collection])
+            curr = 0
+            for record in collections[collection]:
+                curr += 1
+                total_records += 1
+                
+                priref = self.migrator.get_priref(record)
+
+                try:
+                    print "[%s][%s] Testing %s / %s reproductions. [idx: %s]" %(collection, priref, curr, total, total_records)
+
+                    """xml_records = self.get_records(self.get_all_records(collection, "priref='%s'&fields=reproduction.reference"%(priref)))
+                    if len(xml_records):
+                        xml_record = xml_records[0]
+                    else:
+                        xml_record = None
+                        print "[%s][%s] priref not found" %(collection, priref) """
+
+                    images = self.get_reproduction_references_all(record)
+
+                    for image in images:
+                        if image['path'] not in reproductions.keys():
+                            reproductions[image['path']] = {"total": 1, "records": [priref]}
+                        else:
+                            rep_total = reproductions[image['path']]["total"]
+                            rep_total += 1
+                            reproductions[image['path']]["total"] = rep_total
+                            rep_records = reproductions[image['path']]["records"]
+                            rep_records.append(priref)
+                            reproductions[image['path']]["records"] = rep_records
+                except:
+                    print "[ERROR][%s][%s] Error while getting reproductions" %(collection, priref)
+                    pass
+
+        # Analyse
+        repeated_images = [{key: reproductions[key]} for key in reproductions.keys() if reproductions[key]['total'] > 1]
+
+        #print "\nReproductions:"
+        #print reproductions
+
+        print "\nRepeated images:"
+        print repeated_images
+        print "\nTotal repeated: %s" %(len(repeated_images))
+        
+
+        return True
+
+
 
     def sync_test_record(self):
         
