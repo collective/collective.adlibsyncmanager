@@ -28,11 +28,11 @@ ORGANIZATION = "cmu"
 VALID_TYPES = ['test', 'sync_date']
 API_ALL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
 API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=1000"
-API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=200"
+API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=0"
 API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
 
 API_DELETED_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&command=getdeletedrecords&datefrom=%s"
-API_IMAGES_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&command=getcontent&server=images&value=%s"
+API_IMAGES_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&command=getcontent&server=images&value=%s&imageformat=jpg"
 
 
 COLLECTION_OBJ_TYPE = {
@@ -137,7 +137,7 @@ class SyncMechanism:
         doc = etree.parse(response)
         return doc
 
-    def get_all_records(self, collection, priref="all&fields=reproduction.reference"):
+    def get_all_records(self, collection, priref="collection='"+urllib.quote('beeldende kunst 1850 - heden')+"'&fields=reproduction.reference"):
         self.api_request = API_ALL % (collection, priref)
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
@@ -441,7 +441,19 @@ class SyncMechanism:
                             else:
                                 image_name = reference_path
 
-                            new_reference = {"path": reference_path, "name": image_name}
+                            image_title = ""
+                            image_description = ""
+
+                            if reference.find('reproduction.reference').find('title') != None:
+                                if reference.find('reproduction.reference').find('title').find('value') != None:
+                                    image_title = reference.find('reproduction.reference').find('title').find('value').text
+                            if reference.find('reproduction.reference').find('description') != None:
+                                image_description = reference.find('reproduction.reference').find('description').text
+
+                            if image_name:
+                                normalized_id = idnormalizer.normalize(image_name, max_length=len(image_name))
+
+                            new_reference = {"path": reference_path, "name": image_name, "title":image_title, "description": image_description, "_id": normalized_id}
                             references.append(new_reference)
 
         return references
@@ -466,7 +478,7 @@ class SyncMechanism:
 
         # get reproduction images
         adlib_references = self.get_reproduction_references(xml_record)
-        adlib_references_names = [ref['name'] for ref in adlib_references]
+        adlib_references_names = [ref['_id'] for ref in adlib_references]
         adlib_references_names_reversed = adlib_references_names[::-1]
 
         # get list of images in objects slideshow
@@ -474,7 +486,7 @@ class SyncMechanism:
 
         slideshow_content = {}
         for img in object_images:
-            img_title = getattr(img, 'title', None)
+            img_title = getattr(img, 'id', None)
             if img_title:
                 slideshow_content[img_title] = img
             else:
@@ -485,7 +497,7 @@ class SyncMechanism:
         images_to_create = []
         images_to_update = []
         for ref in adlib_references:
-            name = ref['name']
+            name = ref['_id']
             if name not in slideshow_content.keys():
                 images_to_create.append(ref)
             else:
@@ -498,13 +510,39 @@ class SyncMechanism:
                 image_name = create_image['name']
                 image_download_url = API_IMAGES_REQUEST %(path)
                 image_file = self.download_image(image_download_url, priref, image_name)
+                image_description = create_image['description']
+                image_title = create_image['title']
+
                 img_obj_created = self.migrator.add_image(image_name, image_file, priref, plone_object, True, False, True)
-                slideshow_content[image_name] = img_obj_created
-                
+
+                if image_title:
+                    setattr(img_obj_created, 'title', image_title)
+                if image_description:
+                    setattr(img_obj_created, 'description', image_description)
+
+                slideshow_content[getattr(img_obj_created, 'id', '')] = img_obj_created
                 self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Image content type created."))
                
             except:
                 self.migrator.log_images("%s__%s__%s"%(priref, create_image.get('name', 'None'), "Error while creating Image content type."))
+                pass
+
+        for update_image in images_to_update:
+            try:
+                _id = update_image['_id']
+                slideshow_img = slideshow_content.get(_id, None)
+
+                if slideshow_img:
+                    image_description = update_image['description']
+                    if image_description:
+                        setattr(slideshow_img, 'description', image_description)
+                    
+                    image_title = update_image['title']
+                    if image_title:
+                        setattr(slideshow_img, 'title', image_description)
+
+            except:
+                self.migrator.log_images("%s__%s__%s"%(priref, update_image.get('name', 'None'), "Error while updating Image content type."))
                 pass
 
         # Delete images
@@ -598,7 +636,7 @@ class SyncMechanism:
         curr = 0
         total = len(records)
 
-        for record in list(records)[:100]:
+        for record in list(records):
     
             curr += 1
             priref = self.migrator.get_priref(record)
@@ -675,7 +713,7 @@ class SyncMechanism:
                 self.migrator.error("%s__ __ XML record is None"%(str(curr)))
                 pass
             
-            transaction.get().commit()
+            #transaction.get().commit()
 
         return True
 
@@ -862,17 +900,88 @@ class SyncMechanism:
         print repeated_images
         print "\nTotal repeated: %s" %(len(repeated_images))
         
-
         return True
 
 
+    def find_reproductions_collect(self):
+
+        print "Find multiple reproductions"
+
+        records_collect = self.get_records(self.get_all_records("collect"))
+        print "Got records from all collections"
+
+        reproductions = {}
+
+        collections = {"collect": records_collect}
+        total_records = 0
+
+        without_images = []
+        more_than_one = []
+        
+        for collection in collections.keys():
+            total = len(collections[collection])
+            curr = 0
+            for record in collections[collection]:
+                curr += 1
+                total_records += 1
+
+                priref = self.migrator.get_priref(record)
+
+                try:
+                    print "[%s][%s] Testing %s / %s reproductions. [idx: %s]" %(collection, priref, curr, total, total_records)
+
+                    """xml_records = self.get_records(self.get_all_records(collection, "priref='%s'&fields=reproduction.reference"%(priref)))
+                    if len(xml_records):
+                        xml_record = xml_records[0]
+                    else:
+                        xml_record = None
+                        print "[%s][%s] priref not found" %(collection, priref) """
+
+                    images = self.get_reproduction_references_all(record)
+
+                    if not images:
+                        without_images.append(priref)
+
+                    if images and len(images) > 1:
+                        more_than_one.append(priref)
+
+                    for image in images:
+                        if image['path'] not in reproductions.keys():
+                            reproductions[image['path']] = {"total": 1, "records": [priref]}
+                        else:
+                            rep_total = reproductions[image['path']]["total"]
+                            rep_total += 1
+                            reproductions[image['path']]["total"] = rep_total
+                            rep_records = reproductions[image['path']]["records"]
+                            rep_records.append(priref)
+                            reproductions[image['path']]["records"] = rep_records
+                except:
+                    print "[ERROR][%s][%s] Error while getting reproductions" %(collection, priref)
+                    pass
+
+        # Analyse
+        #repeated_images = [{key: reproductions[key]} for key in reproductions.keys() if reproductions[key]['total'] > 1]
+
+        print "Total reproductions: %s" %(len(reproductions))
+        print "Total records without images: %s" %(len(without_images))
+        print "Total records with more than one image: %s" %(len(more_than_one))
+        print more_than_one[:10]
+        # ['1608', '1610', '1943', '2643', '3308', '3902', '4070', '4075', '4248', '4737']
+        #print "\nReproductions:"
+        #print reproductions
+
+        #print "\nRepeated images:"
+        #print repeated_images
+        #print "\nTotal repeated: %s" %(len(repeated_images))
+        
+        return True
 
     def sync_test_record(self):
         
         print "\n#### TEST RUN ####"
     
         self.migrator.CREATE_NEW = True
-        self.sync_images = True
+        self.sync_images = False
 
         for collection in self.collections:
             try:
@@ -887,7 +996,7 @@ class SyncMechanism:
                 TEST_PRIREF = "40923"
 
                 #test records = 24409, 4687, 13303
-                """record = self.get_record_by_priref("24409", collection)
+                record = self.get_record_by_priref("24409", collection)
                 self.update_sync_records([record], collection, True)
 
                 record = self.get_record_by_priref("4687", collection)
@@ -897,10 +1006,10 @@ class SyncMechanism:
                 self.update_sync_records([record], collection, True)
 
                 record = self.get_record_by_priref("40923", collection)
-                self.update_sync_records([record], collection, True)"""
-
-                record = self.get_record_by_priref("21", collection)
                 self.update_sync_records([record], collection, True)
+
+                """record = self.get_record_by_priref("40923", collection)
+                self.update_sync_records([record], collection, True)"""
 
             except Exception, e:
                 #exception_text = "\nUnexpected failure.\n" + str(e)

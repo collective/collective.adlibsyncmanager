@@ -72,6 +72,8 @@ CORE = {
     "notes":"notes-note",
 
     #TODO Locations
+
+    "current_location.name": "current_location-name",
     "defaultlocation": "",
     "defaultlocation-location.default.name": "",
     "defaultlocation-location.default.context": "",
