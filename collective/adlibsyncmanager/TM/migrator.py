@@ -374,7 +374,7 @@ class Migrator:
 
         plone_fieldname = self.updater.check_dictionary(xml_path)
         
-        if plone_fieldname:
+        if plone_fieldname and "repeatable" not in plone_fieldname:
             plone_fieldroot = plone_fieldname.split('-')[0]
             has_field = hasattr(plone_object, plone_fieldroot)
            
@@ -384,6 +384,24 @@ class Migrator:
 
                 if self.valid_field(plone_fieldroot):
                     value = self.transform_all_types(xml_element, field_type, current_value, xml_path, plone_fieldname)
+                else:
+                    value = current_value
+
+                self.updater.setattribute(plone_object, plone_fieldroot, field_type, value)
+            else:
+                self.error("Field not available in Plone object: %s" %(plone_fieldroot))
+
+        elif plone_fieldname and "repeatable" in plone_fieldname:
+            plone_fieldname_split = plone_fieldname.split('-')
+            plone_fieldroot = plone_fieldname_split[1]
+            has_field = hasattr(plone_object, plone_fieldroot)
+
+            if has_field:
+                current_value = getattr(plone_object, plone_fieldroot)
+                field_type = self.updater.get_type_of_field(plone_fieldroot)
+
+                if self.valid_field(plone_fieldroot):
+                    value = self.consume_repeatable_field(xml_element, current_value, xml_path, plone_fieldroot)
                 else:
                     value = current_value
 
@@ -421,6 +439,7 @@ class Migrator:
         return True
 
     # Handle datagridfield 
+
     def handle_datagridfield(self, current_value, xml_path, xml_element, plone_fieldname):
         subfield = self.updater.get_subfield(plone_fieldname)
         plone_fieldroot = plone_fieldname.split('-')[0]
@@ -449,8 +468,44 @@ class Migrator:
             self.error("Badly formed CORE dictionary for repeatable field: %s" %(plone_fieldname))
 
         return field_value
+    
+
+    # NEW IMPORT OF REPEATABLE FIELDS #
+    def consume_repeatable_field(self, xml_element, current_value, xml_path, plone_fieldroot):
+        new_value = self.updater.get_schema_gridfield(plone_fieldroot)
+        if not current_value:
+            current_value = []
+        current_value.append(new_value)
+        return current_value
+
+    def handle_repeatable_field(self, current_value, xml_path, xml_element, plone_fieldname):
+        subfield = self.updater.get_subfield(plone_fieldname)
+        plone_fieldroot = plone_fieldname.split('-')[0]
+        subfield_type = self.updater.get_type_of_subfield(xml_path)
+        new_value = self.transform_all_types(xml_element, subfield_type, current_value, xml_path, xml_path)
+        
+        repeatable_field_value = self.update_repeatable_field(subfield, current_value, new_value, plone_fieldroot)
+        return repeatable_field_value
+
+    def update_repeatable_field(self, subfield, current_value, value, plone_fieldroot):
+        if not current_value:
+            current_value = []
+            new_value = self.updater.get_schema_gridfield(plone_fieldroot)
+            current_value.append(new_value)
+
+        if len(current_value) > 0:
+            first_value = current_value[0]
+            if len(first_value.keys()) == 1:
+                new_value = self.updater.get_schema_gridfield(plone_fieldroot)
+                current_value.append(new_value)
+
+        current_item = current_value[-1]
+        current_item[subfield] = value
+        current_value[-1] = current_item
+        return current_value
 
     def transform_all_types(self, xml_element, field_type, current_value, xml_path, plone_fieldname):
+
         if plone_fieldname in FIELDS_ALLOW_SINGLE_ONLY:
             if current_value not in NOT_ALLOWED:
                 return current_value
@@ -528,7 +583,8 @@ class Migrator:
                 return RichTextValue(text, 'text/html', 'text/html')
 
         elif field_type == "datagridfield":
-            value = self.handle_datagridfield(current_value, xml_path, xml_element, plone_fieldname)
+            value = self.handle_repeatable_field(current_value, xml_path, xml_element, plone_fieldname)
+
         # Unknown
         else:
             value = None
@@ -682,6 +738,7 @@ class Migrator:
                             )
                             if image_file:
                                 image_file.close()
+
                             container.invokeFactory(type_name="Image", id=normalized_id, title=image_name, image=img)
 
                             img_obj = container[normalized_id]
@@ -712,6 +769,7 @@ class Migrator:
                         )
                         if image_file:
                             image_file.close()
+
                         setattr(obj_image, 'image', img)
 
                         if crop:
@@ -866,10 +924,18 @@ class Migrator:
 
         if self.updater.portal_type == "Object":
             new_title = self.updater.get_title_by_type(xml_record)
-            setattr(plone_object, 'title', new_title)
-            #setattr(plone_object, 'object_title', new_title)
-
-        #setattr(plone_object, 'object_title', object_title)
+            
+            if not new_title:
+                object_number = self.updater.get_required_field_by_type(xml_record, self.object_type)
+                if object_number:
+                    setattr(plone_object, 'title', object_number)
+                else:
+                    if priref:
+                        setattr(plone_object, 'title', priref)
+                    else:
+                        setattr(plone_object, 'title', "Untitled")
+            else:
+                setattr(plone_object, 'title', new_title)
         
         description = self.create_description_field(plone_object)
         setattr(plone_object, 'description', description)

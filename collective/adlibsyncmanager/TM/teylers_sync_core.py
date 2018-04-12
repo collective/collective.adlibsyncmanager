@@ -17,6 +17,7 @@ CORE = {
     "collection":"",
     "content.motif.general":"",
 
+    "Production":"repeatable-creator",
     "Production-creator-name-value":"creator-name",
     "Production-creator.qualifier":"creator-qualifier",
     "Production-creator.role-value":"creator-role",
@@ -27,9 +28,11 @@ CORE = {
     "Production-creator-birth.place-value":"creator-birth_place",
     "Production-creator-death.place-value":"creator-death_place",
     "Production-creator-url":"creator-url",
+    "Production-creator-priref":"creator-priref",
     "Production-creator-equivalent_name-value":"creator-equivalent_name",
-
     "production.date.notes":"production-notes",
+
+    "Production_date":"repeatable-production",    
     "Production_date-production.date.end": "production-date_end",
     "Production_date-production.date.end.prec": "production-date_end_precision",
     "Production_date-production.date.start": "production-date_start",
@@ -37,22 +40,27 @@ CORE = {
 
     "techniek.vrije.tekst":"technique-technique",
     
+    "Object_name":"repeatable-object_name",
     "Object_name-object_name-value": "object_name-name",
     "object_number":"object_number",
     "collection-value":"collection-term",
-    
+
+    "acquisition.method":"",
     "acquisition.method-value": "acquisition-method",
     "acquisition.date": "acquisition-date",
     "acquisition.date.precision": "acquisition-date_precision",
 
+    "Dimension":"repeatable-dimension",
     "Dimension-dimension.value": "dimension-value",
     "Dimension-dimension.type-value": "dimension-type",
     "Dimension-dimension.unit-value": "dimension-unit",
     "Dimension-dimension.precision": "dimension-precision",
-    "dimension.free": "dimension-notes",
+    "Dimension-dimension.notes": "dimension-notes",
+    "dimension.free": "",
 
     #"Material-material-value":"material-material",
     "Material-material-value":"",
+    "Inscription":"repeatable-inscription",
     "Inscription-inscription.content":"inscription-content",
     "Inscription-inscription.method":"inscription-method",
     "Inscription-inscription.position-value":"inscription-position",
@@ -62,12 +70,16 @@ CORE = {
     
     "physical_description": "physical_description", 
     
+    "Associated_subject":"repeatable-associated_subject",
     "Associated_subject-association.subject-value": "associated_subject-subject",
     "Associated_subject-association.subject.association-value": "associated_subject-association",
     "Associated_subject-association.subject.date.start": "associated_subject-date",
     "Associated_subject-association.subject.note": "associated_subject-notes",
+
+    "Associated_period": "repeatable-associated_period",
     "Associated_period-association.period-value":"associated_period-period",
     "Associated_person-association.person-value": "associated_person-person",
+
 
     "notes":"notes-note",
 
@@ -80,19 +92,20 @@ CORE = {
     
 
     #TODO exhibitions
-    "Exhibition":"",
+    "Exhibition":"repeatable-exhibitions",
+
     "Exhibition-exhibition":"",
-    "Exhibition-exhibition-title":"",
+    "Exhibition-exhibition-title":"exhibitions-title",
     "Exhibition-exhibition-venue":"",
-    "Exhibition-exhibition-venue-value":"",
+    "Exhibition-exhibition-venue-value":"exhibitions-venue",
     "Exhibition-exhibition-venue.place":"",
-    "Exhibition-exhibition-venue.place-value":"",
-    "Exhibition-exhibition-venue.date.start":"",
-    "Exhibition-exhibition-venue.date.end":"",
+    "Exhibition-exhibition-venue.place-value":"exhibitions-place",
+    "Exhibition-exhibition-venue.date.start":"exhibitions-date_start",
+    "Exhibition-exhibition-venue.date.end":"exhibitions-date_end",
     "Exhibition-exhibition-object.object_number":"",
     "Exhibition-exhibition-priref":"",
     "Exhibition-exhibition-notes": "",
-    "Exhibition-exhibition-nummer_cm": "",
+    "Exhibition-exhibition-nummer_cm": "exhibitions-nummer_cm",
     "Exhibition-exhibition-reproduction.reference":"",
     "Exhibition-exhibition-reproduction.reference-reference_number":"",
     "Exhibition-exhibition-reproduction.reference-record_access.user":"",
@@ -113,6 +126,7 @@ CORE = {
     "Documentation-documentation.title-author.name-value": "documentation-author",
     "Documentation-documentation.title-statement_of_responsibility": "",
     "Documentation-documentation.title-statement_of_responsibility-value": "documentation-statement_of_responsibility",
+    "Documentation-documentation.page_reference":"documentation-page_references",
     "Documentation-documentation.title-priref": "",
     
     "Documentation-documentation.title-place_of_publication":"",
@@ -147,15 +161,13 @@ CORE = {
     # IGNORE TAGS   #
     # # # # # # # # #
 
-    "acquisition.method":"",
-    "Associated_period":"",
     "Associated_period-association.period":"",
-    "Associated_person":"",
+    "Associated_person":"repeatable-associated_person",
     "Associated_person-association.person":"",
-    "Associated_subject":"",
+
     "Associated_subject-association.subject":"",
     "Associated_subject-association.subject.association":"",
-    "Dimension":"",
+
     "Dimension-dimension.part":"",
     "Dimension-dimension.type":"",
     "Dimension-dimension.unit":"",
@@ -170,7 +182,7 @@ CORE = {
     "Edit":"",
     "Edit-edit.date":"",
     "input.date":"",
-    "Inscription":"",
+
     "Inscription-inscription.position":"",
     "Inscription-inscription.type":"",
     "Label":"",
@@ -178,14 +190,11 @@ CORE = {
     "Material-material":"",
     "Object_name":"",
     "Object_name-object_name":"",
-    "Production":"",
     "Production-creator":"",
     "Production-creator-name":"",
     "Production-creator-birth.place":"",
     "Production-creator-death.place":"",
-    "Production-creator-priref":"",
     "Production-creator.role":"",
-    "Production_date":"",
     "Production-creator-equivalent_name":"",
     "Production-creator-used_for":"",
     "Production-creator-used_for-value":"",

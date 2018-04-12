@@ -734,7 +734,6 @@ class Updater:
     def check_dictionary(self, xml_path):
         if xml_path in self.CORE.keys():
             return self.CORE[xml_path]
-
         return False
 
     def escape_empty_string(self, old_value):

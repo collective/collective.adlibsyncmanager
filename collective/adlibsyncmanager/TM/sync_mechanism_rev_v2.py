@@ -18,7 +18,8 @@ import re
 import sys
 import smtplib
 import plone.api
-
+from plone.app.multilingual.interfaces import ITranslationManager
+from plone.app.contenttypes.behaviors.collection import ICollection
 from .teylers_sync_core import CORE
 
 
@@ -27,7 +28,7 @@ ORGANIZATION = "cmu"
 
 VALID_TYPES = ['test', 'sync_date']
 API_ALL = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
-API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=1000"
+API_COLLECTION_REQUEST_COLLECT = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=collect&search=%s&limit=0"
 API_COLLECTION_REQUEST = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?%s&limit=0"
 API_COLLECTION_REQUEST_PRIREF = "http://"+ORGANIZATION+".adlibhosting.com/wwwopacximages/wwwopac.ashx?database=%s&search=%s&limit=0"
 
@@ -138,6 +139,22 @@ class SyncMechanism:
         return doc
 
     def get_all_records(self, collection, priref="collection='"+urllib.quote('beeldende kunst 1850 - heden')+"'&fields=reproduction.reference"):
+        self.api_request = API_ALL % (collection, priref)
+        req = urllib2.Request(self.api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+        return doc
+
+    def get_all_records_relations(self, collection, priref="all&fields=related_object.reference"):
+        self.api_request = API_ALL % (collection, priref)
+        req = urllib2.Request(self.api_request)
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        response = urllib2.urlopen(req)
+        doc = etree.parse(response)
+        return doc
+
+    def get_all_records_persons(self, collection, priref="all&fields=creator"):
         self.api_request = API_ALL % (collection, priref)
         req = urllib2.Request(self.api_request)
         req.add_header('User-Agent', 'Mozilla/5.0')
@@ -424,6 +441,36 @@ class SyncMechanism:
 
         return references
 
+    def get_relations_all(self, xml_record):
+
+        relations = []
+
+        if xml_record.findall('Related_object') != None:
+            for relation in xml_record.findall('Related_object'):
+                if relation.find('related_object.reference') != None:
+                    
+                    rel_obj_number = relation.find('related_object.reference').text
+
+                    if rel_obj_number:
+                        relations.append(rel_obj_number)
+
+        return relations
+
+    def get_persons_all(self, xml_record):
+
+        persons = []
+
+        if xml_record.findall('Production') != None:
+            for person in xml_record.findall('Production'):
+                if person.find('creator') != None:
+                    creator = person.find('creator')
+                    if creator.find('priref') != None:
+                        creator_priref = creator.find('priref').text
+                        if creator_priref:
+                            persons.append(creator_priref)
+
+        return persons
+
     def get_reproduction_references(self, xml_record):
 
         references = []
@@ -459,20 +506,20 @@ class SyncMechanism:
         return references
 
     def download_image(self, url, priref, image_name):
-        img_date = None
+        img_data = None
         try:
-            img_request = requests.get(url)
+            img_request = requests.get(url, stream=True)
             if img_request:
                 img_data = img_request.content
-                return img_data
+                return img_data, img_request
             else:
                 self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Download image from API request invalid"))
-                return None
+                return None, None
         except:
             self.migrator.log_images("%s__%s__%s"%(priref, image_name, "Error while downloading image from API URL"))
-            return None
+            return None, None
 
-        return img_data
+        return img_data, None
 
     def sync_record_images(self, priref, plone_object, xml_record):
 
@@ -508,12 +555,18 @@ class SyncMechanism:
             try:
                 path = create_image['path']
                 image_name = create_image['name']
-                image_download_url = API_IMAGES_REQUEST %(path)
-                image_file = self.download_image(image_download_url, priref, image_name)
+                path_url = urllib.quote(path)
+                image_download_url = API_IMAGES_REQUEST %(path_url)
+                image_file, image_request = self.download_image(image_download_url, priref, image_name)
                 image_description = create_image['description']
                 image_title = create_image['title']
 
                 img_obj_created = self.migrator.add_image(image_name, image_file, priref, plone_object, True, False, True)
+
+                """image_request = None
+                image_file = None
+                del image_request
+                del image_file"""
 
                 if image_title:
                     setattr(img_obj_created, 'title', image_title)
@@ -592,9 +645,12 @@ class SyncMechanism:
             place_of_publication = ""
             year_of_publication = ""
             authors = []
+            page_reference = ""
+
+            if doc.find('documentation.page_reference') != None:
+                page_reference = doc.find('documentation.page_reference').text
 
             if doc.find('documentation.title') != None:
-
                 docxml = doc.find('documentation.title')
                 if docxml.find('title') != None:
                     title = docxml.find('title').text
@@ -619,17 +675,149 @@ class SyncMechanism:
                         authors.append(author.find('value').text)
 
                 new_author = {
-                    "title":title,
-                    "lead_word":lead_word,
+                    "title": title,
+                    "lead_word": lead_word,
                     "statement_of_responsibility":statement_of_responsibility,
                     "place_of_publication":place_of_publication,
                     "year_of_publication":year_of_publication,
-                    "author":authors
+                    "author":authors, 
+                    "page_references": page_reference
                 }
 
                 documentation.append(new_author)
 
         setattr(plone_object, "documentation", documentation)
+        return True
+
+
+    def update_person(self, person, name, priref):
+        try:
+            if person:
+                person_obj = person.getObject()
+                setattr(person_obj, 'title', name)
+                setattr(person_obj, 'name', name)
+                setattr(person_obj, 'priref', priref)
+                defaultquery = [{u'i': u'object_person_priref', u'o': u'plone.app.querystring.operation.string.is', u'v': u'%s'%(priref)}, {u'i': u'hasMedia', u'o': u'plone.app.querystring.operation.boolean.isTrue', u'v': u'/'}, {'i': 'path', 'o': 'plone.app.querystring.operation.string.path', 'v': '/'}]
+                ICollection(person_obj)._set_query(defaultquery)
+                person_obj.setLayout("listing_view")
+                person_obj.reindexObject()
+                return person_obj
+            else:
+                return False
+        except:
+            raise
+            return None
+
+    def create_person(self, name, priref):
+        try:
+            container = plone.api.content.get(path='/nl/ontdek/personen-en-instellingen')
+            if container:
+                person_id = idnormalizer.normalize(name, max_length=len(name))
+                new_person = plone.api.content.create(container=container, type="Person", id=person_id, title=name, name=name, priref=priref, safe_id=True)
+                if new_person:
+                    defaultquery = [{u'i': u'object_person_priref', u'o': u'plone.app.querystring.operation.string.is', u'v': u'%s'%(priref)}, {u'i': u'hasMedia', u'o': u'plone.app.querystring.operation.boolean.isTrue', u'v': u'/'}, {'i': 'path', 'o': 'plone.app.querystring.operation.string.path', 'v': '/'}]
+                    ICollection(new_person)._set_query(defaultquery)
+                    plone.api.content.transition(obj=new_person, to_state="published")
+                    new_person.setLayout("listing_view")
+                    new_person.reindexObject()
+                    return new_person
+                else:
+                    return False
+            else:
+                return False
+        except:
+            raise
+            return False
+
+        return False
+
+    def translate_person(self, person, name, person_priref):
+        try:
+            if not ITranslationManager(person).has_translation('en'):
+                ITranslationManager(person).add_translation('en')
+                person_trans = ITranslationManager(person).get_translation('en')
+                setattr(person_trans, 'title', getattr(person, 'title', person_priref))
+                setattr(person_trans, 'name', getattr(person, 'name', name))
+                setattr(person_trans, 'priref', getattr(person, 'priref', name))
+                plone.api.content.transition(obj=person_trans, to_state="published")
+                defaultquery = [{u'i': u'object_person_priref', u'o': u'plone.app.querystring.operation.string.is', u'v': u'%s'%(person_priref)}, {u'i': u'hasMedia', u'o': u'plone.app.querystring.operation.boolean.isTrue', u'v': u'/'}, {'i': 'path', 'o': 'plone.app.querystring.operation.string.path', 'v': '/'}]
+                ICollection(person_trans)._set_query(defaultquery)
+                person_trans.setLayout("listing_view")
+                person_trans.reindexObject()
+                self.write_log_details("%s__ Created translation for person [%s] - %s" %('', person_priref, person_trans.absolute_url()))
+                return True
+            else:
+                person_trans = ITranslationManager(person).get_translation('en')
+                setattr(person_trans, 'title', getattr(person, 'title', person_priref))
+                setattr(person_trans, 'name', getattr(person, 'name', name))
+                setattr(person_trans, 'priref', getattr(person, 'priref', name))
+                defaultquery = [{u'i': u'object_person_priref', u'o': u'plone.app.querystring.operation.string.is', u'v': u'%s'%(person_priref)}, {u'i': u'hasMedia', u'o': u'plone.app.querystring.operation.boolean.isTrue', u'v': u'/'}, {'i': 'path', 'o': 'plone.app.querystring.operation.string.path', 'v': '/'}]
+                ICollection(person_trans)._set_query(defaultquery)
+                person_trans.setLayout("listing_view")
+                try:
+                    plone.api.content.transition(obj=person_trans, to_state="published")
+                except:
+                    pass
+                person_trans.reindexObject()
+                self.write_log_details("%s__ Updated translation for person [%s] - %s" %('', person_priref, person_trans.absolute_url()))
+                return True
+        except:
+            raise
+            return False
+
+        return False
+
+    def find_person(self, person_priref):
+        try:
+            person = None
+            persons = plone.api.content.find(context=self.portal, Language='nl', person_priref=person_priref, portal_type="Person")
+            if persons:
+                person = persons[0]
+                return person
+            return person
+        except:
+            raise
+            return None
+
+    def generate_persons(self, obj_priref, xml_record):
+        persons = xml_record.findall("Production")
+
+        for person in persons:
+            name = ""
+            priref = ""
+            if person.find('creator') != None:
+                person_xml = person.find('creator')
+                if person_xml.find('name') != None:
+                    if person_xml.find('name').find('value') != None:
+                        name = person_xml.find('name').find('value').text
+                        name_split = name.split(',')
+                        if len(name_split) > 1:
+                            name = "%s %s" %(name_split[1], name_split[0])
+
+                if person_xml.find('priref') != None:
+                    priref = person_xml.find('priref').text
+
+                if priref:
+                    person_obj = self.find_person(priref)
+                    if person_obj:
+                        updated_person = self.update_person(person_obj, name, priref)
+                        if updated_person:
+                            self.translate_person(updated_person, name, priref)
+                            self.write_log_details("%s__ Updated person [%s] - %s" %(obj_priref, priref, updated_person.absolute_url()))
+                        else:
+                            self.migrator.error("%s__ __ Something went wrong while updating person [%s]"%(str(obj_priref), priref))
+                    else:
+                        created_person = self.create_person(name, priref)
+                        if created_person:
+                            self.translate_person(created_person, name, priref)
+                            self.write_log_details("%s__ Created person [%s] - %s" %(obj_priref, priref, created_person.absolute_url()))
+                        else:
+                            self.migrator.error("%s__ __ Something went wrong while creating person [%s]"%(str(obj_priref), priref))
+                else:
+                    self.migrator.error("%s__ __ Cannot find person priref. Not importing person."%(str(obj_priref)))
+
+            else:
+                self.migrator.error("%s__ __ Cannot find person xml"%(str(obj_priref)))
         return True
 
     def update_sync_records(self, records, collection, test=False):
@@ -683,6 +871,7 @@ class SyncMechanism:
 
                                 self.generate_special_fields(priref, plone_object, xml_record)
                                 self.generate_special_fields(priref, obj_translated, xml_record)
+                                self.generate_persons(priref, xml_record)
                             else:
                                 if self.migrator.CREATE_NEW:
                                     created_object = self.migrator.create_new_object(priref, plone_object, xml_record)
@@ -699,6 +888,7 @@ class SyncMechanism:
 
                                         self.generate_special_fields(priref, created_object, xml_record)
                                         self.generate_special_fields(priref, obj_translated, xml_record)
+                                        self.generate_persons(priref, xml_record)
                                     else:
                                         self.migrator.error("%s__ __ Created object is None. Something went wrong."%(str(priref)))
                                 else:
@@ -708,12 +898,12 @@ class SyncMechanism:
                     except Exception, e:
                         exception_text = str(e)
                         self.send_fail_email(exception_text, self.collection_type, "priref: %s" %(priref))
-                        pass
+                        raise
             else:
                 self.migrator.error("%s__ __ XML record is None"%(str(curr)))
                 pass
             
-            #transaction.get().commit()
+            transaction.get().commit()
 
         return True
 
@@ -805,9 +995,9 @@ class SyncMechanism:
             except Exception, e:
                 exception_text = "\nUnexpected failure.\n" + str(e)
                 self.migrator.error("%s__ __Sync unexpected failure on date: %s. Exception: %s" %(self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'), exception_text))
-                #self.send_fail_email(exception_text, self.collection_type, datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+                self.send_fail_email(exception_text, "", datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
                 #self.sync_request_details[collection]['modification']['last_request_success'] = False
-                raise
+                pass
 
         return True
 
@@ -840,6 +1030,102 @@ class SyncMechanism:
 
         return True
 
+    def find_persons(self):
+
+        print "Find persons"
+
+        records_collect = self.get_records(self.get_all_records_persons("collect"))
+        print "Got records from all collections"
+
+        persons = {}
+
+        collections = {"collect": records_collect}
+        total_records = 0
+
+        for collection in collections.keys():
+            total = len(collections[collection])
+            curr = 0
+            for record in collections[collection]:
+                curr += 1
+                total_records += 1
+                
+                priref = self.migrator.get_priref(record)
+
+                try:
+                    print "[%s][%s] Testing %s / %s objects" %(collection, priref, curr, total)
+
+                    all_persons = self.get_persons_all(record)
+                    total_persons = len(all_persons)
+
+                    for person in all_persons:
+                        if person not in persons.keys():
+                            persons[priref] = {"total": 1}
+                        else:
+                            rel_total = persons[priref]["total"]
+                            rel_total += 1
+                            persons[priref]["total"] = rep_total
+                except:
+                    print "[ERROR][%s][%s] Error while getting person" %(collection, priref)
+                    pass
+
+        # Analyse
+        print "Total number of persons %s" %(len(persons))
+        
+        return True
+
+    def find_relations(self):
+
+        print "Find relations"
+
+        records_collect = self.get_records(self.get_all_records_relations("collect"))
+        print "Got records from all collections"
+
+        relations = {}
+
+        collections = {"collect": records_collect}
+        total_records = 0
+        total_number_of_relations = 0
+
+        for collection in collections.keys():
+            total = len(collections[collection])
+            curr = 0
+            for record in collections[collection]:
+                curr += 1
+                total_records += 1
+                
+                priref = self.migrator.get_priref(record)
+
+                try:
+                    print "[%s][%s] Testing %s / %s objects" %(collection, priref, curr, total)
+
+                    all_relations = self.get_relations_all(record)
+                    total_record_relations = len(all_relations)
+
+                    if priref not in relations.keys():
+                        if total_record_relations:
+                            relations[priref] = {"total": total_record_relations}
+                            total_number_of_relations += total_record_relations
+                    else:
+                        if total_record_relations:
+                            rel_total = relations[priref]["total"]
+                            rel_total += total_record_relations
+                            relations[priref]["total"] = rep_total
+                            total_number_of_relations += total_record_relations
+                except:
+                    print "[ERROR][%s][%s] Error while getting relation" %(collection, priref)
+                    pass
+
+        # Analyse
+        total_records_with_relations = len(relations.keys())
+        average_number_relatios = total_number_of_relations / total_records_with_relations
+        average_number_relatios_total = total_number_of_relations / total
+
+        print "Number of records with relations: %s" %(total_records_with_relations)
+        print "Average number of relations: %s" %(str(float(average_number_relatios)))
+        print "Total number of relations: %s" %(total_number_of_relations)
+        print "Average number of relations in the entire collection: %s" %(str(float(average_number_relatios_total)))
+        
+        return True
 
     def find_reproductions(self):
 
@@ -981,7 +1267,7 @@ class SyncMechanism:
         print "\n#### TEST RUN ####"
     
         self.migrator.CREATE_NEW = True
-        self.sync_images = False
+        self.sync_images = True
 
         for collection in self.collections:
             try:
@@ -995,21 +1281,33 @@ class SyncMechanism:
                 TEST_PRIREF_MEISJE = "24409"
                 TEST_PRIREF = "40923"
 
+                """record = self.get_record_by_priref("16759", collection)
+                self.update_sync_records([record], collection, True)"""
+
+                """record = self.get_record_by_priref("25711", collection)
+                self.update_sync_records([record], collection, True)"""
+
                 #test records = 24409, 4687, 13303
-                record = self.get_record_by_priref("24409", collection)
+                """record = self.get_record_by_priref("24409", collection)
                 self.update_sync_records([record], collection, True)
 
                 record = self.get_record_by_priref("4687", collection)
                 self.update_sync_records([record], collection, True)
 
                 record = self.get_record_by_priref("13303", collection)
-                self.update_sync_records([record], collection, True)
+                self.update_sync_records([record], collection, True)"""
 
                 record = self.get_record_by_priref("40923", collection)
                 self.update_sync_records([record], collection, True)
 
-                """record = self.get_record_by_priref("40923", collection)
+                """
+                Others: record = self.get_record_by_priref("908", collection)
+                self.update_sync_records([record], collection, True)
+
+                record = self.get_record_by_priref("919", collection)
                 self.update_sync_records([record], collection, True)"""
+
+
 
             except Exception, e:
                 #exception_text = "\nUnexpected failure.\n" + str(e)
